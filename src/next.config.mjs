@@ -26,23 +26,6 @@ export default defineNextConfig({
 		// Will be available on both server and client
 		basePath: '/configure',	
 	},
-	headers: async () => {
-		return [
-			{
-				source: '/(.*)',
-				headers: [
-					{
-						key: 'Cross-Origin-Opener-Policy',
-						value: 'same-origin',
-					},
-					{
-						key: 'Cross-Origin-Embedder-Policy',
-						value: 'require-corp',
-					},
-				],
-			}
-		]
-	},
 	experimental: {
 		instrumentationHook: true,
 		typedRoutes: true,

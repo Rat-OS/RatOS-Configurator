@@ -10,7 +10,7 @@ import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from 
 import { useToolheads } from '@/hooks/useToolheadConfiguration';
 import { Board } from '@/zods/boards';
 import { Card } from '@/components/common/card';
-import { Book, CircleAlert, ExternalLink, RectangleHorizontal, Square } from 'lucide-react';
+import { AlertCircle, Book, CircleAlert, ExternalLink, RectangleHorizontal, Square } from 'lucide-react';
 import { Button } from '@/components/common/button';
 import { twJoin } from 'tailwind-merge';
 import { Modal } from '@/components/common/modal';
@@ -237,6 +237,15 @@ export const ElectronicsWiring = (props: StepScreenProps) => {
 								A <strong className="text-foreground">large</strong> green rectangle indicates a driver, place drivers
 								in the highlighted slots if you need the annotated axis for your particular build. Some printers need
 								more or less drivers, and you will later be able to reconfigure the slot ordering.
+							</div>
+						</li>
+						<li className="flex gap-2">
+							<div className="flex-shrink-0">
+								<AlertCircle className="text-rose-500" />
+							</div>
+							<div className="text-rose-300">
+								Be careful with your endstop cables, failing to order the pins correctly can result in damage on some
+								boards.
 							</div>
 						</li>
 						<li></li>
