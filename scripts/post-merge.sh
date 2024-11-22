@@ -4,4 +4,4 @@
 # It will be removed in a future version.
 SCRIPT_DIR=$( cd -- "$( dirname -- "$(realpath -- "${BASH_SOURCE[0]}")" )" &> /dev/null && pwd )
 
-exec "$SCRIPT_DIR/app/scripts/post-merge.sh"
+exec "$SCRIPT_DIR/../app/scripts/post-merge.sh"
