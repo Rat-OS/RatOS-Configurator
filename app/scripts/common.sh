@@ -4,7 +4,7 @@ SRC_DIR=$(realpath "$SCRIPT_DIR/..")
 BASE_DIR=$(realpath "$SRC_DIR/..")
 GIT_DIR=$BASE_DIR/.git
 
-source "$SRC_DIR/configuration/scripts/environment.sh"
+source "$BASE_DIR/configuration/scripts/environment.sh"
 
 report_status()
 {
