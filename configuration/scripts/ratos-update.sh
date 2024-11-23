@@ -39,12 +39,6 @@ fix_klippy_env_ownership()
 	fi
 }
 
-restart_configurator()
-{
-	report_status "Restarting configurator..."
-	systemctl restart ratos-configurator
-}
-
 symlink_extensions()
 {
 	report_status "Symlinking klippy extensions"
@@ -74,4 +68,3 @@ register_ratos_kinematics
 unregister_vaoc_led
 symlink_extensions
 update_beacon_fw
-restart_configurator
