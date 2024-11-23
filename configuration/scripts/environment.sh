@@ -3,17 +3,32 @@
 # performed outside of a function so that other scripts sourcing this in will run this by default
 
 # Get the real user (not root) when script is run with sudo
-if [ -n "$SUDO_USER" ]; then
+# Debug output
+echo "Debug: SUDO_USER=$SUDO_USER"
+echo "Debug: USER=$USER"
+echo "Debug: id -u=$(id -u)"
+echo "Debug: EUID=$EUID"
+
+if [ -n "$SUDO_USER" ] && [ "$SUDO_USER" != "root" ]; then
+    echo "Case 1: Running with sudo as non-root user"
     REAL_USER=$SUDO_USER
     REAL_HOME=$(getent passwd "$SUDO_USER" | cut -d: -f6)
-elif [ "$(id -u)" -ne 0 ]; then
+elif [ "$EUID" -ne 0 ]; then
+    echo "Case 2: Running as non-root without sudo"
     REAL_USER=$USER
     REAL_HOME=$HOME
 else
-	echo "Running as root, defaulting to pi as RATOS_USER and RATOS_USERGROUP..."
-	REAL_USER="pi"
-	REAL_HOME="/home/pi"
+    echo "Case 3: Running as root directly"
+    REAL_USER="pi"
+    REAL_HOME="/home/pi"
 fi
+
+if [ "$REAL_USER" = "root" ]; then
+    echo "Fatal Error: Running as root, this is not supported, exiting..." >&2
+    exit 1
+fi
+
+echo "Result: REAL_USER=$REAL_USER REAL_HOME=$REAL_HOME"
 
 envFile="/usr/local/etc/.ratos.env"
 userEnvFile="${REAL_HOME}/.ratos.env"
@@ -34,6 +49,7 @@ KLIPPER_DIR=${REAL_HOME}/klipper
 KLIPPER_ENV=${REAL_HOME}/klippy-env
 BEACON_DIR=${REAL_HOME}/beacon
 EOF
+	chmod a+r "$envFile"
 	echo "Created $envFile with default values:"
 	cat "$envFile"
 	echo "You can create $userEnvFile to override these values for $RATOS_USER or modify $envFile to change them for all users."
