@@ -21,7 +21,7 @@ userEnvFile="${REAL_HOME}/.ratos.env"
 # create $envFile if file does not exist using sane defaults on a ratos pi image.
 if [ ! -f "$envFile" ]; then
 	echo "$envFile not found, determining default values..."
-	CMD="tee".
+	CMD="tee"
 	[ "$EUID" -ne 0 ] && CMD="sudo tee"
 	RATOS_USER=$REAL_USER
 
