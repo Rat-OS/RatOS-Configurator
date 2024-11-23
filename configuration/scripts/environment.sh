@@ -4,11 +4,11 @@
 
 # Get the real user (not root) when script is run with sudo
 if [ -n "$SUDO_USER" ]; then
-    REAL_USER="$SUDO_USER"
+    REAL_USER=$SUDO_USER
     REAL_HOME=$(getent passwd "$SUDO_USER" | cut -d: -f6)
 elif [ "$(id -u)" -ne 0 ]; then
-    REAL_USER="$USER"
-    REAL_HOME="$HOME"
+    REAL_USER=$USER
+    REAL_HOME=$HOME
 else
 	echo "Running as root, defaulting to pi as RATOS_USER and RATOS_USERGROUP..."
 	REAL_USER="pi"
@@ -21,18 +21,18 @@ userEnvFile="${REAL_HOME}/.ratos.env"
 # create $envFile if file does not exist using sane defaults on a ratos pi image.
 if [ ! -f "$envFile" ]; then
 	echo "$envFile not found, determining default values..."
-	CMD="tee"
+	CMD="tee".
 	[ "$EUID" -ne 0 ] && CMD="sudo tee"
-	RATOS_USER="$REAL_USER"
+	RATOS_USER=$REAL_USER
 
 	$CMD "$envFile" > /dev/null <<EOF
-RATOS_USERNAME="${RATOS_USER}"
-RATOS_USERGROUP="${RATOS_USER}"
-RATOS_PRINTER_DATA_DIR="${REAL_HOME}/printer_data"
-MOONRAKER_DIR="${REAL_HOME}/moonraker"
-KLIPPER_DIR="${REAL_HOME}/klipper"
-KLIPPER_ENV="${REAL_HOME}/klippy-env"
-BEACON_DIR="${REAL_HOME}/beacon"
+RATOS_USERNAME=${RATOS_USER}
+RATOS_USERGROUP=${RATOS_USER}
+RATOS_PRINTER_DATA_DIR=${REAL_HOME}/printer_data
+MOONRAKER_DIR=${REAL_HOME}/moonraker
+KLIPPER_DIR=${REAL_HOME}/klipper
+KLIPPER_ENV=${REAL_HOME}/klippy-env
+BEACON_DIR=${REAL_HOME}/beacon
 EOF
 	echo "Created $envFile with default values:"
 	cat "$envFile"
