@@ -3,28 +3,25 @@
 # performed outside of a function so that other scripts sourcing this in will run this by default
 
 # Get the real user (not root) when script is run with sudo
-# Debug output
-echo "Debug: SUDO_USER=$SUDO_USER"
-echo "Debug: USER=$USER"
-echo "Debug: id -u=$(id -u)"
-echo "Debug: EUID=$EUID"
+
+echo -e "\n\n###### Loading RatOS environment"
 
 if [ -n "$SUDO_USER" ] && [ "$SUDO_USER" != "root" ]; then
-    echo "Case 1: Running with sudo as non-root user"
+    echo "Running with sudo as non-root user"
     REAL_USER=$SUDO_USER
     REAL_HOME=$(getent passwd "$SUDO_USER" | cut -d: -f6)
 elif [ "$EUID" -ne 0 ]; then
-    echo "Case 2: Running as non-root without sudo"
+    echo "Running as non-root without sudo"
     REAL_USER=$USER
     REAL_HOME=$HOME
 else
-    echo "Case 3: Running as root directly"
+    echo "Running as root directly, defaulting to pi user."
     REAL_USER="pi"
     REAL_HOME="/home/pi"
 fi
 
 if [ "$REAL_USER" = "root" ]; then
-    echo "Fatal Error: Running as root, this is not supported, exiting..." >&2
+    echo "Fatal Error: Unable to determine non-root user, please run as a normal user or use sudo, exiting..." >&2
     exit 1
 fi
 
