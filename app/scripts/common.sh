@@ -57,9 +57,9 @@ install_or_update_service_file()
 pnpm_install() {
 	report_status "Installing pnpm dependencies..."
     pushd "$SRC_DIR" || exit 1
-	if [ -d "$SRC_DIR/../node_modules" ]; then
+	if [ -d "$BASE_DIR/node_modules" ]; then
 		report_status "Moving node_modules from git directory to src directory"
-		mv "$SRC_DIR/../node_modules" "$SRC_DIR"
+		mv "$BASE_DIR/node_modules" "$SRC_DIR"
 	fi
 	if [ "$EUID" -eq 0 ]; then
 		# Check if node_modules is owned by root and delete
