@@ -92,6 +92,9 @@ importers:
       '@schema-hub/zod-error-formatter':
         specifier: ^0.0.8
         version: 0.0.8(zod@3.22.4)
+      '@shelf/fast-chunk-string':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@tailwindcss/container-queries':
         specifier: ^0.1.1
         version: 0.1.1(tailwindcss@3.4.3)
@@ -444,6 +447,9 @@ importers:
       eslint-plugin-unused-imports:
         specifier: ^3.0.0
         version: 3.0.0(@typescript-eslint/eslint-plugin@7.0.2(@typescript-eslint/parser@6.19.0(eslint@8.56.0)(typescript@5.5.2))(eslint@8.56.0)(typescript@5.5.2))(eslint@8.56.0)
+      ink-testing-library:
+        specifier: ^4.0.0
+        version: 4.0.0(@types/react@18.2.21)
       jest-environment-jsdom:
         specifier: ^29.5.0
         version: 29.5.0
@@ -1814,6 +1820,10 @@ packages:
     peerDependencies:
       zod: ^3.22.4
 
+  '@shelf/fast-chunk-string@3.0.0':
+    resolution: {integrity: sha512-VgGBn/+laNSpAgUBtnHY3i0hfkX6dgDFPRE5DroyGZReerfRiUCVwizL9vcQcXcjdqvEnPyB0sc6+iyjPXlDCA==}
+    engines: {node: '>=16'}
+
   '@sinclair/typebox@0.25.24':
     resolution: {integrity: sha512-XJfwUVUKDHF5ugKwIcxEgc9k8b7HbznCp6eUfWgu710hMPNIO4aw4/zB5RogDQz8nd6gyCDpU9O/m6qYEWY6yQ==}
 
@@ -2506,6 +2516,10 @@ packages:
   chalk@5.3.0:
     resolution: {integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
+
+  char-regex@1.0.2:
+    resolution: {integrity: sha512-kWWXztvZ5SBQV+eRgKFeh8q5sLuZY2+8WUIzlxWVTg+oGwY14qylx1KbKzHd8P6ZYkAg0xyIDU9JMHhyJMZ1jw==}
+    engines: {node: '>=10'}
 
   character-entities-legacy@1.1.4:
     resolution: {integrity: sha512-3Xnr+7ZFS1uxeiUDvV02wQ+QDbc55o97tIV5zHScSPJpcLm/r0DFPcoY3tYRp+VZukxuMeKgXYmsXQHO05zQeA==}
@@ -3404,6 +3418,15 @@ packages:
     peerDependencies:
       ink: '>=3.0.0'
       react: '>=16.8.0'
+
+  ink-testing-library@4.0.0:
+    resolution: {integrity: sha512-yF92kj3pmBvk7oKbSq5vEALO//o7Z9Ck/OaLNlkzXNeYdwfpxMQkSowGTFUCS5MSu9bWfSZMewGpp7bFc66D7Q==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   ink@5.0.0:
     resolution: {integrity: sha512-9tv2QeX1pQ4QIZ6wR0Nq2kPRkUBZxRnTTMkSyGxLIO1UZzRVAx8jiVGDt5YfjXWLvJkESHTgI/mlHvc5wmpUhg==}
@@ -4666,6 +4689,10 @@ packages:
   run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
 
+  runes@0.4.3:
+    resolution: {integrity: sha512-K6p9y4ZyL9wPzA+PMDloNQPfoDGTiFYDvdlXznyGKgD10BJpcAosvATKrExRKOrNLgD8E7Um7WGW0lxsnOuNLg==}
+    engines: {node: '>=4.0.0'}
+
   rxjs@7.8.1:
     resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
 
@@ -4847,6 +4874,10 @@ packages:
   streamsearch@1.1.0:
     resolution: {integrity: sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==}
     engines: {node: '>=10.0.0'}
+
+  string-length@4.0.0:
+    resolution: {integrity: sha512-GWDgJDQvvIwP4e5IEu0tuOyRUs/bVvQNNdh0HhMnZwo0Kuo4NKmjI/as/9I34+GHYWKkuS0nUrHubgRTs4O4fw==}
+    engines: {node: '>=10'}
 
   string-width@4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
@@ -6757,6 +6788,11 @@ snapshots:
     dependencies:
       zod: 3.22.4
 
+  '@shelf/fast-chunk-string@3.0.0':
+    dependencies:
+      runes: 0.4.3
+      string-length: 4.0.0
+
   '@sinclair/typebox@0.25.24': {}
 
   '@sinclair/typebox@0.27.8': {}
@@ -7570,6 +7606,8 @@ snapshots:
       supports-color: 7.2.0
 
   chalk@5.3.0: {}
+
+  char-regex@1.0.2: {}
 
   character-entities-legacy@1.1.4: {}
 
@@ -8630,6 +8668,10 @@ snapshots:
       ink: 5.0.0(@types/react@18.2.21)(react-devtools-core@4.19.1)(react@18.2.0)
       object-hash: 2.2.0
       react: 18.2.0
+
+  ink-testing-library@4.0.0(@types/react@18.2.21):
+    optionalDependencies:
+      '@types/react': 18.2.21
 
   ink@5.0.0(@types/react@18.2.21)(react-devtools-core@4.19.1)(react@18.2.0):
     dependencies:
@@ -9918,6 +9960,8 @@ snapshots:
     dependencies:
       queue-microtask: 1.2.3
 
+  runes@0.4.3: {}
+
   rxjs@7.8.1:
     dependencies:
       tslib: 2.6.2
@@ -10082,6 +10126,11 @@ snapshots:
       internal-slot: 1.0.5
 
   streamsearch@1.1.0: {}
+
+  string-length@4.0.0:
+    dependencies:
+      char-regex: 1.0.2
+      strip-ansi: 6.0.1
 
   string-width@4.2.3:
     dependencies:

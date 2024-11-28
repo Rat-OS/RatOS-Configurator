@@ -14064,7 +14064,7 @@ var require_react_dom_server_node_development = __commonJS({
       (function() {
         "use strict";
         var React46 = require_react();
-        var util3 = __require("util");
+        var util4 = __require("util");
         var ReactVersion = "18.2.0";
         var ReactSharedInternals = React46.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         function warn(format) {
@@ -14210,7 +14210,7 @@ var require_react_dom_server_node_development = __commonJS({
         function close(destination) {
           destination.end();
         }
-        var textEncoder = new util3.TextEncoder();
+        var textEncoder = new util4.TextEncoder();
         function stringToChunk(content) {
           return content;
         }
@@ -19840,7 +19840,7 @@ var require_signal_exit = __commonJS({
         };
       };
     } else {
-      assert = __require("assert");
+      assert2 = __require("assert");
       signals = require_signals();
       isWin = /^win/i.test(process15.platform);
       EE = __require("events");
@@ -19863,7 +19863,7 @@ var require_signal_exit = __commonJS({
           return function() {
           };
         }
-        assert.equal(typeof cb, "function", "a callback must be provided for exit handler");
+        assert2.equal(typeof cb, "function", "a callback must be provided for exit handler");
         if (loaded === false) {
           load();
         }
@@ -19969,7 +19969,7 @@ var require_signal_exit = __commonJS({
         }
       };
     }
-    var assert;
+    var assert2;
     var signals;
     var isWin;
     var EE;
@@ -43332,7 +43332,7 @@ var require_websocket = __commonJS({
     var net = __require("net");
     var tls = __require("tls");
     var { randomBytes, createHash } = __require("crypto");
-    var { Duplex, Readable } = __require("stream");
+    var { Duplex, Readable: Readable2 } = __require("stream");
     var { URL: URL2 } = __require("url");
     var PerMessageDeflate = require_permessage_deflate();
     var Receiver2 = require_receiver();
@@ -47429,7 +47429,7 @@ var require_backend = __commonJS({
                 }
                 return _typeof(obj);
               }
-              exports2 = module2.exports = SemVer3;
+              exports2 = module2.exports = SemVer5;
               var debug;
               if ((typeof process15 === "undefined" ? "undefined" : _typeof(process15)) === "object" && process15.env && process15.env.NODE_DEBUG && /\bsemver\b/i.test(process15.env.NODE_DEBUG)) {
                 debug = function debug2() {
@@ -47549,7 +47549,7 @@ var require_backend = __commonJS({
                     includePrerelease: false
                   };
                 }
-                if (version instanceof SemVer3) {
+                if (version instanceof SemVer5) {
                   return version;
                 }
                 if (typeof version !== "string") {
@@ -47563,7 +47563,7 @@ var require_backend = __commonJS({
                   return null;
                 }
                 try {
-                  return new SemVer3(version, options);
+                  return new SemVer5(version, options);
                 } catch (er) {
                   return null;
                 }
@@ -47578,15 +47578,15 @@ var require_backend = __commonJS({
                 var s2 = parse2(version.trim().replace(/^[=v]+/, ""), options);
                 return s2 ? s2.version : null;
               }
-              exports2.SemVer = SemVer3;
-              function SemVer3(version, options) {
+              exports2.SemVer = SemVer5;
+              function SemVer5(version, options) {
                 if (!options || _typeof(options) !== "object") {
                   options = {
                     loose: !!options,
                     includePrerelease: false
                   };
                 }
-                if (version instanceof SemVer3) {
+                if (version instanceof SemVer5) {
                   if (version.loose === options.loose) {
                     return version;
                   } else {
@@ -47598,8 +47598,8 @@ var require_backend = __commonJS({
                 if (version.length > MAX_LENGTH) {
                   throw new TypeError("version is longer than " + MAX_LENGTH + " characters");
                 }
-                if (!(this instanceof SemVer3)) {
-                  return new SemVer3(version, options);
+                if (!(this instanceof SemVer5)) {
+                  return new SemVer5(version, options);
                 }
                 debug("SemVer", version, options);
                 this.options = options;
@@ -47637,32 +47637,32 @@ var require_backend = __commonJS({
                 this.build = m[5] ? m[5].split(".") : [];
                 this.format();
               }
-              SemVer3.prototype.format = function() {
+              SemVer5.prototype.format = function() {
                 this.version = this.major + "." + this.minor + "." + this.patch;
                 if (this.prerelease.length) {
                   this.version += "-" + this.prerelease.join(".");
                 }
                 return this.version;
               };
-              SemVer3.prototype.toString = function() {
+              SemVer5.prototype.toString = function() {
                 return this.version;
               };
-              SemVer3.prototype.compare = function(other) {
+              SemVer5.prototype.compare = function(other) {
                 debug("SemVer.compare", this.version, this.options, other);
-                if (!(other instanceof SemVer3)) {
-                  other = new SemVer3(other, this.options);
+                if (!(other instanceof SemVer5)) {
+                  other = new SemVer5(other, this.options);
                 }
                 return this.compareMain(other) || this.comparePre(other);
               };
-              SemVer3.prototype.compareMain = function(other) {
-                if (!(other instanceof SemVer3)) {
-                  other = new SemVer3(other, this.options);
+              SemVer5.prototype.compareMain = function(other) {
+                if (!(other instanceof SemVer5)) {
+                  other = new SemVer5(other, this.options);
                 }
                 return compareIdentifiers(this.major, other.major) || compareIdentifiers(this.minor, other.minor) || compareIdentifiers(this.patch, other.patch);
               };
-              SemVer3.prototype.comparePre = function(other) {
-                if (!(other instanceof SemVer3)) {
-                  other = new SemVer3(other, this.options);
+              SemVer5.prototype.comparePre = function(other) {
+                if (!(other instanceof SemVer5)) {
+                  other = new SemVer5(other, this.options);
                 }
                 if (this.prerelease.length && !other.prerelease.length) {
                   return -1;
@@ -47689,9 +47689,9 @@ var require_backend = __commonJS({
                   }
                 } while (++i2);
               };
-              SemVer3.prototype.compareBuild = function(other) {
-                if (!(other instanceof SemVer3)) {
-                  other = new SemVer3(other, this.options);
+              SemVer5.prototype.compareBuild = function(other) {
+                if (!(other instanceof SemVer5)) {
+                  other = new SemVer5(other, this.options);
                 }
                 var i2 = 0;
                 do {
@@ -47711,7 +47711,7 @@ var require_backend = __commonJS({
                   }
                 } while (++i2);
               };
-              SemVer3.prototype.inc = function(release, identifier) {
+              SemVer5.prototype.inc = function(release, identifier) {
                 switch (release) {
                   case "premajor":
                     this.prerelease.length = 0;
@@ -47797,7 +47797,7 @@ var require_backend = __commonJS({
                   loose = void 0;
                 }
                 try {
-                  return new SemVer3(version, loose).inc(release, identifier).version;
+                  return new SemVer5(version, loose).inc(release, identifier).version;
                 } catch (er) {
                   return null;
                 }
@@ -47841,19 +47841,19 @@ var require_backend = __commonJS({
               }
               exports2.major = major;
               function major(a, loose) {
-                return new SemVer3(a, loose).major;
+                return new SemVer5(a, loose).major;
               }
               exports2.minor = minor;
               function minor(a, loose) {
-                return new SemVer3(a, loose).minor;
+                return new SemVer5(a, loose).minor;
               }
               exports2.patch = patch;
               function patch(a, loose) {
-                return new SemVer3(a, loose).patch;
+                return new SemVer5(a, loose).patch;
               }
               exports2.compare = compare;
               function compare(a, b, loose) {
-                return new SemVer3(a, loose).compare(new SemVer3(b, loose));
+                return new SemVer5(a, loose).compare(new SemVer5(b, loose));
               }
               exports2.compareLoose = compareLoose;
               function compareLoose(a, b) {
@@ -47861,8 +47861,8 @@ var require_backend = __commonJS({
               }
               exports2.compareBuild = compareBuild;
               function compareBuild(a, b, loose) {
-                var versionA = new SemVer3(a, loose);
-                var versionB = new SemVer3(b, loose);
+                var versionA = new SemVer5(a, loose);
+                var versionB = new SemVer5(b, loose);
                 return versionA.compare(versionB) || versionA.compareBuild(versionB);
               }
               exports2.rcompare = rcompare;
@@ -47981,7 +47981,7 @@ var require_backend = __commonJS({
                 if (!m[2]) {
                   this.semver = ANY;
                 } else {
-                  this.semver = new SemVer3(m[2], this.options.loose);
+                  this.semver = new SemVer5(m[2], this.options.loose);
                 }
               };
               Comparator.prototype.toString = function() {
@@ -47994,7 +47994,7 @@ var require_backend = __commonJS({
                 }
                 if (typeof version === "string") {
                   try {
-                    version = new SemVer3(version, this.options);
+                    version = new SemVer5(version, this.options);
                   } catch (er) {
                     return false;
                   }
@@ -48316,7 +48316,7 @@ var require_backend = __commonJS({
                 }
                 if (typeof version === "string") {
                   try {
-                    version = new SemVer3(version, this.options);
+                    version = new SemVer5(version, this.options);
                   } catch (er) {
                     return false;
                   }
@@ -48373,7 +48373,7 @@ var require_backend = __commonJS({
                   if (rangeObj.test(v)) {
                     if (!max || maxSV.compare(v) === -1) {
                       max = v;
-                      maxSV = new SemVer3(max, options);
+                      maxSV = new SemVer5(max, options);
                     }
                   }
                 });
@@ -48392,7 +48392,7 @@ var require_backend = __commonJS({
                   if (rangeObj.test(v)) {
                     if (!min || minSV.compare(v) === 1) {
                       min = v;
-                      minSV = new SemVer3(min, options);
+                      minSV = new SemVer5(min, options);
                     }
                   }
                 });
@@ -48401,11 +48401,11 @@ var require_backend = __commonJS({
               exports2.minVersion = minVersion;
               function minVersion(range, loose) {
                 range = new Range(range, loose);
-                var minver = new SemVer3("0.0.0");
+                var minver = new SemVer5("0.0.0");
                 if (range.test(minver)) {
                   return minver;
                 }
-                minver = new SemVer3("0.0.0-0");
+                minver = new SemVer5("0.0.0-0");
                 if (range.test(minver)) {
                   return minver;
                 }
@@ -48413,7 +48413,7 @@ var require_backend = __commonJS({
                 for (var i2 = 0; i2 < range.set.length; ++i2) {
                   var comparators = range.set[i2];
                   comparators.forEach(function(comparator) {
-                    var compver = new SemVer3(comparator.semver.version);
+                    var compver = new SemVer5(comparator.semver.version);
                     switch (comparator.operator) {
                       case ">":
                         if (compver.prerelease.length === 0) {
@@ -48459,7 +48459,7 @@ var require_backend = __commonJS({
               }
               exports2.outside = outside;
               function outside(version, range, hilo, options) {
-                version = new SemVer3(version, options);
+                version = new SemVer5(version, options);
                 range = new Range(range, options);
                 var gtfn, ltefn, ltfn, comp, ecomp;
                 switch (hilo) {
@@ -48523,7 +48523,7 @@ var require_backend = __commonJS({
               }
               exports2.coerce = coerce2;
               function coerce2(version, options) {
-                if (version instanceof SemVer3) {
+                if (version instanceof SemVer5) {
                   return version;
                 }
                 if (typeof version === "number") {
@@ -61477,7 +61477,7 @@ var require_semver = __commonJS({
     var { safeRe: re, t } = require_re();
     var parseOptions = require_parse_options();
     var { compareIdentifiers } = require_identifiers();
-    var SemVer3 = class _SemVer {
+    var SemVer5 = class _SemVer {
       constructor(version, options) {
         options = parseOptions(options);
         if (version instanceof _SemVer) {
@@ -61707,7 +61707,7 @@ var require_semver = __commonJS({
         return this;
       }
     };
-    module.exports = SemVer3;
+    module.exports = SemVer5;
   }
 });
 
@@ -61715,13 +61715,13 @@ var require_semver = __commonJS({
 var require_parse = __commonJS({
   "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/parse.js"(exports, module) {
     init_cjs_shim();
-    var SemVer3 = require_semver();
+    var SemVer5 = require_semver();
     var parse2 = (version, options, throwErrors = false) => {
-      if (version instanceof SemVer3) {
+      if (version instanceof SemVer5) {
         return version;
       }
       try {
-        return new SemVer3(version, options);
+        return new SemVer5(version, options);
       } catch (er) {
         if (!throwErrors) {
           return null;
@@ -65622,7 +65622,7 @@ var require_warning_messages = __commonJS({
 var require_make_warning = __commonJS({
   "../node_modules/.pnpm/normalize-package-data@6.0.0/node_modules/normalize-package-data/lib/make_warning.js"(exports, module) {
     init_cjs_shim();
-    var util3 = __require("util");
+    var util4 = __require("util");
     var messages = require_warning_messages();
     module.exports = function() {
       var args = Array.prototype.slice.call(arguments, 0);
@@ -65632,7 +65632,7 @@ var require_make_warning = __commonJS({
       } else {
         var msgTemplate = messages[warningName] ? messages[warningName] : warningName + ": '%s'";
         args.unshift(msgTemplate);
-        return util3.format.apply(null, args);
+        return util4.format.apply(null, args);
       }
     };
     function makeTypoWarning(providedName, probableName, field) {
@@ -65640,7 +65640,7 @@ var require_make_warning = __commonJS({
         providedName = field + "['" + providedName + "']";
         probableName = field + "['" + probableName + "']";
       }
-      return util3.format(messages.typo, providedName, probableName);
+      return util4.format(messages.typo, providedName, probableName);
     }
   }
 });
@@ -69581,7 +69581,7 @@ var require_thread_stream = __commonJS({
       READ_INDEX
     } = require_indexes();
     var buffer = __require("buffer");
-    var assert = __require("assert");
+    var assert2 = __require("assert");
     var kImpl = Symbol("kImpl");
     var MAX_STRING = buffer.constants.MAX_STRING_LENGTH;
     var FakeWeakRef = class {
@@ -69631,7 +69631,7 @@ var require_thread_stream = __commonJS({
       return worker;
     }
     function drain(stream) {
-      assert(!stream[kImpl].sync);
+      assert2(!stream[kImpl].sync);
       if (stream[kImpl].needDrain) {
         stream[kImpl].needDrain = false;
         stream.emit("drain");
@@ -71890,1647 +71890,6 @@ var require_pino = __commonJS({
   }
 });
 
-// ../node_modules/.pnpm/ring-buffer-ts@1.2.0/node_modules/ring-buffer-ts/dist/index.js
-var require_dist = __commonJS({
-  "../node_modules/.pnpm/ring-buffer-ts@1.2.0/node_modules/ring-buffer-ts/dist/index.js"(exports, module) {
-    init_cjs_shim();
-    !function(e, t) {
-      if ("object" == typeof exports && "object" == typeof module)
-        module.exports = t();
-      else if ("function" == typeof define && define.amd)
-        define([], t);
-      else {
-        var r = t();
-        for (var s2 in r)
-          ("object" == typeof exports ? exports : e)[s2] = r[s2];
-      }
-    }(exports, () => (() => {
-      "use strict";
-      var e = { d: (t2, r2) => {
-        for (var s2 in r2)
-          e.o(r2, s2) && !e.o(t2, s2) && Object.defineProperty(t2, s2, { enumerable: true, get: r2[s2] });
-      }, o: (e2, t2) => Object.prototype.hasOwnProperty.call(e2, t2), r: (e2) => {
-        "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e2, Symbol.toStringTag, { value: "Module" }), Object.defineProperty(e2, "__esModule", { value: true });
-      } }, t = {};
-      e.r(t), e.d(t, { RingBuffer: () => r });
-      class r {
-        static fromArray(e2, t2 = 0) {
-          const s2 = new r(t2);
-          return s2.fromArray(e2, 0 === t2), s2;
-        }
-        constructor(e2) {
-          if (this.buffer = [], this.pos = 0, e2 < 0)
-            throw new RangeError("Invalid size.");
-          this.size = e2;
-        }
-        getSize() {
-          return this.size;
-        }
-        getPos() {
-          return this.pos;
-        }
-        getBufferLength() {
-          return this.buffer.length;
-        }
-        add(...e2) {
-          e2.forEach((e3) => {
-            this.buffer[this.pos] = e3, this.pos = (this.pos + 1) % this.size;
-          });
-        }
-        get(e2) {
-          if (e2 < 0 && (e2 += this.buffer.length), !(e2 < 0 || e2 > this.buffer.length))
-            return this.buffer.length < this.size ? this.buffer[e2] : this.buffer[(this.pos + e2) % this.size];
-        }
-        getFirst() {
-          return this.get(0);
-        }
-        getLast() {
-          return this.get(-1);
-        }
-        getFirstN(e2) {
-          return 0 === e2 ? [] : e2 < 0 ? this.getLastN(-e2) : this.toArray().slice(0, e2);
-        }
-        getLastN(e2) {
-          return 0 === e2 ? [] : e2 < 0 ? this.getFirstN(-e2) : this.toArray().slice(-e2);
-        }
-        remove(e2, t2 = 1) {
-          if (e2 < 0 && (e2 += this.buffer.length), e2 < 0 || e2 > this.buffer.length)
-            return [];
-          const r2 = this.toArray(), s2 = r2.splice(e2, t2);
-          return this.fromArray(r2), s2;
-        }
-        removeFirst() {
-          return this.remove(0)[0];
-        }
-        removeLast() {
-          return this.remove(-1)[0];
-        }
-        toArray() {
-          return this.buffer.slice(this.pos).concat(this.buffer.slice(0, this.pos));
-        }
-        fromArray(e2, t2 = false) {
-          if (!Array.isArray(e2))
-            throw new TypeError("Input value is not an array.");
-          t2 && this.resize(e2.length), 0 !== this.size && (this.buffer = e2.slice(-this.size), this.pos = this.buffer.length % this.size);
-        }
-        clear() {
-          this.buffer = [], this.pos = 0;
-        }
-        resize(e2) {
-          if (e2 < 0)
-            throw new RangeError("The size does not allow negative values.");
-          if (0 === e2)
-            this.clear();
-          else if (e2 !== this.size) {
-            const t2 = this.toArray();
-            this.fromArray(t2.slice(-e2)), this.pos = this.buffer.length % e2;
-          }
-          this.size = e2;
-        }
-        isFull() {
-          return this.buffer.length === this.size;
-        }
-        isEmpty() {
-          return 0 === this.buffer.length;
-        }
-      }
-      return t;
-    })());
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/inc.js
-var require_inc = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/inc.js"(exports, module) {
-    init_cjs_shim();
-    var SemVer3 = require_semver();
-    var inc = (version, release, options, identifier, identifierBase) => {
-      if (typeof options === "string") {
-        identifierBase = identifier;
-        identifier = options;
-        options = void 0;
-      }
-      try {
-        return new SemVer3(
-          version instanceof SemVer3 ? version.version : version,
-          options
-        ).inc(release, identifier, identifierBase).version;
-      } catch (er) {
-        return null;
-      }
-    };
-    module.exports = inc;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/diff.js
-var require_diff = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/diff.js"(exports, module) {
-    init_cjs_shim();
-    var parse2 = require_parse();
-    var diff2 = (version1, version2) => {
-      const v1 = parse2(version1, null, true);
-      const v2 = parse2(version2, null, true);
-      const comparison = v1.compare(v2);
-      if (comparison === 0) {
-        return null;
-      }
-      const v1Higher = comparison > 0;
-      const highVersion = v1Higher ? v1 : v2;
-      const lowVersion = v1Higher ? v2 : v1;
-      const highHasPre = !!highVersion.prerelease.length;
-      const lowHasPre = !!lowVersion.prerelease.length;
-      if (lowHasPre && !highHasPre) {
-        if (!lowVersion.patch && !lowVersion.minor) {
-          return "major";
-        }
-        if (highVersion.patch) {
-          return "patch";
-        }
-        if (highVersion.minor) {
-          return "minor";
-        }
-        return "major";
-      }
-      const prefix = highHasPre ? "pre" : "";
-      if (v1.major !== v2.major) {
-        return prefix + "major";
-      }
-      if (v1.minor !== v2.minor) {
-        return prefix + "minor";
-      }
-      if (v1.patch !== v2.patch) {
-        return prefix + "patch";
-      }
-      return "prerelease";
-    };
-    module.exports = diff2;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/major.js
-var require_major = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/major.js"(exports, module) {
-    init_cjs_shim();
-    var SemVer3 = require_semver();
-    var major = (a, loose) => new SemVer3(a, loose).major;
-    module.exports = major;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/minor.js
-var require_minor = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/minor.js"(exports, module) {
-    init_cjs_shim();
-    var SemVer3 = require_semver();
-    var minor = (a, loose) => new SemVer3(a, loose).minor;
-    module.exports = minor;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/patch.js
-var require_patch = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/patch.js"(exports, module) {
-    init_cjs_shim();
-    var SemVer3 = require_semver();
-    var patch = (a, loose) => new SemVer3(a, loose).patch;
-    module.exports = patch;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/prerelease.js
-var require_prerelease = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/prerelease.js"(exports, module) {
-    init_cjs_shim();
-    var parse2 = require_parse();
-    var prerelease = (version, options) => {
-      const parsed = parse2(version, options);
-      return parsed && parsed.prerelease.length ? parsed.prerelease : null;
-    };
-    module.exports = prerelease;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/compare.js
-var require_compare = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/compare.js"(exports, module) {
-    init_cjs_shim();
-    var SemVer3 = require_semver();
-    var compare = (a, b, loose) => new SemVer3(a, loose).compare(new SemVer3(b, loose));
-    module.exports = compare;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/rcompare.js
-var require_rcompare = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/rcompare.js"(exports, module) {
-    init_cjs_shim();
-    var compare = require_compare();
-    var rcompare = (a, b, loose) => compare(b, a, loose);
-    module.exports = rcompare;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/compare-loose.js
-var require_compare_loose = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/compare-loose.js"(exports, module) {
-    init_cjs_shim();
-    var compare = require_compare();
-    var compareLoose = (a, b) => compare(a, b, true);
-    module.exports = compareLoose;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/compare-build.js
-var require_compare_build = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/compare-build.js"(exports, module) {
-    init_cjs_shim();
-    var SemVer3 = require_semver();
-    var compareBuild = (a, b, loose) => {
-      const versionA = new SemVer3(a, loose);
-      const versionB = new SemVer3(b, loose);
-      return versionA.compare(versionB) || versionA.compareBuild(versionB);
-    };
-    module.exports = compareBuild;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/sort.js
-var require_sort = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/sort.js"(exports, module) {
-    init_cjs_shim();
-    var compareBuild = require_compare_build();
-    var sort = (list, loose) => list.sort((a, b) => compareBuild(a, b, loose));
-    module.exports = sort;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/rsort.js
-var require_rsort = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/rsort.js"(exports, module) {
-    init_cjs_shim();
-    var compareBuild = require_compare_build();
-    var rsort = (list, loose) => list.sort((a, b) => compareBuild(b, a, loose));
-    module.exports = rsort;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/gt.js
-var require_gt = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/gt.js"(exports, module) {
-    init_cjs_shim();
-    var compare = require_compare();
-    var gt = (a, b, loose) => compare(a, b, loose) > 0;
-    module.exports = gt;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/lt.js
-var require_lt = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/lt.js"(exports, module) {
-    init_cjs_shim();
-    var compare = require_compare();
-    var lt = (a, b, loose) => compare(a, b, loose) < 0;
-    module.exports = lt;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/eq.js
-var require_eq = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/eq.js"(exports, module) {
-    init_cjs_shim();
-    var compare = require_compare();
-    var eq = (a, b, loose) => compare(a, b, loose) === 0;
-    module.exports = eq;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/neq.js
-var require_neq = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/neq.js"(exports, module) {
-    init_cjs_shim();
-    var compare = require_compare();
-    var neq = (a, b, loose) => compare(a, b, loose) !== 0;
-    module.exports = neq;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/gte.js
-var require_gte = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/gte.js"(exports, module) {
-    init_cjs_shim();
-    var compare = require_compare();
-    var gte = (a, b, loose) => compare(a, b, loose) >= 0;
-    module.exports = gte;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/lte.js
-var require_lte = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/lte.js"(exports, module) {
-    init_cjs_shim();
-    var compare = require_compare();
-    var lte = (a, b, loose) => compare(a, b, loose) <= 0;
-    module.exports = lte;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/cmp.js
-var require_cmp = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/cmp.js"(exports, module) {
-    init_cjs_shim();
-    var eq = require_eq();
-    var neq = require_neq();
-    var gt = require_gt();
-    var gte = require_gte();
-    var lt = require_lt();
-    var lte = require_lte();
-    var cmp = (a, op, b, loose) => {
-      switch (op) {
-        case "===":
-          if (typeof a === "object") {
-            a = a.version;
-          }
-          if (typeof b === "object") {
-            b = b.version;
-          }
-          return a === b;
-        case "!==":
-          if (typeof a === "object") {
-            a = a.version;
-          }
-          if (typeof b === "object") {
-            b = b.version;
-          }
-          return a !== b;
-        case "":
-        case "=":
-        case "==":
-          return eq(a, b, loose);
-        case "!=":
-          return neq(a, b, loose);
-        case ">":
-          return gt(a, b, loose);
-        case ">=":
-          return gte(a, b, loose);
-        case "<":
-          return lt(a, b, loose);
-        case "<=":
-          return lte(a, b, loose);
-        default:
-          throw new TypeError(`Invalid operator: ${op}`);
-      }
-    };
-    module.exports = cmp;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/coerce.js
-var require_coerce = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/coerce.js"(exports, module) {
-    init_cjs_shim();
-    var SemVer3 = require_semver();
-    var parse2 = require_parse();
-    var { safeRe: re, t } = require_re();
-    var coerce2 = (version, options) => {
-      if (version instanceof SemVer3) {
-        return version;
-      }
-      if (typeof version === "number") {
-        version = String(version);
-      }
-      if (typeof version !== "string") {
-        return null;
-      }
-      options = options || {};
-      let match2 = null;
-      if (!options.rtl) {
-        match2 = version.match(options.includePrerelease ? re[t.COERCEFULL] : re[t.COERCE]);
-      } else {
-        const coerceRtlRegex = options.includePrerelease ? re[t.COERCERTLFULL] : re[t.COERCERTL];
-        let next;
-        while ((next = coerceRtlRegex.exec(version)) && (!match2 || match2.index + match2[0].length !== version.length)) {
-          if (!match2 || next.index + next[0].length !== match2.index + match2[0].length) {
-            match2 = next;
-          }
-          coerceRtlRegex.lastIndex = next.index + next[1].length + next[2].length;
-        }
-        coerceRtlRegex.lastIndex = -1;
-      }
-      if (match2 === null) {
-        return null;
-      }
-      const major = match2[2];
-      const minor = match2[3] || "0";
-      const patch = match2[4] || "0";
-      const prerelease = options.includePrerelease && match2[5] ? `-${match2[5]}` : "";
-      const build = options.includePrerelease && match2[6] ? `+${match2[6]}` : "";
-      return parse2(`${major}.${minor}.${patch}${prerelease}${build}`, options);
-    };
-    module.exports = coerce2;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/internal/lrucache.js
-var require_lrucache = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/internal/lrucache.js"(exports, module) {
-    init_cjs_shim();
-    var LRUCache = class {
-      constructor() {
-        this.max = 1e3;
-        this.map = /* @__PURE__ */ new Map();
-      }
-      get(key) {
-        const value = this.map.get(key);
-        if (value === void 0) {
-          return void 0;
-        } else {
-          this.map.delete(key);
-          this.map.set(key, value);
-          return value;
-        }
-      }
-      delete(key) {
-        return this.map.delete(key);
-      }
-      set(key, value) {
-        const deleted = this.delete(key);
-        if (!deleted && value !== void 0) {
-          if (this.map.size >= this.max) {
-            const firstKey = this.map.keys().next().value;
-            this.delete(firstKey);
-          }
-          this.map.set(key, value);
-        }
-        return this;
-      }
-    };
-    module.exports = LRUCache;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/classes/range.js
-var require_range = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/classes/range.js"(exports, module) {
-    init_cjs_shim();
-    var SPACE_CHARACTERS = /\s+/g;
-    var Range = class _Range {
-      constructor(range, options) {
-        options = parseOptions(options);
-        if (range instanceof _Range) {
-          if (range.loose === !!options.loose && range.includePrerelease === !!options.includePrerelease) {
-            return range;
-          } else {
-            return new _Range(range.raw, options);
-          }
-        }
-        if (range instanceof Comparator) {
-          this.raw = range.value;
-          this.set = [[range]];
-          this.formatted = void 0;
-          return this;
-        }
-        this.options = options;
-        this.loose = !!options.loose;
-        this.includePrerelease = !!options.includePrerelease;
-        this.raw = range.trim().replace(SPACE_CHARACTERS, " ");
-        this.set = this.raw.split("||").map((r) => this.parseRange(r.trim())).filter((c) => c.length);
-        if (!this.set.length) {
-          throw new TypeError(`Invalid SemVer Range: ${this.raw}`);
-        }
-        if (this.set.length > 1) {
-          const first = this.set[0];
-          this.set = this.set.filter((c) => !isNullSet(c[0]));
-          if (this.set.length === 0) {
-            this.set = [first];
-          } else if (this.set.length > 1) {
-            for (const c of this.set) {
-              if (c.length === 1 && isAny(c[0])) {
-                this.set = [c];
-                break;
-              }
-            }
-          }
-        }
-        this.formatted = void 0;
-      }
-      get range() {
-        if (this.formatted === void 0) {
-          this.formatted = "";
-          for (let i = 0; i < this.set.length; i++) {
-            if (i > 0) {
-              this.formatted += "||";
-            }
-            const comps = this.set[i];
-            for (let k = 0; k < comps.length; k++) {
-              if (k > 0) {
-                this.formatted += " ";
-              }
-              this.formatted += comps[k].toString().trim();
-            }
-          }
-        }
-        return this.formatted;
-      }
-      format() {
-        return this.range;
-      }
-      toString() {
-        return this.range;
-      }
-      parseRange(range) {
-        const memoOpts = (this.options.includePrerelease && FLAG_INCLUDE_PRERELEASE) | (this.options.loose && FLAG_LOOSE);
-        const memoKey = memoOpts + ":" + range;
-        const cached = cache3.get(memoKey);
-        if (cached) {
-          return cached;
-        }
-        const loose = this.options.loose;
-        const hr = loose ? re[t.HYPHENRANGELOOSE] : re[t.HYPHENRANGE];
-        range = range.replace(hr, hyphenReplace(this.options.includePrerelease));
-        debug("hyphen replace", range);
-        range = range.replace(re[t.COMPARATORTRIM], comparatorTrimReplace);
-        debug("comparator trim", range);
-        range = range.replace(re[t.TILDETRIM], tildeTrimReplace);
-        debug("tilde trim", range);
-        range = range.replace(re[t.CARETTRIM], caretTrimReplace);
-        debug("caret trim", range);
-        let rangeList = range.split(" ").map((comp) => parseComparator(comp, this.options)).join(" ").split(/\s+/).map((comp) => replaceGTE0(comp, this.options));
-        if (loose) {
-          rangeList = rangeList.filter((comp) => {
-            debug("loose invalid filter", comp, this.options);
-            return !!comp.match(re[t.COMPARATORLOOSE]);
-          });
-        }
-        debug("range list", rangeList);
-        const rangeMap = /* @__PURE__ */ new Map();
-        const comparators = rangeList.map((comp) => new Comparator(comp, this.options));
-        for (const comp of comparators) {
-          if (isNullSet(comp)) {
-            return [comp];
-          }
-          rangeMap.set(comp.value, comp);
-        }
-        if (rangeMap.size > 1 && rangeMap.has("")) {
-          rangeMap.delete("");
-        }
-        const result = [...rangeMap.values()];
-        cache3.set(memoKey, result);
-        return result;
-      }
-      intersects(range, options) {
-        if (!(range instanceof _Range)) {
-          throw new TypeError("a Range is required");
-        }
-        return this.set.some((thisComparators) => {
-          return isSatisfiable(thisComparators, options) && range.set.some((rangeComparators) => {
-            return isSatisfiable(rangeComparators, options) && thisComparators.every((thisComparator) => {
-              return rangeComparators.every((rangeComparator) => {
-                return thisComparator.intersects(rangeComparator, options);
-              });
-            });
-          });
-        });
-      }
-      // if ANY of the sets match ALL of its comparators, then pass
-      test(version) {
-        if (!version) {
-          return false;
-        }
-        if (typeof version === "string") {
-          try {
-            version = new SemVer3(version, this.options);
-          } catch (er) {
-            return false;
-          }
-        }
-        for (let i = 0; i < this.set.length; i++) {
-          if (testSet(this.set[i], version, this.options)) {
-            return true;
-          }
-        }
-        return false;
-      }
-    };
-    module.exports = Range;
-    var LRU = require_lrucache();
-    var cache3 = new LRU();
-    var parseOptions = require_parse_options();
-    var Comparator = require_comparator();
-    var debug = require_debug();
-    var SemVer3 = require_semver();
-    var {
-      safeRe: re,
-      t,
-      comparatorTrimReplace,
-      tildeTrimReplace,
-      caretTrimReplace
-    } = require_re();
-    var { FLAG_INCLUDE_PRERELEASE, FLAG_LOOSE } = require_constants3();
-    var isNullSet = (c) => c.value === "<0.0.0-0";
-    var isAny = (c) => c.value === "";
-    var isSatisfiable = (comparators, options) => {
-      let result = true;
-      const remainingComparators = comparators.slice();
-      let testComparator = remainingComparators.pop();
-      while (result && remainingComparators.length) {
-        result = remainingComparators.every((otherComparator) => {
-          return testComparator.intersects(otherComparator, options);
-        });
-        testComparator = remainingComparators.pop();
-      }
-      return result;
-    };
-    var parseComparator = (comp, options) => {
-      debug("comp", comp, options);
-      comp = replaceCarets(comp, options);
-      debug("caret", comp);
-      comp = replaceTildes(comp, options);
-      debug("tildes", comp);
-      comp = replaceXRanges(comp, options);
-      debug("xrange", comp);
-      comp = replaceStars(comp, options);
-      debug("stars", comp);
-      return comp;
-    };
-    var isX = (id) => !id || id.toLowerCase() === "x" || id === "*";
-    var replaceTildes = (comp, options) => {
-      return comp.trim().split(/\s+/).map((c) => replaceTilde(c, options)).join(" ");
-    };
-    var replaceTilde = (comp, options) => {
-      const r = options.loose ? re[t.TILDELOOSE] : re[t.TILDE];
-      return comp.replace(r, (_2, M, m, p, pr) => {
-        debug("tilde", comp, _2, M, m, p, pr);
-        let ret;
-        if (isX(M)) {
-          ret = "";
-        } else if (isX(m)) {
-          ret = `>=${M}.0.0 <${+M + 1}.0.0-0`;
-        } else if (isX(p)) {
-          ret = `>=${M}.${m}.0 <${M}.${+m + 1}.0-0`;
-        } else if (pr) {
-          debug("replaceTilde pr", pr);
-          ret = `>=${M}.${m}.${p}-${pr} <${M}.${+m + 1}.0-0`;
-        } else {
-          ret = `>=${M}.${m}.${p} <${M}.${+m + 1}.0-0`;
-        }
-        debug("tilde return", ret);
-        return ret;
-      });
-    };
-    var replaceCarets = (comp, options) => {
-      return comp.trim().split(/\s+/).map((c) => replaceCaret(c, options)).join(" ");
-    };
-    var replaceCaret = (comp, options) => {
-      debug("caret", comp, options);
-      const r = options.loose ? re[t.CARETLOOSE] : re[t.CARET];
-      const z2 = options.includePrerelease ? "-0" : "";
-      return comp.replace(r, (_2, M, m, p, pr) => {
-        debug("caret", comp, _2, M, m, p, pr);
-        let ret;
-        if (isX(M)) {
-          ret = "";
-        } else if (isX(m)) {
-          ret = `>=${M}.0.0${z2} <${+M + 1}.0.0-0`;
-        } else if (isX(p)) {
-          if (M === "0") {
-            ret = `>=${M}.${m}.0${z2} <${M}.${+m + 1}.0-0`;
-          } else {
-            ret = `>=${M}.${m}.0${z2} <${+M + 1}.0.0-0`;
-          }
-        } else if (pr) {
-          debug("replaceCaret pr", pr);
-          if (M === "0") {
-            if (m === "0") {
-              ret = `>=${M}.${m}.${p}-${pr} <${M}.${m}.${+p + 1}-0`;
-            } else {
-              ret = `>=${M}.${m}.${p}-${pr} <${M}.${+m + 1}.0-0`;
-            }
-          } else {
-            ret = `>=${M}.${m}.${p}-${pr} <${+M + 1}.0.0-0`;
-          }
-        } else {
-          debug("no pr");
-          if (M === "0") {
-            if (m === "0") {
-              ret = `>=${M}.${m}.${p}${z2} <${M}.${m}.${+p + 1}-0`;
-            } else {
-              ret = `>=${M}.${m}.${p}${z2} <${M}.${+m + 1}.0-0`;
-            }
-          } else {
-            ret = `>=${M}.${m}.${p} <${+M + 1}.0.0-0`;
-          }
-        }
-        debug("caret return", ret);
-        return ret;
-      });
-    };
-    var replaceXRanges = (comp, options) => {
-      debug("replaceXRanges", comp, options);
-      return comp.split(/\s+/).map((c) => replaceXRange(c, options)).join(" ");
-    };
-    var replaceXRange = (comp, options) => {
-      comp = comp.trim();
-      const r = options.loose ? re[t.XRANGELOOSE] : re[t.XRANGE];
-      return comp.replace(r, (ret, gtlt, M, m, p, pr) => {
-        debug("xRange", comp, ret, gtlt, M, m, p, pr);
-        const xM = isX(M);
-        const xm = xM || isX(m);
-        const xp = xm || isX(p);
-        const anyX = xp;
-        if (gtlt === "=" && anyX) {
-          gtlt = "";
-        }
-        pr = options.includePrerelease ? "-0" : "";
-        if (xM) {
-          if (gtlt === ">" || gtlt === "<") {
-            ret = "<0.0.0-0";
-          } else {
-            ret = "*";
-          }
-        } else if (gtlt && anyX) {
-          if (xm) {
-            m = 0;
-          }
-          p = 0;
-          if (gtlt === ">") {
-            gtlt = ">=";
-            if (xm) {
-              M = +M + 1;
-              m = 0;
-              p = 0;
-            } else {
-              m = +m + 1;
-              p = 0;
-            }
-          } else if (gtlt === "<=") {
-            gtlt = "<";
-            if (xm) {
-              M = +M + 1;
-            } else {
-              m = +m + 1;
-            }
-          }
-          if (gtlt === "<") {
-            pr = "-0";
-          }
-          ret = `${gtlt + M}.${m}.${p}${pr}`;
-        } else if (xm) {
-          ret = `>=${M}.0.0${pr} <${+M + 1}.0.0-0`;
-        } else if (xp) {
-          ret = `>=${M}.${m}.0${pr} <${M}.${+m + 1}.0-0`;
-        }
-        debug("xRange return", ret);
-        return ret;
-      });
-    };
-    var replaceStars = (comp, options) => {
-      debug("replaceStars", comp, options);
-      return comp.trim().replace(re[t.STAR], "");
-    };
-    var replaceGTE0 = (comp, options) => {
-      debug("replaceGTE0", comp, options);
-      return comp.trim().replace(re[options.includePrerelease ? t.GTE0PRE : t.GTE0], "");
-    };
-    var hyphenReplace = (incPr) => ($0, from, fM, fm, fp, fpr, fb, to, tM, tm, tp, tpr) => {
-      if (isX(fM)) {
-        from = "";
-      } else if (isX(fm)) {
-        from = `>=${fM}.0.0${incPr ? "-0" : ""}`;
-      } else if (isX(fp)) {
-        from = `>=${fM}.${fm}.0${incPr ? "-0" : ""}`;
-      } else if (fpr) {
-        from = `>=${from}`;
-      } else {
-        from = `>=${from}${incPr ? "-0" : ""}`;
-      }
-      if (isX(tM)) {
-        to = "";
-      } else if (isX(tm)) {
-        to = `<${+tM + 1}.0.0-0`;
-      } else if (isX(tp)) {
-        to = `<${tM}.${+tm + 1}.0-0`;
-      } else if (tpr) {
-        to = `<=${tM}.${tm}.${tp}-${tpr}`;
-      } else if (incPr) {
-        to = `<${tM}.${tm}.${+tp + 1}-0`;
-      } else {
-        to = `<=${to}`;
-      }
-      return `${from} ${to}`.trim();
-    };
-    var testSet = (set, version, options) => {
-      for (let i = 0; i < set.length; i++) {
-        if (!set[i].test(version)) {
-          return false;
-        }
-      }
-      if (version.prerelease.length && !options.includePrerelease) {
-        for (let i = 0; i < set.length; i++) {
-          debug(set[i].semver);
-          if (set[i].semver === Comparator.ANY) {
-            continue;
-          }
-          if (set[i].semver.prerelease.length > 0) {
-            const allowed = set[i].semver;
-            if (allowed.major === version.major && allowed.minor === version.minor && allowed.patch === version.patch) {
-              return true;
-            }
-          }
-        }
-        return false;
-      }
-      return true;
-    };
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/classes/comparator.js
-var require_comparator = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/classes/comparator.js"(exports, module) {
-    init_cjs_shim();
-    var ANY = Symbol("SemVer ANY");
-    var Comparator = class _Comparator {
-      static get ANY() {
-        return ANY;
-      }
-      constructor(comp, options) {
-        options = parseOptions(options);
-        if (comp instanceof _Comparator) {
-          if (comp.loose === !!options.loose) {
-            return comp;
-          } else {
-            comp = comp.value;
-          }
-        }
-        comp = comp.trim().split(/\s+/).join(" ");
-        debug("comparator", comp, options);
-        this.options = options;
-        this.loose = !!options.loose;
-        this.parse(comp);
-        if (this.semver === ANY) {
-          this.value = "";
-        } else {
-          this.value = this.operator + this.semver.version;
-        }
-        debug("comp", this);
-      }
-      parse(comp) {
-        const r = this.options.loose ? re[t.COMPARATORLOOSE] : re[t.COMPARATOR];
-        const m = comp.match(r);
-        if (!m) {
-          throw new TypeError(`Invalid comparator: ${comp}`);
-        }
-        this.operator = m[1] !== void 0 ? m[1] : "";
-        if (this.operator === "=") {
-          this.operator = "";
-        }
-        if (!m[2]) {
-          this.semver = ANY;
-        } else {
-          this.semver = new SemVer3(m[2], this.options.loose);
-        }
-      }
-      toString() {
-        return this.value;
-      }
-      test(version) {
-        debug("Comparator.test", version, this.options.loose);
-        if (this.semver === ANY || version === ANY) {
-          return true;
-        }
-        if (typeof version === "string") {
-          try {
-            version = new SemVer3(version, this.options);
-          } catch (er) {
-            return false;
-          }
-        }
-        return cmp(version, this.operator, this.semver, this.options);
-      }
-      intersects(comp, options) {
-        if (!(comp instanceof _Comparator)) {
-          throw new TypeError("a Comparator is required");
-        }
-        if (this.operator === "") {
-          if (this.value === "") {
-            return true;
-          }
-          return new Range(comp.value, options).test(this.value);
-        } else if (comp.operator === "") {
-          if (comp.value === "") {
-            return true;
-          }
-          return new Range(this.value, options).test(comp.semver);
-        }
-        options = parseOptions(options);
-        if (options.includePrerelease && (this.value === "<0.0.0-0" || comp.value === "<0.0.0-0")) {
-          return false;
-        }
-        if (!options.includePrerelease && (this.value.startsWith("<0.0.0") || comp.value.startsWith("<0.0.0"))) {
-          return false;
-        }
-        if (this.operator.startsWith(">") && comp.operator.startsWith(">")) {
-          return true;
-        }
-        if (this.operator.startsWith("<") && comp.operator.startsWith("<")) {
-          return true;
-        }
-        if (this.semver.version === comp.semver.version && this.operator.includes("=") && comp.operator.includes("=")) {
-          return true;
-        }
-        if (cmp(this.semver, "<", comp.semver, options) && this.operator.startsWith(">") && comp.operator.startsWith("<")) {
-          return true;
-        }
-        if (cmp(this.semver, ">", comp.semver, options) && this.operator.startsWith("<") && comp.operator.startsWith(">")) {
-          return true;
-        }
-        return false;
-      }
-    };
-    module.exports = Comparator;
-    var parseOptions = require_parse_options();
-    var { safeRe: re, t } = require_re();
-    var cmp = require_cmp();
-    var debug = require_debug();
-    var SemVer3 = require_semver();
-    var Range = require_range();
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/satisfies.js
-var require_satisfies = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/satisfies.js"(exports, module) {
-    init_cjs_shim();
-    var Range = require_range();
-    var satisfies = (version, range, options) => {
-      try {
-        range = new Range(range, options);
-      } catch (er) {
-        return false;
-      }
-      return range.test(version);
-    };
-    module.exports = satisfies;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/to-comparators.js
-var require_to_comparators = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/to-comparators.js"(exports, module) {
-    init_cjs_shim();
-    var Range = require_range();
-    var toComparators = (range, options) => new Range(range, options).set.map((comp) => comp.map((c) => c.value).join(" ").trim().split(" "));
-    module.exports = toComparators;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/max-satisfying.js
-var require_max_satisfying = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/max-satisfying.js"(exports, module) {
-    init_cjs_shim();
-    var SemVer3 = require_semver();
-    var Range = require_range();
-    var maxSatisfying = (versions, range, options) => {
-      let max = null;
-      let maxSV = null;
-      let rangeObj = null;
-      try {
-        rangeObj = new Range(range, options);
-      } catch (er) {
-        return null;
-      }
-      versions.forEach((v) => {
-        if (rangeObj.test(v)) {
-          if (!max || maxSV.compare(v) === -1) {
-            max = v;
-            maxSV = new SemVer3(max, options);
-          }
-        }
-      });
-      return max;
-    };
-    module.exports = maxSatisfying;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/min-satisfying.js
-var require_min_satisfying = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/min-satisfying.js"(exports, module) {
-    init_cjs_shim();
-    var SemVer3 = require_semver();
-    var Range = require_range();
-    var minSatisfying = (versions, range, options) => {
-      let min = null;
-      let minSV = null;
-      let rangeObj = null;
-      try {
-        rangeObj = new Range(range, options);
-      } catch (er) {
-        return null;
-      }
-      versions.forEach((v) => {
-        if (rangeObj.test(v)) {
-          if (!min || minSV.compare(v) === 1) {
-            min = v;
-            minSV = new SemVer3(min, options);
-          }
-        }
-      });
-      return min;
-    };
-    module.exports = minSatisfying;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/min-version.js
-var require_min_version = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/min-version.js"(exports, module) {
-    init_cjs_shim();
-    var SemVer3 = require_semver();
-    var Range = require_range();
-    var gt = require_gt();
-    var minVersion = (range, loose) => {
-      range = new Range(range, loose);
-      let minver = new SemVer3("0.0.0");
-      if (range.test(minver)) {
-        return minver;
-      }
-      minver = new SemVer3("0.0.0-0");
-      if (range.test(minver)) {
-        return minver;
-      }
-      minver = null;
-      for (let i = 0; i < range.set.length; ++i) {
-        const comparators = range.set[i];
-        let setMin = null;
-        comparators.forEach((comparator) => {
-          const compver = new SemVer3(comparator.semver.version);
-          switch (comparator.operator) {
-            case ">":
-              if (compver.prerelease.length === 0) {
-                compver.patch++;
-              } else {
-                compver.prerelease.push(0);
-              }
-              compver.raw = compver.format();
-            case "":
-            case ">=":
-              if (!setMin || gt(compver, setMin)) {
-                setMin = compver;
-              }
-              break;
-            case "<":
-            case "<=":
-              break;
-            default:
-              throw new Error(`Unexpected operation: ${comparator.operator}`);
-          }
-        });
-        if (setMin && (!minver || gt(minver, setMin))) {
-          minver = setMin;
-        }
-      }
-      if (minver && range.test(minver)) {
-        return minver;
-      }
-      return null;
-    };
-    module.exports = minVersion;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/valid.js
-var require_valid2 = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/valid.js"(exports, module) {
-    init_cjs_shim();
-    var Range = require_range();
-    var validRange = (range, options) => {
-      try {
-        return new Range(range, options).range || "*";
-      } catch (er) {
-        return null;
-      }
-    };
-    module.exports = validRange;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/outside.js
-var require_outside = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/outside.js"(exports, module) {
-    init_cjs_shim();
-    var SemVer3 = require_semver();
-    var Comparator = require_comparator();
-    var { ANY } = Comparator;
-    var Range = require_range();
-    var satisfies = require_satisfies();
-    var gt = require_gt();
-    var lt = require_lt();
-    var lte = require_lte();
-    var gte = require_gte();
-    var outside = (version, range, hilo, options) => {
-      version = new SemVer3(version, options);
-      range = new Range(range, options);
-      let gtfn, ltefn, ltfn, comp, ecomp;
-      switch (hilo) {
-        case ">":
-          gtfn = gt;
-          ltefn = lte;
-          ltfn = lt;
-          comp = ">";
-          ecomp = ">=";
-          break;
-        case "<":
-          gtfn = lt;
-          ltefn = gte;
-          ltfn = gt;
-          comp = "<";
-          ecomp = "<=";
-          break;
-        default:
-          throw new TypeError('Must provide a hilo val of "<" or ">"');
-      }
-      if (satisfies(version, range, options)) {
-        return false;
-      }
-      for (let i = 0; i < range.set.length; ++i) {
-        const comparators = range.set[i];
-        let high = null;
-        let low = null;
-        comparators.forEach((comparator) => {
-          if (comparator.semver === ANY) {
-            comparator = new Comparator(">=0.0.0");
-          }
-          high = high || comparator;
-          low = low || comparator;
-          if (gtfn(comparator.semver, high.semver, options)) {
-            high = comparator;
-          } else if (ltfn(comparator.semver, low.semver, options)) {
-            low = comparator;
-          }
-        });
-        if (high.operator === comp || high.operator === ecomp) {
-          return false;
-        }
-        if ((!low.operator || low.operator === comp) && ltefn(version, low.semver)) {
-          return false;
-        } else if (low.operator === ecomp && ltfn(version, low.semver)) {
-          return false;
-        }
-      }
-      return true;
-    };
-    module.exports = outside;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/gtr.js
-var require_gtr = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/gtr.js"(exports, module) {
-    init_cjs_shim();
-    var outside = require_outside();
-    var gtr = (version, range, options) => outside(version, range, ">", options);
-    module.exports = gtr;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/ltr.js
-var require_ltr = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/ltr.js"(exports, module) {
-    init_cjs_shim();
-    var outside = require_outside();
-    var ltr = (version, range, options) => outside(version, range, "<", options);
-    module.exports = ltr;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/intersects.js
-var require_intersects = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/intersects.js"(exports, module) {
-    init_cjs_shim();
-    var Range = require_range();
-    var intersects = (r1, r2, options) => {
-      r1 = new Range(r1, options);
-      r2 = new Range(r2, options);
-      return r1.intersects(r2, options);
-    };
-    module.exports = intersects;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/simplify.js
-var require_simplify = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/simplify.js"(exports, module) {
-    init_cjs_shim();
-    var satisfies = require_satisfies();
-    var compare = require_compare();
-    module.exports = (versions, range, options) => {
-      const set = [];
-      let first = null;
-      let prev = null;
-      const v = versions.sort((a, b) => compare(a, b, options));
-      for (const version of v) {
-        const included = satisfies(version, range, options);
-        if (included) {
-          prev = version;
-          if (!first) {
-            first = version;
-          }
-        } else {
-          if (prev) {
-            set.push([first, prev]);
-          }
-          prev = null;
-          first = null;
-        }
-      }
-      if (first) {
-        set.push([first, null]);
-      }
-      const ranges = [];
-      for (const [min, max] of set) {
-        if (min === max) {
-          ranges.push(min);
-        } else if (!max && min === v[0]) {
-          ranges.push("*");
-        } else if (!max) {
-          ranges.push(`>=${min}`);
-        } else if (min === v[0]) {
-          ranges.push(`<=${max}`);
-        } else {
-          ranges.push(`${min} - ${max}`);
-        }
-      }
-      const simplified = ranges.join(" || ");
-      const original = typeof range.raw === "string" ? range.raw : String(range);
-      return simplified.length < original.length ? simplified : range;
-    };
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/subset.js
-var require_subset = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/subset.js"(exports, module) {
-    init_cjs_shim();
-    var Range = require_range();
-    var Comparator = require_comparator();
-    var { ANY } = Comparator;
-    var satisfies = require_satisfies();
-    var compare = require_compare();
-    var subset = (sub, dom, options = {}) => {
-      if (sub === dom) {
-        return true;
-      }
-      sub = new Range(sub, options);
-      dom = new Range(dom, options);
-      let sawNonNull = false;
-      OUTER:
-        for (const simpleSub of sub.set) {
-          for (const simpleDom of dom.set) {
-            const isSub = simpleSubset(simpleSub, simpleDom, options);
-            sawNonNull = sawNonNull || isSub !== null;
-            if (isSub) {
-              continue OUTER;
-            }
-          }
-          if (sawNonNull) {
-            return false;
-          }
-        }
-      return true;
-    };
-    var minimumVersionWithPreRelease = [new Comparator(">=0.0.0-0")];
-    var minimumVersion = [new Comparator(">=0.0.0")];
-    var simpleSubset = (sub, dom, options) => {
-      if (sub === dom) {
-        return true;
-      }
-      if (sub.length === 1 && sub[0].semver === ANY) {
-        if (dom.length === 1 && dom[0].semver === ANY) {
-          return true;
-        } else if (options.includePrerelease) {
-          sub = minimumVersionWithPreRelease;
-        } else {
-          sub = minimumVersion;
-        }
-      }
-      if (dom.length === 1 && dom[0].semver === ANY) {
-        if (options.includePrerelease) {
-          return true;
-        } else {
-          dom = minimumVersion;
-        }
-      }
-      const eqSet = /* @__PURE__ */ new Set();
-      let gt, lt;
-      for (const c of sub) {
-        if (c.operator === ">" || c.operator === ">=") {
-          gt = higherGT(gt, c, options);
-        } else if (c.operator === "<" || c.operator === "<=") {
-          lt = lowerLT(lt, c, options);
-        } else {
-          eqSet.add(c.semver);
-        }
-      }
-      if (eqSet.size > 1) {
-        return null;
-      }
-      let gtltComp;
-      if (gt && lt) {
-        gtltComp = compare(gt.semver, lt.semver, options);
-        if (gtltComp > 0) {
-          return null;
-        } else if (gtltComp === 0 && (gt.operator !== ">=" || lt.operator !== "<=")) {
-          return null;
-        }
-      }
-      for (const eq of eqSet) {
-        if (gt && !satisfies(eq, String(gt), options)) {
-          return null;
-        }
-        if (lt && !satisfies(eq, String(lt), options)) {
-          return null;
-        }
-        for (const c of dom) {
-          if (!satisfies(eq, String(c), options)) {
-            return false;
-          }
-        }
-        return true;
-      }
-      let higher, lower;
-      let hasDomLT, hasDomGT;
-      let needDomLTPre = lt && !options.includePrerelease && lt.semver.prerelease.length ? lt.semver : false;
-      let needDomGTPre = gt && !options.includePrerelease && gt.semver.prerelease.length ? gt.semver : false;
-      if (needDomLTPre && needDomLTPre.prerelease.length === 1 && lt.operator === "<" && needDomLTPre.prerelease[0] === 0) {
-        needDomLTPre = false;
-      }
-      for (const c of dom) {
-        hasDomGT = hasDomGT || c.operator === ">" || c.operator === ">=";
-        hasDomLT = hasDomLT || c.operator === "<" || c.operator === "<=";
-        if (gt) {
-          if (needDomGTPre) {
-            if (c.semver.prerelease && c.semver.prerelease.length && c.semver.major === needDomGTPre.major && c.semver.minor === needDomGTPre.minor && c.semver.patch === needDomGTPre.patch) {
-              needDomGTPre = false;
-            }
-          }
-          if (c.operator === ">" || c.operator === ">=") {
-            higher = higherGT(gt, c, options);
-            if (higher === c && higher !== gt) {
-              return false;
-            }
-          } else if (gt.operator === ">=" && !satisfies(gt.semver, String(c), options)) {
-            return false;
-          }
-        }
-        if (lt) {
-          if (needDomLTPre) {
-            if (c.semver.prerelease && c.semver.prerelease.length && c.semver.major === needDomLTPre.major && c.semver.minor === needDomLTPre.minor && c.semver.patch === needDomLTPre.patch) {
-              needDomLTPre = false;
-            }
-          }
-          if (c.operator === "<" || c.operator === "<=") {
-            lower = lowerLT(lt, c, options);
-            if (lower === c && lower !== lt) {
-              return false;
-            }
-          } else if (lt.operator === "<=" && !satisfies(lt.semver, String(c), options)) {
-            return false;
-          }
-        }
-        if (!c.operator && (lt || gt) && gtltComp !== 0) {
-          return false;
-        }
-      }
-      if (gt && hasDomLT && !lt && gtltComp !== 0) {
-        return false;
-      }
-      if (lt && hasDomGT && !gt && gtltComp !== 0) {
-        return false;
-      }
-      if (needDomGTPre || needDomLTPre) {
-        return false;
-      }
-      return true;
-    };
-    var higherGT = (a, b, options) => {
-      if (!a) {
-        return b;
-      }
-      const comp = compare(a.semver, b.semver, options);
-      return comp > 0 ? a : comp < 0 ? b : b.operator === ">" && a.operator === ">=" ? b : a;
-    };
-    var lowerLT = (a, b, options) => {
-      if (!a) {
-        return b;
-      }
-      const comp = compare(a.semver, b.semver, options);
-      return comp < 0 ? a : comp > 0 ? b : b.operator === "<" && a.operator === "<=" ? b : a;
-    };
-    module.exports = subset;
-  }
-});
-
-// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/index.js
-var require_semver2 = __commonJS({
-  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/index.js"(exports, module) {
-    init_cjs_shim();
-    var internalRe = require_re();
-    var constants2 = require_constants3();
-    var SemVer3 = require_semver();
-    var identifiers = require_identifiers();
-    var parse2 = require_parse();
-    var valid = require_valid();
-    var clean = require_clean();
-    var inc = require_inc();
-    var diff2 = require_diff();
-    var major = require_major();
-    var minor = require_minor();
-    var patch = require_patch();
-    var prerelease = require_prerelease();
-    var compare = require_compare();
-    var rcompare = require_rcompare();
-    var compareLoose = require_compare_loose();
-    var compareBuild = require_compare_build();
-    var sort = require_sort();
-    var rsort = require_rsort();
-    var gt = require_gt();
-    var lt = require_lt();
-    var eq = require_eq();
-    var neq = require_neq();
-    var gte = require_gte();
-    var lte = require_lte();
-    var cmp = require_cmp();
-    var coerce2 = require_coerce();
-    var Comparator = require_comparator();
-    var Range = require_range();
-    var satisfies = require_satisfies();
-    var toComparators = require_to_comparators();
-    var maxSatisfying = require_max_satisfying();
-    var minSatisfying = require_min_satisfying();
-    var minVersion = require_min_version();
-    var validRange = require_valid2();
-    var outside = require_outside();
-    var gtr = require_gtr();
-    var ltr = require_ltr();
-    var intersects = require_intersects();
-    var simplifyRange = require_simplify();
-    var subset = require_subset();
-    module.exports = {
-      parse: parse2,
-      valid,
-      clean,
-      inc,
-      diff: diff2,
-      major,
-      minor,
-      patch,
-      prerelease,
-      compare,
-      rcompare,
-      compareLoose,
-      compareBuild,
-      sort,
-      rsort,
-      gt,
-      lt,
-      eq,
-      neq,
-      gte,
-      lte,
-      cmp,
-      coerce: coerce2,
-      Comparator,
-      Range,
-      satisfies,
-      toComparators,
-      maxSatisfying,
-      minSatisfying,
-      minVersion,
-      validRange,
-      outside,
-      gtr,
-      ltr,
-      intersects,
-      simplifyRange,
-      subset,
-      SemVer: SemVer3,
-      re: internalRe.re,
-      src: internalRe.src,
-      tokens: internalRe.t,
-      SEMVER_SPEC_VERSION: constants2.SEMVER_SPEC_VERSION,
-      RELEASE_TYPES: constants2.RELEASE_TYPES,
-      compareIdentifiers: identifiers.compareIdentifiers,
-      rcompareIdentifiers: identifiers.rcompareIdentifiers
-    };
-  }
-});
-
-// ../server/helpers/fs-reader.js
-var require_fs_reader = __commonJS({
-  "../server/helpers/fs-reader.js"(exports, module) {
-    "use strict";
-    init_cjs_shim();
-    var fs3 = __require("fs");
-    function getLines(file, lines, callback) {
-      fs3.stat(file, function(err, stats) {
-        if (err)
-          return callback(err);
-        if (!lines)
-          return fs3.readFile(file, callback);
-        var fileSize = stats.size;
-        if (fileSize <= 0)
-          return callback(void 0, "");
-        var bufferSize = 1024 * 64;
-        var data = "";
-        var position;
-        var getRemainingFileSize, getReadStartPosition, getNextNewline, getRestOfStringPos, recordAndGetLeftoverData, updatePosition, addMoreNoticeToFile;
-        if (lines > 0) {
-          position = 0;
-          getRemainingFileSize = function() {
-            return fileSize - position;
-          };
-          getReadStartPosition = function(buffer) {
-            return position;
-          };
-          getNextNewline = function(str) {
-            return str.indexOf("\n");
-          };
-          getRestOfStringPos = function(str) {
-            return str.length;
-          };
-          recordAndGetLeftoverData = function(newData, snipPos) {
-            data += newData.substring(0, snipPos + 1);
-            return newData.substring(snipPos + 1);
-          };
-          updatePosition = function(buffer) {
-            position += buffer.length;
-          };
-          addMoreNoticeToFile = function(data2) {
-            return data2 + "<<< more >>> ...";
-          };
-        } else {
-          lines = -lines;
-          position = fileSize;
-          getRemainingFileSize = function() {
-            return fileSize - (fileSize - position);
-          };
-          getReadStartPosition = function(buffer) {
-            return position - buffer.length;
-          };
-          getNextNewline = function(str) {
-            return str.lastIndexOf("\n");
-          };
-          getRestOfStringPos = function(str) {
-            return 0;
-          };
-          recordAndGetLeftoverData = function(newData, snipPos) {
-            data = newData.substring(snipPos) + data;
-            return newData.substring(0, snipPos);
-          };
-          updatePosition = function(buffer) {
-            position -= buffer.length;
-          };
-          addMoreNoticeToFile = function(data2) {
-            return "... <<< more >>>" + data2;
-          };
-        }
-        var readLines2 = 0;
-        fs3.open(file, "r", function(err2, stream) {
-          if (err2)
-            return callback(err2);
-          function read() {
-            var length = getRemainingFileSize();
-            if (length <= 0)
-              return callback(void 0, data);
-            var buffer = Buffer.alloc(bufferSize > length ? length : bufferSize);
-            fs3.read(stream, buffer, 0, buffer.length, getReadStartPosition(buffer), function(err3, numRead, buffer2) {
-              var newData = buffer2.toString("utf8", 0, buffer2.length);
-              do {
-                var snipPos = getNextNewline(newData);
-                if (snipPos >= 0)
-                  readLines2++;
-                else
-                  snipPos = getRestOfStringPos(newData);
-                newData = recordAndGetLeftoverData(newData, snipPos);
-              } while (readLines2 < lines && newData.length > 0);
-              if (readLines2 < lines) {
-                updatePosition(buffer2);
-                read();
-              } else {
-                callback(void 0, addMoreNoticeToFile(data));
-              }
-            });
-          }
-          read();
-        });
-      });
-    }
-    module.exports = getLines;
-  }
-});
-
 // ../node_modules/.pnpm/process-nextick-args@2.0.1/node_modules/process-nextick-args/index.js
 var require_process_nextick_args = __commonJS({
   "../node_modules/.pnpm/process-nextick-args@2.0.1/node_modules/process-nextick-args/index.js"(exports, module) {
@@ -73763,14 +72122,14 @@ var require_inherits = __commonJS({
   "../node_modules/.pnpm/inherits@2.0.4/node_modules/inherits/inherits.js"(exports, module) {
     init_cjs_shim();
     try {
-      util3 = __require("util");
-      if (typeof util3.inherits !== "function")
+      util4 = __require("util");
+      if (typeof util4.inherits !== "function")
         throw "";
-      module.exports = util3.inherits;
+      module.exports = util4.inherits;
     } catch (e) {
       module.exports = require_inherits_browser();
     }
-    var util3;
+    var util4;
   }
 });
 
@@ -73785,7 +72144,7 @@ var require_BufferList = __commonJS({
       }
     }
     var Buffer2 = require_safe_buffer().Buffer;
-    var util3 = __require("util");
+    var util4 = __require("util");
     function copyBuffer(src, target, offset2) {
       src.copy(target, offset2);
     }
@@ -73852,9 +72211,9 @@ var require_BufferList = __commonJS({
       };
       return BufferList;
     }();
-    if (util3 && util3.inspect && util3.inspect.custom) {
-      module.exports.prototype[util3.inspect.custom] = function() {
-        var obj = util3.inspect({ length: this.length });
+    if (util4 && util4.inspect && util4.inspect.custom) {
+      module.exports.prototype[util4.inspect.custom] = function() {
+        var obj = util4.inspect({ length: this.length });
         return this.constructor.name + " " + obj;
       };
     }
@@ -73957,8 +72316,8 @@ var require_stream_writable = __commonJS({
     var asyncWrite = !process.browser && ["v0.10", "v0.9."].indexOf(process.version.slice(0, 5)) > -1 ? setImmediate : pna.nextTick;
     var Duplex;
     Writable2.WritableState = WritableState;
-    var util3 = Object.create(require_util());
-    util3.inherits = require_inherits();
+    var util4 = Object.create(require_util());
+    util4.inherits = require_inherits();
     var internalUtil = {
       deprecate: require_node()
     };
@@ -73973,7 +72332,7 @@ var require_stream_writable = __commonJS({
       return Buffer2.isBuffer(obj) || obj instanceof OurUint8Array;
     }
     var destroyImpl = require_destroy();
-    util3.inherits(Writable2, Stream2);
+    util4.inherits(Writable2, Stream2);
     function nop() {
     }
     function WritableState(options, stream) {
@@ -74422,11 +72781,11 @@ var require_stream_duplex = __commonJS({
       return keys2;
     };
     module.exports = Duplex;
-    var util3 = Object.create(require_util());
-    util3.inherits = require_inherits();
-    var Readable = require_stream_readable();
+    var util4 = Object.create(require_util());
+    util4.inherits = require_inherits();
+    var Readable2 = require_stream_readable();
     var Writable2 = require_stream_writable();
-    util3.inherits(Duplex, Readable);
+    util4.inherits(Duplex, Readable2);
     {
       keys = objectKeys(Writable2.prototype);
       for (v = 0; v < keys.length; v++) {
@@ -74441,7 +72800,7 @@ var require_stream_duplex = __commonJS({
     function Duplex(options) {
       if (!(this instanceof Duplex))
         return new Duplex(options);
-      Readable.call(this, options);
+      Readable2.call(this, options);
       Writable2.call(this, options);
       if (options && options.readable === false)
         this.readable = false;
@@ -74759,10 +73118,10 @@ var require_stream_readable = __commonJS({
     "use strict";
     init_cjs_shim();
     var pna = require_process_nextick_args();
-    module.exports = Readable;
+    module.exports = Readable2;
     var isArray = require_isarray();
     var Duplex;
-    Readable.ReadableState = ReadableState;
+    Readable2.ReadableState = ReadableState;
     var EE = __require("events").EventEmitter;
     var EElistenerCount = function(emitter, type) {
       return emitter.listeners(type).length;
@@ -74777,8 +73136,8 @@ var require_stream_readable = __commonJS({
     function _isUint8Array(obj) {
       return Buffer2.isBuffer(obj) || obj instanceof OurUint8Array;
     }
-    var util3 = Object.create(require_util());
-    util3.inherits = require_inherits();
+    var util4 = Object.create(require_util());
+    util4.inherits = require_inherits();
     var debugUtil = __require("util");
     var debug = void 0;
     if (debugUtil && debugUtil.debuglog) {
@@ -74790,7 +73149,7 @@ var require_stream_readable = __commonJS({
     var BufferList = require_BufferList();
     var destroyImpl = require_destroy();
     var StringDecoder;
-    util3.inherits(Readable, Stream2);
+    util4.inherits(Readable2, Stream2);
     var kProxyEvents = ["error", "close", "destroy", "pause", "resume"];
     function prependListener(emitter, event, fn) {
       if (typeof emitter.prependListener === "function")
@@ -74845,10 +73204,10 @@ var require_stream_readable = __commonJS({
         this.encoding = options.encoding;
       }
     }
-    function Readable(options) {
+    function Readable2(options) {
       Duplex = Duplex || require_stream_duplex();
-      if (!(this instanceof Readable))
-        return new Readable(options);
+      if (!(this instanceof Readable2))
+        return new Readable2(options);
       this._readableState = new ReadableState(options, this);
       this.readable = true;
       if (options) {
@@ -74859,7 +73218,7 @@ var require_stream_readable = __commonJS({
       }
       Stream2.call(this);
     }
-    Object.defineProperty(Readable.prototype, "destroyed", {
+    Object.defineProperty(Readable2.prototype, "destroyed", {
       get: function() {
         if (this._readableState === void 0) {
           return false;
@@ -74873,13 +73232,13 @@ var require_stream_readable = __commonJS({
         this._readableState.destroyed = value;
       }
     });
-    Readable.prototype.destroy = destroyImpl.destroy;
-    Readable.prototype._undestroy = destroyImpl.undestroy;
-    Readable.prototype._destroy = function(err, cb) {
+    Readable2.prototype.destroy = destroyImpl.destroy;
+    Readable2.prototype._undestroy = destroyImpl.undestroy;
+    Readable2.prototype._destroy = function(err, cb) {
       this.push(null);
       cb(err);
     };
-    Readable.prototype.push = function(chunk, encoding) {
+    Readable2.prototype.push = function(chunk, encoding) {
       var state = this._readableState;
       var skipChunkCheck;
       if (!state.objectMode) {
@@ -74896,7 +73255,7 @@ var require_stream_readable = __commonJS({
       }
       return readableAddChunk(this, chunk, encoding, false, skipChunkCheck);
     };
-    Readable.prototype.unshift = function(chunk) {
+    Readable2.prototype.unshift = function(chunk) {
       return readableAddChunk(this, chunk, null, true, false);
     };
     function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
@@ -74964,10 +73323,10 @@ var require_stream_readable = __commonJS({
     function needMoreData(state) {
       return !state.ended && (state.needReadable || state.length < state.highWaterMark || state.length === 0);
     }
-    Readable.prototype.isPaused = function() {
+    Readable2.prototype.isPaused = function() {
       return this._readableState.flowing === false;
     };
-    Readable.prototype.setEncoding = function(enc) {
+    Readable2.prototype.setEncoding = function(enc) {
       if (!StringDecoder)
         StringDecoder = require_string_decoder().StringDecoder;
       this._readableState.decoder = new StringDecoder(enc);
@@ -75010,7 +73369,7 @@ var require_stream_readable = __commonJS({
       }
       return state.length;
     }
-    Readable.prototype.read = function(n2) {
+    Readable2.prototype.read = function(n2) {
       debug("read", n2);
       n2 = parseInt(n2, 10);
       var state = this._readableState;
@@ -75120,10 +73479,10 @@ var require_stream_readable = __commonJS({
       }
       state.readingMore = false;
     }
-    Readable.prototype._read = function(n2) {
+    Readable2.prototype._read = function(n2) {
       this.emit("error", new Error("_read() is not implemented"));
     };
-    Readable.prototype.pipe = function(dest, pipeOpts) {
+    Readable2.prototype.pipe = function(dest, pipeOpts) {
       var src = this;
       var state = this._readableState;
       switch (state.pipesCount) {
@@ -75233,7 +73592,7 @@ var require_stream_readable = __commonJS({
         }
       };
     }
-    Readable.prototype.unpipe = function(dest) {
+    Readable2.prototype.unpipe = function(dest) {
       var state = this._readableState;
       var unpipeInfo = { hasUnpiped: false };
       if (state.pipesCount === 0)
@@ -75271,7 +73630,7 @@ var require_stream_readable = __commonJS({
       dest.emit("unpipe", this, unpipeInfo);
       return this;
     };
-    Readable.prototype.on = function(ev, fn) {
+    Readable2.prototype.on = function(ev, fn) {
       var res = Stream2.prototype.on.call(this, ev, fn);
       if (ev === "data") {
         if (this._readableState.flowing !== false)
@@ -75290,12 +73649,12 @@ var require_stream_readable = __commonJS({
       }
       return res;
     };
-    Readable.prototype.addListener = Readable.prototype.on;
+    Readable2.prototype.addListener = Readable2.prototype.on;
     function nReadingNextTick(self2) {
       debug("readable nexttick read 0");
       self2.read(0);
     }
-    Readable.prototype.resume = function() {
+    Readable2.prototype.resume = function() {
       var state = this._readableState;
       if (!state.flowing) {
         debug("resume");
@@ -75322,7 +73681,7 @@ var require_stream_readable = __commonJS({
       if (state.flowing && !state.reading)
         stream.read(0);
     }
-    Readable.prototype.pause = function() {
+    Readable2.prototype.pause = function() {
       debug("call pause flowing=%j", this._readableState.flowing);
       if (false !== this._readableState.flowing) {
         debug("pause");
@@ -75337,7 +73696,7 @@ var require_stream_readable = __commonJS({
       while (state.flowing && stream.read() !== null) {
       }
     }
-    Readable.prototype.wrap = function(stream) {
+    Readable2.prototype.wrap = function(stream) {
       var _this = this;
       var state = this._readableState;
       var paused = false;
@@ -75385,7 +73744,7 @@ var require_stream_readable = __commonJS({
       };
       return this;
     };
-    Object.defineProperty(Readable.prototype, "readableHighWaterMark", {
+    Object.defineProperty(Readable2.prototype, "readableHighWaterMark", {
       // making it explicit this property is not enumerable
       // because otherwise some prototype manipulation in
       // userland will fail
@@ -75394,7 +73753,7 @@ var require_stream_readable = __commonJS({
         return this._readableState.highWaterMark;
       }
     });
-    Readable._fromList = fromList;
+    Readable2._fromList = fromList;
     function fromList(n2, state) {
       if (state.length === 0)
         return null;
@@ -75517,11 +73876,11 @@ var require_stream_transform = __commonJS({
   "../node_modules/.pnpm/readable-stream@2.3.8/node_modules/readable-stream/lib/_stream_transform.js"(exports, module) {
     "use strict";
     init_cjs_shim();
-    module.exports = Transform4;
+    module.exports = Transform5;
     var Duplex = require_stream_duplex();
-    var util3 = Object.create(require_util());
-    util3.inherits = require_inherits();
-    util3.inherits(Transform4, Duplex);
+    var util4 = Object.create(require_util());
+    util4.inherits = require_inherits();
+    util4.inherits(Transform5, Duplex);
     function afterTransform(er, data) {
       var ts = this._transformState;
       ts.transforming = false;
@@ -75540,9 +73899,9 @@ var require_stream_transform = __commonJS({
         this._read(rs.highWaterMark);
       }
     }
-    function Transform4(options) {
-      if (!(this instanceof Transform4))
-        return new Transform4(options);
+    function Transform5(options) {
+      if (!(this instanceof Transform5))
+        return new Transform5(options);
       Duplex.call(this, options);
       this._transformState = {
         afterTransform: afterTransform.bind(this),
@@ -75572,14 +73931,14 @@ var require_stream_transform = __commonJS({
         done(this, null, null);
       }
     }
-    Transform4.prototype.push = function(chunk, encoding) {
+    Transform5.prototype.push = function(chunk, encoding) {
       this._transformState.needTransform = false;
       return Duplex.prototype.push.call(this, chunk, encoding);
     };
-    Transform4.prototype._transform = function(chunk, encoding, cb) {
+    Transform5.prototype._transform = function(chunk, encoding, cb) {
       throw new Error("_transform() is not implemented");
     };
-    Transform4.prototype._write = function(chunk, encoding, cb) {
+    Transform5.prototype._write = function(chunk, encoding, cb) {
       var ts = this._transformState;
       ts.writecb = cb;
       ts.writechunk = chunk;
@@ -75590,7 +73949,7 @@ var require_stream_transform = __commonJS({
           this._read(rs.highWaterMark);
       }
     };
-    Transform4.prototype._read = function(n2) {
+    Transform5.prototype._read = function(n2) {
       var ts = this._transformState;
       if (ts.writechunk !== null && ts.writecb && !ts.transforming) {
         ts.transforming = true;
@@ -75599,7 +73958,7 @@ var require_stream_transform = __commonJS({
         ts.needTransform = true;
       }
     };
-    Transform4.prototype._destroy = function(err, cb) {
+    Transform5.prototype._destroy = function(err, cb) {
       var _this2 = this;
       Duplex.prototype._destroy.call(this, err, function(err2) {
         cb(err2);
@@ -75626,14 +73985,14 @@ var require_stream_passthrough = __commonJS({
     "use strict";
     init_cjs_shim();
     module.exports = PassThrough2;
-    var Transform4 = require_stream_transform();
-    var util3 = Object.create(require_util());
-    util3.inherits = require_inherits();
-    util3.inherits(PassThrough2, Transform4);
+    var Transform5 = require_stream_transform();
+    var util4 = Object.create(require_util());
+    util4.inherits = require_inherits();
+    util4.inherits(PassThrough2, Transform5);
     function PassThrough2(options) {
       if (!(this instanceof PassThrough2))
         return new PassThrough2(options);
-      Transform4.call(this, options);
+      Transform5.call(this, options);
     }
     PassThrough2.prototype._transform = function(chunk, encoding, cb) {
       cb(null, chunk);
@@ -75692,14 +74051,14 @@ var require_immutable = __commonJS({
 var require_through2 = __commonJS({
   "../node_modules/.pnpm/through2@2.0.5/node_modules/through2/through2.js"(exports, module) {
     init_cjs_shim();
-    var Transform4 = require_readable().Transform;
+    var Transform5 = require_readable().Transform;
     var inherits = __require("util").inherits;
     var xtend = require_immutable();
     function DestroyableTransform(opts) {
-      Transform4.call(this, opts);
+      Transform5.call(this, opts);
       this._destroyed = false;
     }
-    inherits(DestroyableTransform, Transform4);
+    inherits(DestroyableTransform, Transform5);
     DestroyableTransform.prototype.destroy = function(err) {
       if (this._destroyed)
         return;
@@ -75888,12 +74247,1919 @@ var require_progress_stream = __commonJS({
   }
 });
 
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/inc.js
+var require_inc = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/inc.js"(exports, module) {
+    init_cjs_shim();
+    var SemVer5 = require_semver();
+    var inc = (version, release, options, identifier, identifierBase) => {
+      if (typeof options === "string") {
+        identifierBase = identifier;
+        identifier = options;
+        options = void 0;
+      }
+      try {
+        return new SemVer5(
+          version instanceof SemVer5 ? version.version : version,
+          options
+        ).inc(release, identifier, identifierBase).version;
+      } catch (er) {
+        return null;
+      }
+    };
+    module.exports = inc;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/diff.js
+var require_diff = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/diff.js"(exports, module) {
+    init_cjs_shim();
+    var parse2 = require_parse();
+    var diff2 = (version1, version2) => {
+      const v1 = parse2(version1, null, true);
+      const v2 = parse2(version2, null, true);
+      const comparison = v1.compare(v2);
+      if (comparison === 0) {
+        return null;
+      }
+      const v1Higher = comparison > 0;
+      const highVersion = v1Higher ? v1 : v2;
+      const lowVersion = v1Higher ? v2 : v1;
+      const highHasPre = !!highVersion.prerelease.length;
+      const lowHasPre = !!lowVersion.prerelease.length;
+      if (lowHasPre && !highHasPre) {
+        if (!lowVersion.patch && !lowVersion.minor) {
+          return "major";
+        }
+        if (highVersion.patch) {
+          return "patch";
+        }
+        if (highVersion.minor) {
+          return "minor";
+        }
+        return "major";
+      }
+      const prefix = highHasPre ? "pre" : "";
+      if (v1.major !== v2.major) {
+        return prefix + "major";
+      }
+      if (v1.minor !== v2.minor) {
+        return prefix + "minor";
+      }
+      if (v1.patch !== v2.patch) {
+        return prefix + "patch";
+      }
+      return "prerelease";
+    };
+    module.exports = diff2;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/major.js
+var require_major = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/major.js"(exports, module) {
+    init_cjs_shim();
+    var SemVer5 = require_semver();
+    var major = (a, loose) => new SemVer5(a, loose).major;
+    module.exports = major;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/minor.js
+var require_minor = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/minor.js"(exports, module) {
+    init_cjs_shim();
+    var SemVer5 = require_semver();
+    var minor = (a, loose) => new SemVer5(a, loose).minor;
+    module.exports = minor;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/patch.js
+var require_patch = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/patch.js"(exports, module) {
+    init_cjs_shim();
+    var SemVer5 = require_semver();
+    var patch = (a, loose) => new SemVer5(a, loose).patch;
+    module.exports = patch;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/prerelease.js
+var require_prerelease = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/prerelease.js"(exports, module) {
+    init_cjs_shim();
+    var parse2 = require_parse();
+    var prerelease = (version, options) => {
+      const parsed = parse2(version, options);
+      return parsed && parsed.prerelease.length ? parsed.prerelease : null;
+    };
+    module.exports = prerelease;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/compare.js
+var require_compare = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/compare.js"(exports, module) {
+    init_cjs_shim();
+    var SemVer5 = require_semver();
+    var compare = (a, b, loose) => new SemVer5(a, loose).compare(new SemVer5(b, loose));
+    module.exports = compare;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/rcompare.js
+var require_rcompare = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/rcompare.js"(exports, module) {
+    init_cjs_shim();
+    var compare = require_compare();
+    var rcompare = (a, b, loose) => compare(b, a, loose);
+    module.exports = rcompare;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/compare-loose.js
+var require_compare_loose = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/compare-loose.js"(exports, module) {
+    init_cjs_shim();
+    var compare = require_compare();
+    var compareLoose = (a, b) => compare(a, b, true);
+    module.exports = compareLoose;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/compare-build.js
+var require_compare_build = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/compare-build.js"(exports, module) {
+    init_cjs_shim();
+    var SemVer5 = require_semver();
+    var compareBuild = (a, b, loose) => {
+      const versionA = new SemVer5(a, loose);
+      const versionB = new SemVer5(b, loose);
+      return versionA.compare(versionB) || versionA.compareBuild(versionB);
+    };
+    module.exports = compareBuild;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/sort.js
+var require_sort = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/sort.js"(exports, module) {
+    init_cjs_shim();
+    var compareBuild = require_compare_build();
+    var sort = (list, loose) => list.sort((a, b) => compareBuild(a, b, loose));
+    module.exports = sort;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/rsort.js
+var require_rsort = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/rsort.js"(exports, module) {
+    init_cjs_shim();
+    var compareBuild = require_compare_build();
+    var rsort = (list, loose) => list.sort((a, b) => compareBuild(b, a, loose));
+    module.exports = rsort;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/gt.js
+var require_gt = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/gt.js"(exports, module) {
+    init_cjs_shim();
+    var compare = require_compare();
+    var gt = (a, b, loose) => compare(a, b, loose) > 0;
+    module.exports = gt;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/lt.js
+var require_lt = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/lt.js"(exports, module) {
+    init_cjs_shim();
+    var compare = require_compare();
+    var lt = (a, b, loose) => compare(a, b, loose) < 0;
+    module.exports = lt;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/eq.js
+var require_eq = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/eq.js"(exports, module) {
+    init_cjs_shim();
+    var compare = require_compare();
+    var eq = (a, b, loose) => compare(a, b, loose) === 0;
+    module.exports = eq;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/neq.js
+var require_neq = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/neq.js"(exports, module) {
+    init_cjs_shim();
+    var compare = require_compare();
+    var neq = (a, b, loose) => compare(a, b, loose) !== 0;
+    module.exports = neq;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/gte.js
+var require_gte = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/gte.js"(exports, module) {
+    init_cjs_shim();
+    var compare = require_compare();
+    var gte = (a, b, loose) => compare(a, b, loose) >= 0;
+    module.exports = gte;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/lte.js
+var require_lte = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/lte.js"(exports, module) {
+    init_cjs_shim();
+    var compare = require_compare();
+    var lte = (a, b, loose) => compare(a, b, loose) <= 0;
+    module.exports = lte;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/cmp.js
+var require_cmp = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/cmp.js"(exports, module) {
+    init_cjs_shim();
+    var eq = require_eq();
+    var neq = require_neq();
+    var gt = require_gt();
+    var gte = require_gte();
+    var lt = require_lt();
+    var lte = require_lte();
+    var cmp = (a, op, b, loose) => {
+      switch (op) {
+        case "===":
+          if (typeof a === "object") {
+            a = a.version;
+          }
+          if (typeof b === "object") {
+            b = b.version;
+          }
+          return a === b;
+        case "!==":
+          if (typeof a === "object") {
+            a = a.version;
+          }
+          if (typeof b === "object") {
+            b = b.version;
+          }
+          return a !== b;
+        case "":
+        case "=":
+        case "==":
+          return eq(a, b, loose);
+        case "!=":
+          return neq(a, b, loose);
+        case ">":
+          return gt(a, b, loose);
+        case ">=":
+          return gte(a, b, loose);
+        case "<":
+          return lt(a, b, loose);
+        case "<=":
+          return lte(a, b, loose);
+        default:
+          throw new TypeError(`Invalid operator: ${op}`);
+      }
+    };
+    module.exports = cmp;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/coerce.js
+var require_coerce = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/coerce.js"(exports, module) {
+    init_cjs_shim();
+    var SemVer5 = require_semver();
+    var parse2 = require_parse();
+    var { safeRe: re, t } = require_re();
+    var coerce2 = (version, options) => {
+      if (version instanceof SemVer5) {
+        return version;
+      }
+      if (typeof version === "number") {
+        version = String(version);
+      }
+      if (typeof version !== "string") {
+        return null;
+      }
+      options = options || {};
+      let match2 = null;
+      if (!options.rtl) {
+        match2 = version.match(options.includePrerelease ? re[t.COERCEFULL] : re[t.COERCE]);
+      } else {
+        const coerceRtlRegex = options.includePrerelease ? re[t.COERCERTLFULL] : re[t.COERCERTL];
+        let next;
+        while ((next = coerceRtlRegex.exec(version)) && (!match2 || match2.index + match2[0].length !== version.length)) {
+          if (!match2 || next.index + next[0].length !== match2.index + match2[0].length) {
+            match2 = next;
+          }
+          coerceRtlRegex.lastIndex = next.index + next[1].length + next[2].length;
+        }
+        coerceRtlRegex.lastIndex = -1;
+      }
+      if (match2 === null) {
+        return null;
+      }
+      const major = match2[2];
+      const minor = match2[3] || "0";
+      const patch = match2[4] || "0";
+      const prerelease = options.includePrerelease && match2[5] ? `-${match2[5]}` : "";
+      const build = options.includePrerelease && match2[6] ? `+${match2[6]}` : "";
+      return parse2(`${major}.${minor}.${patch}${prerelease}${build}`, options);
+    };
+    module.exports = coerce2;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/internal/lrucache.js
+var require_lrucache = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/internal/lrucache.js"(exports, module) {
+    init_cjs_shim();
+    var LRUCache = class {
+      constructor() {
+        this.max = 1e3;
+        this.map = /* @__PURE__ */ new Map();
+      }
+      get(key) {
+        const value = this.map.get(key);
+        if (value === void 0) {
+          return void 0;
+        } else {
+          this.map.delete(key);
+          this.map.set(key, value);
+          return value;
+        }
+      }
+      delete(key) {
+        return this.map.delete(key);
+      }
+      set(key, value) {
+        const deleted = this.delete(key);
+        if (!deleted && value !== void 0) {
+          if (this.map.size >= this.max) {
+            const firstKey = this.map.keys().next().value;
+            this.delete(firstKey);
+          }
+          this.map.set(key, value);
+        }
+        return this;
+      }
+    };
+    module.exports = LRUCache;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/classes/range.js
+var require_range = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/classes/range.js"(exports, module) {
+    init_cjs_shim();
+    var SPACE_CHARACTERS = /\s+/g;
+    var Range = class _Range {
+      constructor(range, options) {
+        options = parseOptions(options);
+        if (range instanceof _Range) {
+          if (range.loose === !!options.loose && range.includePrerelease === !!options.includePrerelease) {
+            return range;
+          } else {
+            return new _Range(range.raw, options);
+          }
+        }
+        if (range instanceof Comparator) {
+          this.raw = range.value;
+          this.set = [[range]];
+          this.formatted = void 0;
+          return this;
+        }
+        this.options = options;
+        this.loose = !!options.loose;
+        this.includePrerelease = !!options.includePrerelease;
+        this.raw = range.trim().replace(SPACE_CHARACTERS, " ");
+        this.set = this.raw.split("||").map((r) => this.parseRange(r.trim())).filter((c) => c.length);
+        if (!this.set.length) {
+          throw new TypeError(`Invalid SemVer Range: ${this.raw}`);
+        }
+        if (this.set.length > 1) {
+          const first = this.set[0];
+          this.set = this.set.filter((c) => !isNullSet(c[0]));
+          if (this.set.length === 0) {
+            this.set = [first];
+          } else if (this.set.length > 1) {
+            for (const c of this.set) {
+              if (c.length === 1 && isAny(c[0])) {
+                this.set = [c];
+                break;
+              }
+            }
+          }
+        }
+        this.formatted = void 0;
+      }
+      get range() {
+        if (this.formatted === void 0) {
+          this.formatted = "";
+          for (let i = 0; i < this.set.length; i++) {
+            if (i > 0) {
+              this.formatted += "||";
+            }
+            const comps = this.set[i];
+            for (let k = 0; k < comps.length; k++) {
+              if (k > 0) {
+                this.formatted += " ";
+              }
+              this.formatted += comps[k].toString().trim();
+            }
+          }
+        }
+        return this.formatted;
+      }
+      format() {
+        return this.range;
+      }
+      toString() {
+        return this.range;
+      }
+      parseRange(range) {
+        const memoOpts = (this.options.includePrerelease && FLAG_INCLUDE_PRERELEASE) | (this.options.loose && FLAG_LOOSE);
+        const memoKey = memoOpts + ":" + range;
+        const cached = cache3.get(memoKey);
+        if (cached) {
+          return cached;
+        }
+        const loose = this.options.loose;
+        const hr = loose ? re[t.HYPHENRANGELOOSE] : re[t.HYPHENRANGE];
+        range = range.replace(hr, hyphenReplace(this.options.includePrerelease));
+        debug("hyphen replace", range);
+        range = range.replace(re[t.COMPARATORTRIM], comparatorTrimReplace);
+        debug("comparator trim", range);
+        range = range.replace(re[t.TILDETRIM], tildeTrimReplace);
+        debug("tilde trim", range);
+        range = range.replace(re[t.CARETTRIM], caretTrimReplace);
+        debug("caret trim", range);
+        let rangeList = range.split(" ").map((comp) => parseComparator(comp, this.options)).join(" ").split(/\s+/).map((comp) => replaceGTE0(comp, this.options));
+        if (loose) {
+          rangeList = rangeList.filter((comp) => {
+            debug("loose invalid filter", comp, this.options);
+            return !!comp.match(re[t.COMPARATORLOOSE]);
+          });
+        }
+        debug("range list", rangeList);
+        const rangeMap = /* @__PURE__ */ new Map();
+        const comparators = rangeList.map((comp) => new Comparator(comp, this.options));
+        for (const comp of comparators) {
+          if (isNullSet(comp)) {
+            return [comp];
+          }
+          rangeMap.set(comp.value, comp);
+        }
+        if (rangeMap.size > 1 && rangeMap.has("")) {
+          rangeMap.delete("");
+        }
+        const result = [...rangeMap.values()];
+        cache3.set(memoKey, result);
+        return result;
+      }
+      intersects(range, options) {
+        if (!(range instanceof _Range)) {
+          throw new TypeError("a Range is required");
+        }
+        return this.set.some((thisComparators) => {
+          return isSatisfiable(thisComparators, options) && range.set.some((rangeComparators) => {
+            return isSatisfiable(rangeComparators, options) && thisComparators.every((thisComparator) => {
+              return rangeComparators.every((rangeComparator) => {
+                return thisComparator.intersects(rangeComparator, options);
+              });
+            });
+          });
+        });
+      }
+      // if ANY of the sets match ALL of its comparators, then pass
+      test(version) {
+        if (!version) {
+          return false;
+        }
+        if (typeof version === "string") {
+          try {
+            version = new SemVer5(version, this.options);
+          } catch (er) {
+            return false;
+          }
+        }
+        for (let i = 0; i < this.set.length; i++) {
+          if (testSet(this.set[i], version, this.options)) {
+            return true;
+          }
+        }
+        return false;
+      }
+    };
+    module.exports = Range;
+    var LRU = require_lrucache();
+    var cache3 = new LRU();
+    var parseOptions = require_parse_options();
+    var Comparator = require_comparator();
+    var debug = require_debug();
+    var SemVer5 = require_semver();
+    var {
+      safeRe: re,
+      t,
+      comparatorTrimReplace,
+      tildeTrimReplace,
+      caretTrimReplace
+    } = require_re();
+    var { FLAG_INCLUDE_PRERELEASE, FLAG_LOOSE } = require_constants3();
+    var isNullSet = (c) => c.value === "<0.0.0-0";
+    var isAny = (c) => c.value === "";
+    var isSatisfiable = (comparators, options) => {
+      let result = true;
+      const remainingComparators = comparators.slice();
+      let testComparator = remainingComparators.pop();
+      while (result && remainingComparators.length) {
+        result = remainingComparators.every((otherComparator) => {
+          return testComparator.intersects(otherComparator, options);
+        });
+        testComparator = remainingComparators.pop();
+      }
+      return result;
+    };
+    var parseComparator = (comp, options) => {
+      debug("comp", comp, options);
+      comp = replaceCarets(comp, options);
+      debug("caret", comp);
+      comp = replaceTildes(comp, options);
+      debug("tildes", comp);
+      comp = replaceXRanges(comp, options);
+      debug("xrange", comp);
+      comp = replaceStars(comp, options);
+      debug("stars", comp);
+      return comp;
+    };
+    var isX = (id) => !id || id.toLowerCase() === "x" || id === "*";
+    var replaceTildes = (comp, options) => {
+      return comp.trim().split(/\s+/).map((c) => replaceTilde(c, options)).join(" ");
+    };
+    var replaceTilde = (comp, options) => {
+      const r = options.loose ? re[t.TILDELOOSE] : re[t.TILDE];
+      return comp.replace(r, (_2, M, m, p, pr) => {
+        debug("tilde", comp, _2, M, m, p, pr);
+        let ret;
+        if (isX(M)) {
+          ret = "";
+        } else if (isX(m)) {
+          ret = `>=${M}.0.0 <${+M + 1}.0.0-0`;
+        } else if (isX(p)) {
+          ret = `>=${M}.${m}.0 <${M}.${+m + 1}.0-0`;
+        } else if (pr) {
+          debug("replaceTilde pr", pr);
+          ret = `>=${M}.${m}.${p}-${pr} <${M}.${+m + 1}.0-0`;
+        } else {
+          ret = `>=${M}.${m}.${p} <${M}.${+m + 1}.0-0`;
+        }
+        debug("tilde return", ret);
+        return ret;
+      });
+    };
+    var replaceCarets = (comp, options) => {
+      return comp.trim().split(/\s+/).map((c) => replaceCaret(c, options)).join(" ");
+    };
+    var replaceCaret = (comp, options) => {
+      debug("caret", comp, options);
+      const r = options.loose ? re[t.CARETLOOSE] : re[t.CARET];
+      const z2 = options.includePrerelease ? "-0" : "";
+      return comp.replace(r, (_2, M, m, p, pr) => {
+        debug("caret", comp, _2, M, m, p, pr);
+        let ret;
+        if (isX(M)) {
+          ret = "";
+        } else if (isX(m)) {
+          ret = `>=${M}.0.0${z2} <${+M + 1}.0.0-0`;
+        } else if (isX(p)) {
+          if (M === "0") {
+            ret = `>=${M}.${m}.0${z2} <${M}.${+m + 1}.0-0`;
+          } else {
+            ret = `>=${M}.${m}.0${z2} <${+M + 1}.0.0-0`;
+          }
+        } else if (pr) {
+          debug("replaceCaret pr", pr);
+          if (M === "0") {
+            if (m === "0") {
+              ret = `>=${M}.${m}.${p}-${pr} <${M}.${m}.${+p + 1}-0`;
+            } else {
+              ret = `>=${M}.${m}.${p}-${pr} <${M}.${+m + 1}.0-0`;
+            }
+          } else {
+            ret = `>=${M}.${m}.${p}-${pr} <${+M + 1}.0.0-0`;
+          }
+        } else {
+          debug("no pr");
+          if (M === "0") {
+            if (m === "0") {
+              ret = `>=${M}.${m}.${p}${z2} <${M}.${m}.${+p + 1}-0`;
+            } else {
+              ret = `>=${M}.${m}.${p}${z2} <${M}.${+m + 1}.0-0`;
+            }
+          } else {
+            ret = `>=${M}.${m}.${p} <${+M + 1}.0.0-0`;
+          }
+        }
+        debug("caret return", ret);
+        return ret;
+      });
+    };
+    var replaceXRanges = (comp, options) => {
+      debug("replaceXRanges", comp, options);
+      return comp.split(/\s+/).map((c) => replaceXRange(c, options)).join(" ");
+    };
+    var replaceXRange = (comp, options) => {
+      comp = comp.trim();
+      const r = options.loose ? re[t.XRANGELOOSE] : re[t.XRANGE];
+      return comp.replace(r, (ret, gtlt, M, m, p, pr) => {
+        debug("xRange", comp, ret, gtlt, M, m, p, pr);
+        const xM = isX(M);
+        const xm = xM || isX(m);
+        const xp = xm || isX(p);
+        const anyX = xp;
+        if (gtlt === "=" && anyX) {
+          gtlt = "";
+        }
+        pr = options.includePrerelease ? "-0" : "";
+        if (xM) {
+          if (gtlt === ">" || gtlt === "<") {
+            ret = "<0.0.0-0";
+          } else {
+            ret = "*";
+          }
+        } else if (gtlt && anyX) {
+          if (xm) {
+            m = 0;
+          }
+          p = 0;
+          if (gtlt === ">") {
+            gtlt = ">=";
+            if (xm) {
+              M = +M + 1;
+              m = 0;
+              p = 0;
+            } else {
+              m = +m + 1;
+              p = 0;
+            }
+          } else if (gtlt === "<=") {
+            gtlt = "<";
+            if (xm) {
+              M = +M + 1;
+            } else {
+              m = +m + 1;
+            }
+          }
+          if (gtlt === "<") {
+            pr = "-0";
+          }
+          ret = `${gtlt + M}.${m}.${p}${pr}`;
+        } else if (xm) {
+          ret = `>=${M}.0.0${pr} <${+M + 1}.0.0-0`;
+        } else if (xp) {
+          ret = `>=${M}.${m}.0${pr} <${M}.${+m + 1}.0-0`;
+        }
+        debug("xRange return", ret);
+        return ret;
+      });
+    };
+    var replaceStars = (comp, options) => {
+      debug("replaceStars", comp, options);
+      return comp.trim().replace(re[t.STAR], "");
+    };
+    var replaceGTE0 = (comp, options) => {
+      debug("replaceGTE0", comp, options);
+      return comp.trim().replace(re[options.includePrerelease ? t.GTE0PRE : t.GTE0], "");
+    };
+    var hyphenReplace = (incPr) => ($0, from, fM, fm, fp, fpr, fb, to, tM, tm, tp, tpr) => {
+      if (isX(fM)) {
+        from = "";
+      } else if (isX(fm)) {
+        from = `>=${fM}.0.0${incPr ? "-0" : ""}`;
+      } else if (isX(fp)) {
+        from = `>=${fM}.${fm}.0${incPr ? "-0" : ""}`;
+      } else if (fpr) {
+        from = `>=${from}`;
+      } else {
+        from = `>=${from}${incPr ? "-0" : ""}`;
+      }
+      if (isX(tM)) {
+        to = "";
+      } else if (isX(tm)) {
+        to = `<${+tM + 1}.0.0-0`;
+      } else if (isX(tp)) {
+        to = `<${tM}.${+tm + 1}.0-0`;
+      } else if (tpr) {
+        to = `<=${tM}.${tm}.${tp}-${tpr}`;
+      } else if (incPr) {
+        to = `<${tM}.${tm}.${+tp + 1}-0`;
+      } else {
+        to = `<=${to}`;
+      }
+      return `${from} ${to}`.trim();
+    };
+    var testSet = (set, version, options) => {
+      for (let i = 0; i < set.length; i++) {
+        if (!set[i].test(version)) {
+          return false;
+        }
+      }
+      if (version.prerelease.length && !options.includePrerelease) {
+        for (let i = 0; i < set.length; i++) {
+          debug(set[i].semver);
+          if (set[i].semver === Comparator.ANY) {
+            continue;
+          }
+          if (set[i].semver.prerelease.length > 0) {
+            const allowed = set[i].semver;
+            if (allowed.major === version.major && allowed.minor === version.minor && allowed.patch === version.patch) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+      return true;
+    };
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/classes/comparator.js
+var require_comparator = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/classes/comparator.js"(exports, module) {
+    init_cjs_shim();
+    var ANY = Symbol("SemVer ANY");
+    var Comparator = class _Comparator {
+      static get ANY() {
+        return ANY;
+      }
+      constructor(comp, options) {
+        options = parseOptions(options);
+        if (comp instanceof _Comparator) {
+          if (comp.loose === !!options.loose) {
+            return comp;
+          } else {
+            comp = comp.value;
+          }
+        }
+        comp = comp.trim().split(/\s+/).join(" ");
+        debug("comparator", comp, options);
+        this.options = options;
+        this.loose = !!options.loose;
+        this.parse(comp);
+        if (this.semver === ANY) {
+          this.value = "";
+        } else {
+          this.value = this.operator + this.semver.version;
+        }
+        debug("comp", this);
+      }
+      parse(comp) {
+        const r = this.options.loose ? re[t.COMPARATORLOOSE] : re[t.COMPARATOR];
+        const m = comp.match(r);
+        if (!m) {
+          throw new TypeError(`Invalid comparator: ${comp}`);
+        }
+        this.operator = m[1] !== void 0 ? m[1] : "";
+        if (this.operator === "=") {
+          this.operator = "";
+        }
+        if (!m[2]) {
+          this.semver = ANY;
+        } else {
+          this.semver = new SemVer5(m[2], this.options.loose);
+        }
+      }
+      toString() {
+        return this.value;
+      }
+      test(version) {
+        debug("Comparator.test", version, this.options.loose);
+        if (this.semver === ANY || version === ANY) {
+          return true;
+        }
+        if (typeof version === "string") {
+          try {
+            version = new SemVer5(version, this.options);
+          } catch (er) {
+            return false;
+          }
+        }
+        return cmp(version, this.operator, this.semver, this.options);
+      }
+      intersects(comp, options) {
+        if (!(comp instanceof _Comparator)) {
+          throw new TypeError("a Comparator is required");
+        }
+        if (this.operator === "") {
+          if (this.value === "") {
+            return true;
+          }
+          return new Range(comp.value, options).test(this.value);
+        } else if (comp.operator === "") {
+          if (comp.value === "") {
+            return true;
+          }
+          return new Range(this.value, options).test(comp.semver);
+        }
+        options = parseOptions(options);
+        if (options.includePrerelease && (this.value === "<0.0.0-0" || comp.value === "<0.0.0-0")) {
+          return false;
+        }
+        if (!options.includePrerelease && (this.value.startsWith("<0.0.0") || comp.value.startsWith("<0.0.0"))) {
+          return false;
+        }
+        if (this.operator.startsWith(">") && comp.operator.startsWith(">")) {
+          return true;
+        }
+        if (this.operator.startsWith("<") && comp.operator.startsWith("<")) {
+          return true;
+        }
+        if (this.semver.version === comp.semver.version && this.operator.includes("=") && comp.operator.includes("=")) {
+          return true;
+        }
+        if (cmp(this.semver, "<", comp.semver, options) && this.operator.startsWith(">") && comp.operator.startsWith("<")) {
+          return true;
+        }
+        if (cmp(this.semver, ">", comp.semver, options) && this.operator.startsWith("<") && comp.operator.startsWith(">")) {
+          return true;
+        }
+        return false;
+      }
+    };
+    module.exports = Comparator;
+    var parseOptions = require_parse_options();
+    var { safeRe: re, t } = require_re();
+    var cmp = require_cmp();
+    var debug = require_debug();
+    var SemVer5 = require_semver();
+    var Range = require_range();
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/satisfies.js
+var require_satisfies = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/functions/satisfies.js"(exports, module) {
+    init_cjs_shim();
+    var Range = require_range();
+    var satisfies = (version, range, options) => {
+      try {
+        range = new Range(range, options);
+      } catch (er) {
+        return false;
+      }
+      return range.test(version);
+    };
+    module.exports = satisfies;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/to-comparators.js
+var require_to_comparators = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/to-comparators.js"(exports, module) {
+    init_cjs_shim();
+    var Range = require_range();
+    var toComparators = (range, options) => new Range(range, options).set.map((comp) => comp.map((c) => c.value).join(" ").trim().split(" "));
+    module.exports = toComparators;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/max-satisfying.js
+var require_max_satisfying = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/max-satisfying.js"(exports, module) {
+    init_cjs_shim();
+    var SemVer5 = require_semver();
+    var Range = require_range();
+    var maxSatisfying = (versions, range, options) => {
+      let max = null;
+      let maxSV = null;
+      let rangeObj = null;
+      try {
+        rangeObj = new Range(range, options);
+      } catch (er) {
+        return null;
+      }
+      versions.forEach((v) => {
+        if (rangeObj.test(v)) {
+          if (!max || maxSV.compare(v) === -1) {
+            max = v;
+            maxSV = new SemVer5(max, options);
+          }
+        }
+      });
+      return max;
+    };
+    module.exports = maxSatisfying;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/min-satisfying.js
+var require_min_satisfying = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/min-satisfying.js"(exports, module) {
+    init_cjs_shim();
+    var SemVer5 = require_semver();
+    var Range = require_range();
+    var minSatisfying = (versions, range, options) => {
+      let min = null;
+      let minSV = null;
+      let rangeObj = null;
+      try {
+        rangeObj = new Range(range, options);
+      } catch (er) {
+        return null;
+      }
+      versions.forEach((v) => {
+        if (rangeObj.test(v)) {
+          if (!min || minSV.compare(v) === 1) {
+            min = v;
+            minSV = new SemVer5(min, options);
+          }
+        }
+      });
+      return min;
+    };
+    module.exports = minSatisfying;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/min-version.js
+var require_min_version = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/min-version.js"(exports, module) {
+    init_cjs_shim();
+    var SemVer5 = require_semver();
+    var Range = require_range();
+    var gt = require_gt();
+    var minVersion = (range, loose) => {
+      range = new Range(range, loose);
+      let minver = new SemVer5("0.0.0");
+      if (range.test(minver)) {
+        return minver;
+      }
+      minver = new SemVer5("0.0.0-0");
+      if (range.test(minver)) {
+        return minver;
+      }
+      minver = null;
+      for (let i = 0; i < range.set.length; ++i) {
+        const comparators = range.set[i];
+        let setMin = null;
+        comparators.forEach((comparator) => {
+          const compver = new SemVer5(comparator.semver.version);
+          switch (comparator.operator) {
+            case ">":
+              if (compver.prerelease.length === 0) {
+                compver.patch++;
+              } else {
+                compver.prerelease.push(0);
+              }
+              compver.raw = compver.format();
+            case "":
+            case ">=":
+              if (!setMin || gt(compver, setMin)) {
+                setMin = compver;
+              }
+              break;
+            case "<":
+            case "<=":
+              break;
+            default:
+              throw new Error(`Unexpected operation: ${comparator.operator}`);
+          }
+        });
+        if (setMin && (!minver || gt(minver, setMin))) {
+          minver = setMin;
+        }
+      }
+      if (minver && range.test(minver)) {
+        return minver;
+      }
+      return null;
+    };
+    module.exports = minVersion;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/valid.js
+var require_valid2 = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/valid.js"(exports, module) {
+    init_cjs_shim();
+    var Range = require_range();
+    var validRange = (range, options) => {
+      try {
+        return new Range(range, options).range || "*";
+      } catch (er) {
+        return null;
+      }
+    };
+    module.exports = validRange;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/outside.js
+var require_outside = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/outside.js"(exports, module) {
+    init_cjs_shim();
+    var SemVer5 = require_semver();
+    var Comparator = require_comparator();
+    var { ANY } = Comparator;
+    var Range = require_range();
+    var satisfies = require_satisfies();
+    var gt = require_gt();
+    var lt = require_lt();
+    var lte = require_lte();
+    var gte = require_gte();
+    var outside = (version, range, hilo, options) => {
+      version = new SemVer5(version, options);
+      range = new Range(range, options);
+      let gtfn, ltefn, ltfn, comp, ecomp;
+      switch (hilo) {
+        case ">":
+          gtfn = gt;
+          ltefn = lte;
+          ltfn = lt;
+          comp = ">";
+          ecomp = ">=";
+          break;
+        case "<":
+          gtfn = lt;
+          ltefn = gte;
+          ltfn = gt;
+          comp = "<";
+          ecomp = "<=";
+          break;
+        default:
+          throw new TypeError('Must provide a hilo val of "<" or ">"');
+      }
+      if (satisfies(version, range, options)) {
+        return false;
+      }
+      for (let i = 0; i < range.set.length; ++i) {
+        const comparators = range.set[i];
+        let high = null;
+        let low = null;
+        comparators.forEach((comparator) => {
+          if (comparator.semver === ANY) {
+            comparator = new Comparator(">=0.0.0");
+          }
+          high = high || comparator;
+          low = low || comparator;
+          if (gtfn(comparator.semver, high.semver, options)) {
+            high = comparator;
+          } else if (ltfn(comparator.semver, low.semver, options)) {
+            low = comparator;
+          }
+        });
+        if (high.operator === comp || high.operator === ecomp) {
+          return false;
+        }
+        if ((!low.operator || low.operator === comp) && ltefn(version, low.semver)) {
+          return false;
+        } else if (low.operator === ecomp && ltfn(version, low.semver)) {
+          return false;
+        }
+      }
+      return true;
+    };
+    module.exports = outside;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/gtr.js
+var require_gtr = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/gtr.js"(exports, module) {
+    init_cjs_shim();
+    var outside = require_outside();
+    var gtr = (version, range, options) => outside(version, range, ">", options);
+    module.exports = gtr;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/ltr.js
+var require_ltr = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/ltr.js"(exports, module) {
+    init_cjs_shim();
+    var outside = require_outside();
+    var ltr = (version, range, options) => outside(version, range, "<", options);
+    module.exports = ltr;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/intersects.js
+var require_intersects = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/intersects.js"(exports, module) {
+    init_cjs_shim();
+    var Range = require_range();
+    var intersects = (r1, r2, options) => {
+      r1 = new Range(r1, options);
+      r2 = new Range(r2, options);
+      return r1.intersects(r2, options);
+    };
+    module.exports = intersects;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/simplify.js
+var require_simplify = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/simplify.js"(exports, module) {
+    init_cjs_shim();
+    var satisfies = require_satisfies();
+    var compare = require_compare();
+    module.exports = (versions, range, options) => {
+      const set = [];
+      let first = null;
+      let prev = null;
+      const v = versions.sort((a, b) => compare(a, b, options));
+      for (const version of v) {
+        const included = satisfies(version, range, options);
+        if (included) {
+          prev = version;
+          if (!first) {
+            first = version;
+          }
+        } else {
+          if (prev) {
+            set.push([first, prev]);
+          }
+          prev = null;
+          first = null;
+        }
+      }
+      if (first) {
+        set.push([first, null]);
+      }
+      const ranges = [];
+      for (const [min, max] of set) {
+        if (min === max) {
+          ranges.push(min);
+        } else if (!max && min === v[0]) {
+          ranges.push("*");
+        } else if (!max) {
+          ranges.push(`>=${min}`);
+        } else if (min === v[0]) {
+          ranges.push(`<=${max}`);
+        } else {
+          ranges.push(`${min} - ${max}`);
+        }
+      }
+      const simplified = ranges.join(" || ");
+      const original = typeof range.raw === "string" ? range.raw : String(range);
+      return simplified.length < original.length ? simplified : range;
+    };
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/subset.js
+var require_subset = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/ranges/subset.js"(exports, module) {
+    init_cjs_shim();
+    var Range = require_range();
+    var Comparator = require_comparator();
+    var { ANY } = Comparator;
+    var satisfies = require_satisfies();
+    var compare = require_compare();
+    var subset = (sub, dom, options = {}) => {
+      if (sub === dom) {
+        return true;
+      }
+      sub = new Range(sub, options);
+      dom = new Range(dom, options);
+      let sawNonNull = false;
+      OUTER:
+        for (const simpleSub of sub.set) {
+          for (const simpleDom of dom.set) {
+            const isSub = simpleSubset(simpleSub, simpleDom, options);
+            sawNonNull = sawNonNull || isSub !== null;
+            if (isSub) {
+              continue OUTER;
+            }
+          }
+          if (sawNonNull) {
+            return false;
+          }
+        }
+      return true;
+    };
+    var minimumVersionWithPreRelease = [new Comparator(">=0.0.0-0")];
+    var minimumVersion = [new Comparator(">=0.0.0")];
+    var simpleSubset = (sub, dom, options) => {
+      if (sub === dom) {
+        return true;
+      }
+      if (sub.length === 1 && sub[0].semver === ANY) {
+        if (dom.length === 1 && dom[0].semver === ANY) {
+          return true;
+        } else if (options.includePrerelease) {
+          sub = minimumVersionWithPreRelease;
+        } else {
+          sub = minimumVersion;
+        }
+      }
+      if (dom.length === 1 && dom[0].semver === ANY) {
+        if (options.includePrerelease) {
+          return true;
+        } else {
+          dom = minimumVersion;
+        }
+      }
+      const eqSet = /* @__PURE__ */ new Set();
+      let gt, lt;
+      for (const c of sub) {
+        if (c.operator === ">" || c.operator === ">=") {
+          gt = higherGT(gt, c, options);
+        } else if (c.operator === "<" || c.operator === "<=") {
+          lt = lowerLT(lt, c, options);
+        } else {
+          eqSet.add(c.semver);
+        }
+      }
+      if (eqSet.size > 1) {
+        return null;
+      }
+      let gtltComp;
+      if (gt && lt) {
+        gtltComp = compare(gt.semver, lt.semver, options);
+        if (gtltComp > 0) {
+          return null;
+        } else if (gtltComp === 0 && (gt.operator !== ">=" || lt.operator !== "<=")) {
+          return null;
+        }
+      }
+      for (const eq of eqSet) {
+        if (gt && !satisfies(eq, String(gt), options)) {
+          return null;
+        }
+        if (lt && !satisfies(eq, String(lt), options)) {
+          return null;
+        }
+        for (const c of dom) {
+          if (!satisfies(eq, String(c), options)) {
+            return false;
+          }
+        }
+        return true;
+      }
+      let higher, lower;
+      let hasDomLT, hasDomGT;
+      let needDomLTPre = lt && !options.includePrerelease && lt.semver.prerelease.length ? lt.semver : false;
+      let needDomGTPre = gt && !options.includePrerelease && gt.semver.prerelease.length ? gt.semver : false;
+      if (needDomLTPre && needDomLTPre.prerelease.length === 1 && lt.operator === "<" && needDomLTPre.prerelease[0] === 0) {
+        needDomLTPre = false;
+      }
+      for (const c of dom) {
+        hasDomGT = hasDomGT || c.operator === ">" || c.operator === ">=";
+        hasDomLT = hasDomLT || c.operator === "<" || c.operator === "<=";
+        if (gt) {
+          if (needDomGTPre) {
+            if (c.semver.prerelease && c.semver.prerelease.length && c.semver.major === needDomGTPre.major && c.semver.minor === needDomGTPre.minor && c.semver.patch === needDomGTPre.patch) {
+              needDomGTPre = false;
+            }
+          }
+          if (c.operator === ">" || c.operator === ">=") {
+            higher = higherGT(gt, c, options);
+            if (higher === c && higher !== gt) {
+              return false;
+            }
+          } else if (gt.operator === ">=" && !satisfies(gt.semver, String(c), options)) {
+            return false;
+          }
+        }
+        if (lt) {
+          if (needDomLTPre) {
+            if (c.semver.prerelease && c.semver.prerelease.length && c.semver.major === needDomLTPre.major && c.semver.minor === needDomLTPre.minor && c.semver.patch === needDomLTPre.patch) {
+              needDomLTPre = false;
+            }
+          }
+          if (c.operator === "<" || c.operator === "<=") {
+            lower = lowerLT(lt, c, options);
+            if (lower === c && lower !== lt) {
+              return false;
+            }
+          } else if (lt.operator === "<=" && !satisfies(lt.semver, String(c), options)) {
+            return false;
+          }
+        }
+        if (!c.operator && (lt || gt) && gtltComp !== 0) {
+          return false;
+        }
+      }
+      if (gt && hasDomLT && !lt && gtltComp !== 0) {
+        return false;
+      }
+      if (lt && hasDomGT && !gt && gtltComp !== 0) {
+        return false;
+      }
+      if (needDomGTPre || needDomLTPre) {
+        return false;
+      }
+      return true;
+    };
+    var higherGT = (a, b, options) => {
+      if (!a) {
+        return b;
+      }
+      const comp = compare(a.semver, b.semver, options);
+      return comp > 0 ? a : comp < 0 ? b : b.operator === ">" && a.operator === ">=" ? b : a;
+    };
+    var lowerLT = (a, b, options) => {
+      if (!a) {
+        return b;
+      }
+      const comp = compare(a.semver, b.semver, options);
+      return comp < 0 ? a : comp > 0 ? b : b.operator === "<" && a.operator === "<=" ? b : a;
+    };
+    module.exports = subset;
+  }
+});
+
+// ../node_modules/.pnpm/semver@7.6.3/node_modules/semver/index.js
+var require_semver2 = __commonJS({
+  "../node_modules/.pnpm/semver@7.6.3/node_modules/semver/index.js"(exports, module) {
+    init_cjs_shim();
+    var internalRe = require_re();
+    var constants2 = require_constants3();
+    var SemVer5 = require_semver();
+    var identifiers = require_identifiers();
+    var parse2 = require_parse();
+    var valid = require_valid();
+    var clean = require_clean();
+    var inc = require_inc();
+    var diff2 = require_diff();
+    var major = require_major();
+    var minor = require_minor();
+    var patch = require_patch();
+    var prerelease = require_prerelease();
+    var compare = require_compare();
+    var rcompare = require_rcompare();
+    var compareLoose = require_compare_loose();
+    var compareBuild = require_compare_build();
+    var sort = require_sort();
+    var rsort = require_rsort();
+    var gt = require_gt();
+    var lt = require_lt();
+    var eq = require_eq();
+    var neq = require_neq();
+    var gte = require_gte();
+    var lte = require_lte();
+    var cmp = require_cmp();
+    var coerce2 = require_coerce();
+    var Comparator = require_comparator();
+    var Range = require_range();
+    var satisfies = require_satisfies();
+    var toComparators = require_to_comparators();
+    var maxSatisfying = require_max_satisfying();
+    var minSatisfying = require_min_satisfying();
+    var minVersion = require_min_version();
+    var validRange = require_valid2();
+    var outside = require_outside();
+    var gtr = require_gtr();
+    var ltr = require_ltr();
+    var intersects = require_intersects();
+    var simplifyRange = require_simplify();
+    var subset = require_subset();
+    module.exports = {
+      parse: parse2,
+      valid,
+      clean,
+      inc,
+      diff: diff2,
+      major,
+      minor,
+      patch,
+      prerelease,
+      compare,
+      rcompare,
+      compareLoose,
+      compareBuild,
+      sort,
+      rsort,
+      gt,
+      lt,
+      eq,
+      neq,
+      gte,
+      lte,
+      cmp,
+      coerce: coerce2,
+      Comparator,
+      Range,
+      satisfies,
+      toComparators,
+      maxSatisfying,
+      minSatisfying,
+      minVersion,
+      validRange,
+      outside,
+      gtr,
+      ltr,
+      intersects,
+      simplifyRange,
+      subset,
+      SemVer: SemVer5,
+      re: internalRe.re,
+      src: internalRe.src,
+      tokens: internalRe.t,
+      SEMVER_SPEC_VERSION: constants2.SEMVER_SPEC_VERSION,
+      RELEASE_TYPES: constants2.RELEASE_TYPES,
+      compareIdentifiers: identifiers.compareIdentifiers,
+      rcompareIdentifiers: identifiers.rcompareIdentifiers
+    };
+  }
+});
+
+// ../server/helpers/fs-reader.js
+var require_fs_reader = __commonJS({
+  "../server/helpers/fs-reader.js"(exports, module) {
+    "use strict";
+    init_cjs_shim();
+    var fs3 = __require("fs");
+    function getLines(file, lines, callback) {
+      fs3.stat(file, function(err, stats) {
+        if (err)
+          return callback(err);
+        if (!lines)
+          return fs3.readFile(file, callback);
+        var fileSize = stats.size;
+        if (fileSize <= 0)
+          return callback(void 0, "");
+        var bufferSize = 1024 * 64;
+        var data = "";
+        var position;
+        var getRemainingFileSize, getReadStartPosition, getNextNewline, getRestOfStringPos, recordAndGetLeftoverData, updatePosition, addMoreNoticeToFile;
+        if (lines > 0) {
+          position = 0;
+          getRemainingFileSize = function() {
+            return fileSize - position;
+          };
+          getReadStartPosition = function(buffer) {
+            return position;
+          };
+          getNextNewline = function(str) {
+            return str.indexOf("\n");
+          };
+          getRestOfStringPos = function(str) {
+            return str.length;
+          };
+          recordAndGetLeftoverData = function(newData, snipPos) {
+            data += newData.substring(0, snipPos + 1);
+            return newData.substring(snipPos + 1);
+          };
+          updatePosition = function(buffer) {
+            position += buffer.length;
+          };
+          addMoreNoticeToFile = function(data2) {
+            return data2 + "<<< more >>> ...";
+          };
+        } else {
+          lines = -lines;
+          position = fileSize;
+          getRemainingFileSize = function() {
+            return fileSize - (fileSize - position);
+          };
+          getReadStartPosition = function(buffer) {
+            return position - buffer.length;
+          };
+          getNextNewline = function(str) {
+            return str.lastIndexOf("\n");
+          };
+          getRestOfStringPos = function(str) {
+            return 0;
+          };
+          recordAndGetLeftoverData = function(newData, snipPos) {
+            data = newData.substring(snipPos) + data;
+            return newData.substring(0, snipPos);
+          };
+          updatePosition = function(buffer) {
+            position -= buffer.length;
+          };
+          addMoreNoticeToFile = function(data2) {
+            return "... <<< more >>>" + data2;
+          };
+        }
+        var readLines2 = 0;
+        fs3.open(file, "r", function(err2, stream) {
+          if (err2)
+            return callback(err2);
+          function read() {
+            var length = getRemainingFileSize();
+            if (length <= 0)
+              return callback(void 0, data);
+            var buffer = Buffer.alloc(bufferSize > length ? length : bufferSize);
+            fs3.read(stream, buffer, 0, buffer.length, getReadStartPosition(buffer), function(err3, numRead, buffer2) {
+              var newData = buffer2.toString("utf8", 0, buffer2.length);
+              do {
+                var snipPos = getNextNewline(newData);
+                if (snipPos >= 0)
+                  readLines2++;
+                else
+                  snipPos = getRestOfStringPos(newData);
+                newData = recordAndGetLeftoverData(newData, snipPos);
+              } while (readLines2 < lines && newData.length > 0);
+              if (readLines2 < lines) {
+                updatePosition(buffer2);
+                read();
+              } else {
+                callback(void 0, addMoreNoticeToFile(data));
+              }
+            });
+          }
+          read();
+        });
+      });
+    }
+    module.exports = getLines;
+  }
+});
+
+// ../node_modules/.pnpm/runes@0.4.3/node_modules/runes/index.js
+var require_runes = __commonJS({
+  "../node_modules/.pnpm/runes@0.4.3/node_modules/runes/index.js"(exports, module) {
+    "use strict";
+    init_cjs_shim();
+    var HIGH_SURROGATE_START = 55296;
+    var HIGH_SURROGATE_END = 56319;
+    var LOW_SURROGATE_START = 56320;
+    var REGIONAL_INDICATOR_START = 127462;
+    var REGIONAL_INDICATOR_END = 127487;
+    var FITZPATRICK_MODIFIER_START = 127995;
+    var FITZPATRICK_MODIFIER_END = 127999;
+    var VARIATION_MODIFIER_START = 65024;
+    var VARIATION_MODIFIER_END = 65039;
+    var DIACRITICAL_MARKS_START = 8400;
+    var DIACRITICAL_MARKS_END = 8447;
+    var ZWJ = 8205;
+    var GRAPHEMS = [
+      776,
+      // ( ◌̈ ) COMBINING DIAERESIS
+      2359,
+      // ( ष ) DEVANAGARI LETTER SSA
+      2359,
+      // ( ष ) DEVANAGARI LETTER SSA
+      2367,
+      // ( ि ) DEVANAGARI VOWEL SIGN I
+      2367,
+      // ( ि ) DEVANAGARI VOWEL SIGN I
+      2984,
+      // ( ந ) TAMIL LETTER NA
+      3007,
+      // ( ி ) TAMIL VOWEL SIGN I
+      3021,
+      // ( ◌்) TAMIL SIGN VIRAMA
+      3633,
+      // ( ◌ั ) THAI CHARACTER MAI HAN-AKAT
+      3635,
+      // ( ำ ) THAI CHARACTER SARA AM
+      3648,
+      // ( เ ) THAI CHARACTER SARA E
+      3657,
+      // ( เ ) THAI CHARACTER MAI THO
+      4352,
+      // ( ᄀ ) HANGUL CHOSEONG KIYEOK
+      4449,
+      // ( ᅡ ) HANGUL JUNGSEONG A
+      4520
+      // ( ᆨ ) HANGUL JONGSEONG KIYEOK
+    ];
+    function runes(string) {
+      if (typeof string !== "string") {
+        throw new Error("string cannot be undefined or null");
+      }
+      const result = [];
+      let i = 0;
+      let increment = 0;
+      while (i < string.length) {
+        increment += nextUnits(i + increment, string);
+        if (isGraphem(string[i + increment])) {
+          increment++;
+        }
+        if (isVariationSelector(string[i + increment])) {
+          increment++;
+        }
+        if (isDiacriticalMark(string[i + increment])) {
+          increment++;
+        }
+        if (isZeroWidthJoiner(string[i + increment])) {
+          increment++;
+          continue;
+        }
+        result.push(string.substring(i, i + increment));
+        i += increment;
+        increment = 0;
+      }
+      return result;
+    }
+    function nextUnits(i, string) {
+      const current = string[i];
+      if (!isFirstOfSurrogatePair(current) || i === string.length - 1) {
+        return 1;
+      }
+      const currentPair = current + string[i + 1];
+      let nextPair = string.substring(i + 2, i + 5);
+      if (isRegionalIndicator(currentPair) && isRegionalIndicator(nextPair)) {
+        return 4;
+      }
+      if (isFitzpatrickModifier(nextPair)) {
+        return 4;
+      }
+      return 2;
+    }
+    function isFirstOfSurrogatePair(string) {
+      return string && betweenInclusive(string[0].charCodeAt(0), HIGH_SURROGATE_START, HIGH_SURROGATE_END);
+    }
+    function isRegionalIndicator(string) {
+      return betweenInclusive(codePointFromSurrogatePair(string), REGIONAL_INDICATOR_START, REGIONAL_INDICATOR_END);
+    }
+    function isFitzpatrickModifier(string) {
+      return betweenInclusive(codePointFromSurrogatePair(string), FITZPATRICK_MODIFIER_START, FITZPATRICK_MODIFIER_END);
+    }
+    function isVariationSelector(string) {
+      return typeof string === "string" && betweenInclusive(string.charCodeAt(0), VARIATION_MODIFIER_START, VARIATION_MODIFIER_END);
+    }
+    function isDiacriticalMark(string) {
+      return typeof string === "string" && betweenInclusive(string.charCodeAt(0), DIACRITICAL_MARKS_START, DIACRITICAL_MARKS_END);
+    }
+    function isGraphem(string) {
+      return typeof string === "string" && GRAPHEMS.indexOf(string.charCodeAt(0)) !== -1;
+    }
+    function isZeroWidthJoiner(string) {
+      return typeof string === "string" && string.charCodeAt(0) === ZWJ;
+    }
+    function codePointFromSurrogatePair(pair) {
+      const highOffset = pair.charCodeAt(0) - HIGH_SURROGATE_START;
+      const lowOffset = pair.charCodeAt(1) - LOW_SURROGATE_START;
+      return (highOffset << 10) + lowOffset + 65536;
+    }
+    function betweenInclusive(value, lower, upper) {
+      return value >= lower && value <= upper;
+    }
+    function substring(string, start, width) {
+      const chars = runes(string);
+      if (start === void 0) {
+        return string;
+      }
+      if (start >= chars.length) {
+        return "";
+      }
+      const rest = chars.length - start;
+      const stringWidth2 = width === void 0 ? rest : width;
+      let endIndex = start + stringWidth2;
+      if (endIndex > start + rest) {
+        endIndex = void 0;
+      }
+      return chars.slice(start, endIndex).join("");
+    }
+    module.exports = runes;
+    module.exports.substr = substring;
+  }
+});
+
+// ../node_modules/.pnpm/ansi-regex@5.0.1/node_modules/ansi-regex/index.js
+var require_ansi_regex = __commonJS({
+  "../node_modules/.pnpm/ansi-regex@5.0.1/node_modules/ansi-regex/index.js"(exports, module) {
+    "use strict";
+    init_cjs_shim();
+    module.exports = ({ onlyFirst = false } = {}) => {
+      const pattern = [
+        "[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)",
+        "(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))"
+      ].join("|");
+      return new RegExp(pattern, onlyFirst ? void 0 : "g");
+    };
+  }
+});
+
+// ../node_modules/.pnpm/strip-ansi@6.0.1/node_modules/strip-ansi/index.js
+var require_strip_ansi = __commonJS({
+  "../node_modules/.pnpm/strip-ansi@6.0.1/node_modules/strip-ansi/index.js"(exports, module) {
+    "use strict";
+    init_cjs_shim();
+    var ansiRegex3 = require_ansi_regex();
+    module.exports = (string) => typeof string === "string" ? string.replace(ansiRegex3(), "") : string;
+  }
+});
+
+// ../node_modules/.pnpm/char-regex@1.0.2/node_modules/char-regex/index.js
+var require_char_regex = __commonJS({
+  "../node_modules/.pnpm/char-regex@1.0.2/node_modules/char-regex/index.js"(exports, module) {
+    "use strict";
+    init_cjs_shim();
+    module.exports = () => {
+      const astralRange = "\\ud800-\\udfff";
+      const comboMarksRange = "\\u0300-\\u036f";
+      const comboHalfMarksRange = "\\ufe20-\\ufe2f";
+      const comboSymbolsRange = "\\u20d0-\\u20ff";
+      const comboMarksExtendedRange = "\\u1ab0-\\u1aff";
+      const comboMarksSupplementRange = "\\u1dc0-\\u1dff";
+      const comboRange = comboMarksRange + comboHalfMarksRange + comboSymbolsRange + comboMarksExtendedRange + comboMarksSupplementRange;
+      const varRange = "\\ufe0e\\ufe0f";
+      const familyRange = "\\uD83D\\uDC69\\uD83C\\uDFFB\\u200D\\uD83C\\uDF93";
+      const astral = `[${astralRange}]`;
+      const combo = `[${comboRange}]`;
+      const fitz = "\\ud83c[\\udffb-\\udfff]";
+      const modifier = `(?:${combo}|${fitz})`;
+      const nonAstral = `[^${astralRange}]`;
+      const regional = "(?:\\uD83C[\\uDDE6-\\uDDFF]){2}";
+      const surrogatePair = "[\\ud800-\\udbff][\\udc00-\\udfff]";
+      const zwj = "\\u200d";
+      const blackFlag = "(?:\\ud83c\\udff4\\udb40\\udc67\\udb40\\udc62\\udb40(?:\\udc65|\\udc73|\\udc77)\\udb40(?:\\udc6e|\\udc63|\\udc6c)\\udb40(?:\\udc67|\\udc74|\\udc73)\\udb40\\udc7f)";
+      const family = `[${familyRange}]`;
+      const optModifier = `${modifier}?`;
+      const optVar = `[${varRange}]?`;
+      const optJoin = `(?:${zwj}(?:${[nonAstral, regional, surrogatePair].join("|")})${optVar + optModifier})*`;
+      const seq = optVar + optModifier + optJoin;
+      const nonAstralCombo = `${nonAstral}${combo}?`;
+      const symbol = `(?:${[nonAstralCombo, combo, regional, surrogatePair, astral, family].join("|")})`;
+      return new RegExp(`${blackFlag}|${fitz}(?=${fitz})|${symbol + seq}`, "g");
+    };
+  }
+});
+
+// ../node_modules/.pnpm/string-length@4.0.0/node_modules/string-length/index.js
+var require_string_length = __commonJS({
+  "../node_modules/.pnpm/string-length@4.0.0/node_modules/string-length/index.js"(exports, module) {
+    "use strict";
+    init_cjs_shim();
+    var stripAnsi2 = require_strip_ansi();
+    var charRegex = require_char_regex();
+    var stringLength = (string) => stripAnsi2(string).match(charRegex()).length;
+    module.exports = stringLength;
+  }
+});
+
+// ../node_modules/.pnpm/@shelf+fast-chunk-string@3.0.0/node_modules/@shelf/fast-chunk-string/lib/index.js
+var require_lib5 = __commonJS({
+  "../node_modules/.pnpm/@shelf+fast-chunk-string@3.0.0/node_modules/@shelf/fast-chunk-string/lib/index.js"(exports, module) {
+    "use strict";
+    init_cjs_shim();
+    Object.defineProperty(exports, "__esModule", {
+      value: true
+    });
+    exports.default = fastChunkString2;
+    var _runes = _interopRequireDefault(require_runes());
+    var _stringLength = _interopRequireDefault(require_string_length());
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+    function fastChunkString2(str, {
+      size,
+      unicodeAware = false
+    }) {
+      str = str || "";
+      if (!unicodeAware) {
+        return getChunks(str, size);
+      }
+      return getChunksUnicode(str, size);
+    }
+    function getChunks(str, size) {
+      const strLength = str.length;
+      const numChunks = Math.ceil(strLength / size);
+      const chunks = new Array(numChunks);
+      let i = 0;
+      let o = 0;
+      for (; i < numChunks; ++i, o += size) {
+        chunks[i] = str.substr(o, size);
+      }
+      return chunks;
+    }
+    function getChunksUnicode(str, size) {
+      const strLength = (0, _stringLength.default)(str);
+      const numChunks = Math.ceil(strLength / size);
+      const chunks = new Array(numChunks);
+      let i = 0;
+      let o = 0;
+      const runeChars = (0, _runes.default)(str);
+      for (; i < numChunks; ++i, o += size) {
+        chunks[i] = runeChars.slice(o, o + size).join("");
+      }
+      return chunks;
+    }
+    module.exports = fastChunkString2;
+  }
+});
+
+// ../node_modules/.pnpm/ring-buffer-ts@1.2.0/node_modules/ring-buffer-ts/dist/index.js
+var require_dist = __commonJS({
+  "../node_modules/.pnpm/ring-buffer-ts@1.2.0/node_modules/ring-buffer-ts/dist/index.js"(exports, module) {
+    init_cjs_shim();
+    !function(e, t) {
+      if ("object" == typeof exports && "object" == typeof module)
+        module.exports = t();
+      else if ("function" == typeof define && define.amd)
+        define([], t);
+      else {
+        var r = t();
+        for (var s2 in r)
+          ("object" == typeof exports ? exports : e)[s2] = r[s2];
+      }
+    }(exports, () => (() => {
+      "use strict";
+      var e = { d: (t2, r2) => {
+        for (var s2 in r2)
+          e.o(r2, s2) && !e.o(t2, s2) && Object.defineProperty(t2, s2, { enumerable: true, get: r2[s2] });
+      }, o: (e2, t2) => Object.prototype.hasOwnProperty.call(e2, t2), r: (e2) => {
+        "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e2, Symbol.toStringTag, { value: "Module" }), Object.defineProperty(e2, "__esModule", { value: true });
+      } }, t = {};
+      e.r(t), e.d(t, { RingBuffer: () => r });
+      class r {
+        static fromArray(e2, t2 = 0) {
+          const s2 = new r(t2);
+          return s2.fromArray(e2, 0 === t2), s2;
+        }
+        constructor(e2) {
+          if (this.buffer = [], this.pos = 0, e2 < 0)
+            throw new RangeError("Invalid size.");
+          this.size = e2;
+        }
+        getSize() {
+          return this.size;
+        }
+        getPos() {
+          return this.pos;
+        }
+        getBufferLength() {
+          return this.buffer.length;
+        }
+        add(...e2) {
+          e2.forEach((e3) => {
+            this.buffer[this.pos] = e3, this.pos = (this.pos + 1) % this.size;
+          });
+        }
+        get(e2) {
+          if (e2 < 0 && (e2 += this.buffer.length), !(e2 < 0 || e2 > this.buffer.length))
+            return this.buffer.length < this.size ? this.buffer[e2] : this.buffer[(this.pos + e2) % this.size];
+        }
+        getFirst() {
+          return this.get(0);
+        }
+        getLast() {
+          return this.get(-1);
+        }
+        getFirstN(e2) {
+          return 0 === e2 ? [] : e2 < 0 ? this.getLastN(-e2) : this.toArray().slice(0, e2);
+        }
+        getLastN(e2) {
+          return 0 === e2 ? [] : e2 < 0 ? this.getFirstN(-e2) : this.toArray().slice(-e2);
+        }
+        remove(e2, t2 = 1) {
+          if (e2 < 0 && (e2 += this.buffer.length), e2 < 0 || e2 > this.buffer.length)
+            return [];
+          const r2 = this.toArray(), s2 = r2.splice(e2, t2);
+          return this.fromArray(r2), s2;
+        }
+        removeFirst() {
+          return this.remove(0)[0];
+        }
+        removeLast() {
+          return this.remove(-1)[0];
+        }
+        toArray() {
+          return this.buffer.slice(this.pos).concat(this.buffer.slice(0, this.pos));
+        }
+        fromArray(e2, t2 = false) {
+          if (!Array.isArray(e2))
+            throw new TypeError("Input value is not an array.");
+          t2 && this.resize(e2.length), 0 !== this.size && (this.buffer = e2.slice(-this.size), this.pos = this.buffer.length % this.size);
+        }
+        clear() {
+          this.buffer = [], this.pos = 0;
+        }
+        resize(e2) {
+          if (e2 < 0)
+            throw new RangeError("The size does not allow negative values.");
+          if (0 === e2)
+            this.clear();
+          else if (e2 !== this.size) {
+            const t2 = this.toArray();
+            this.fromArray(t2.slice(-e2)), this.pos = this.buffer.length % e2;
+          }
+          this.size = e2;
+        }
+        isFull() {
+          return this.buffer.length === this.size;
+        }
+        isEmpty() {
+          return 0 === this.buffer.length;
+        }
+      }
+      return t;
+    })());
+  }
+});
+
 // ../node_modules/.pnpm/split2@4.2.0/node_modules/split2/index.js
 var require_split2 = __commonJS({
   "../node_modules/.pnpm/split2@4.2.0/node_modules/split2/index.js"(exports, module) {
     "use strict";
     init_cjs_shim();
-    var { Transform: Transform4 } = __require("stream");
+    var { Transform: Transform5 } = __require("stream");
     var { StringDecoder } = __require("string_decoder");
     var kLast = Symbol("last");
     var kDecoder = Symbol("decoder");
@@ -75973,7 +76239,7 @@ var require_split2 = __commonJS({
       options.transform = transform;
       options.flush = flush;
       options.readableObjectMode = true;
-      const stream = new Transform4(options);
+      const stream = new Transform5(options);
       stream[kLast] = "";
       stream[kDecoder] = new StringDecoder("utf8");
       stream.matcher = matcher;
@@ -86097,36 +86363,36 @@ init_cjs_shim();
 // ../node_modules/.pnpm/zod@3.22.4/node_modules/zod/lib/index.mjs
 init_cjs_shim();
 var util;
-(function(util3) {
-  util3.assertEqual = (val) => val;
+(function(util4) {
+  util4.assertEqual = (val) => val;
   function assertIs(_arg) {
   }
-  util3.assertIs = assertIs;
+  util4.assertIs = assertIs;
   function assertNever(_x) {
     throw new Error();
   }
-  util3.assertNever = assertNever;
-  util3.arrayToEnum = (items) => {
+  util4.assertNever = assertNever;
+  util4.arrayToEnum = (items) => {
     const obj = {};
     for (const item of items) {
       obj[item] = item;
     }
     return obj;
   };
-  util3.getValidEnumValues = (obj) => {
-    const validKeys = util3.objectKeys(obj).filter((k) => typeof obj[obj[k]] !== "number");
+  util4.getValidEnumValues = (obj) => {
+    const validKeys = util4.objectKeys(obj).filter((k) => typeof obj[obj[k]] !== "number");
     const filtered = {};
     for (const k of validKeys) {
       filtered[k] = obj[k];
     }
-    return util3.objectValues(filtered);
+    return util4.objectValues(filtered);
   };
-  util3.objectValues = (obj) => {
-    return util3.objectKeys(obj).map(function(e) {
+  util4.objectValues = (obj) => {
+    return util4.objectKeys(obj).map(function(e) {
       return obj[e];
     });
   };
-  util3.objectKeys = typeof Object.keys === "function" ? (obj) => Object.keys(obj) : (object) => {
+  util4.objectKeys = typeof Object.keys === "function" ? (obj) => Object.keys(obj) : (object) => {
     const keys = [];
     for (const key in object) {
       if (Object.prototype.hasOwnProperty.call(object, key)) {
@@ -86135,19 +86401,19 @@ var util;
     }
     return keys;
   };
-  util3.find = (arr, checker) => {
+  util4.find = (arr, checker) => {
     for (const item of arr) {
       if (checker(item))
         return item;
     }
     return void 0;
   };
-  util3.isInteger = typeof Number.isInteger === "function" ? (val) => Number.isInteger(val) : (val) => typeof val === "number" && isFinite(val) && Math.floor(val) === val;
+  util4.isInteger = typeof Number.isInteger === "function" ? (val) => Number.isInteger(val) : (val) => typeof val === "number" && isFinite(val) && Math.floor(val) === val;
   function joinValues(array, separator = " | ") {
     return array.map((val) => typeof val === "string" ? `'${val}'` : val).join(separator);
   }
-  util3.joinValues = joinValues;
-  util3.jsonStringifyReplacer = (_2, value) => {
+  util4.joinValues = joinValues;
+  util4.jsonStringifyReplacer = (_2, value) => {
     if (typeof value === "bigint") {
       return value.toString();
     }
@@ -90760,93 +91026,14 @@ init_cjs_shim();
 
 // ../server/gcode-processor/gcode-processor.ts
 init_cjs_shim();
+var import_progress_stream = __toESM(require_progress_stream());
+import { existsSync as existsSync5 } from "node:fs";
+import { access, constants, stat } from "node:fs/promises";
+import path6 from "node:path";
 
-// ../server/gcode-processor/GCodeProcessor.ts
+// ../server/gcode-processor/GCodeFile.ts
 init_cjs_shim();
-
-// ../server/gcode-processor/ActionSequence.ts
-init_cjs_shim();
-var kActionResultNonFlagMask = (1 << 8) - 1;
-var ActionSubSequence = class {
-  constructor(entryAction, sequence) {
-    this.entryAction = entryAction;
-    this.sequence = sequence;
-  }
-};
-function subSequence(entryAction, sequence) {
-  return new ActionSubSequence(entryAction, sequence);
-}
-function executeActionSequence(actions, invoke) {
-  let idx = 0;
-  while (idx < actions.length) {
-    let item = actions[idx];
-    let action = void 0;
-    let subseq = void 0;
-    let ret = void 0;
-    if (item instanceof ActionSubSequence) {
-      action = item.entryAction;
-      subseq = item.sequence;
-    } else {
-      action = item;
-    }
-    ret = invoke(action);
-    let result;
-    if (Array.isArray(ret)) {
-      result = ret[0];
-      if (subseq) {
-        if (ret[1] instanceof ActionSubSequence) {
-          actions[idx] = ret[1];
-        } else {
-          if ((result & 512 /* flagReplaceEntryAction */) > 0) {
-            item.entryAction = ret[1];
-          } else {
-            actions[idx] = ret[1];
-          }
-        }
-      } else {
-        actions[idx] = ret[1];
-      }
-    } else {
-      result = ret;
-    }
-    if (subseq && subseq.length > 0 && (result & 256 /* flagSkipSubSequence */) == 0) {
-      executeActionSequence(subseq, invoke);
-    }
-    switch (result & kActionResultNonFlagMask) {
-      case 0 /* Continue */:
-        ++idx;
-        break;
-      case 2 /* Stop */:
-        return;
-      case 1 /* RemoveAndContinue */:
-        actions.splice(idx, 1);
-        break;
-      case 3 /* RemoveAndStop */:
-        actions.splice(idx, 1);
-        return;
-    }
-  }
-}
-
-// ../server/gcode-processor/SlidingWindowLineProcessor.ts
-init_cjs_shim();
-var import_ring_buffer_ts = __toESM(require_dist());
-import { Transform as Transform2 } from "node:stream";
-
-// ../server/gcode-processor/Bookmark.ts
-init_cjs_shim();
-var Bookmark = class {
-  constructor(originalLine, byteOffset, byteLength) {
-    this.originalLine = originalLine;
-    this.byteOffset = byteOffset;
-    this.byteLength = byteLength;
-  }
-};
-var BookmarkableLine = class {
-  constructor(line) {
-    this.line = line;
-  }
-};
+var import_semver5 = __toESM(require_semver2());
 
 // ../server/gcode-processor/errors.ts
 init_cjs_shim();
@@ -90874,242 +91061,6 @@ var GCodeError = class extends GCodeProcessorError {
     this.lineNumber = lineNumber;
   }
 };
-
-// ../server/gcode-processor/SlidingWindowLineProcessor.ts
-var ProcessorLine = class extends BookmarkableLine {
-  constructor() {
-    super(...arguments);
-    this.emit = true;
-  }
-};
-var ProcessLineContext = class {
-  constructor(item, getLineContextOrUndefined, offset2) {
-    this.#item = item;
-    this.#getLineOrUndefined = getLineContextOrUndefined;
-    this.#offset = offset2;
-  }
-  #getLineOrUndefined;
-  #item;
-  #offset;
-  get offset() {
-    return this.#offset;
-  }
-  get line() {
-    return this.#item.line;
-  }
-  set line(value) {
-    this.#item.line = value;
-  }
-  /** Prepend a prefix to the line. */
-  prepend(prefix) {
-    if (prefix) {
-      this.#item.line = prefix + this.#item.line;
-    }
-  }
-  /** Should this line be emitted to output? */
-  get emit() {
-    return this.#item.emit;
-  }
-  /** Should this line be emitted to output? */
-  set emit(value) {
-    this.#item.emit = value;
-  }
-  get bookmarkKey() {
-    return this.#item.bookmarkKey;
-  }
-  set bookmarkKey(key) {
-    if (this.#item.bookmarkKey === void 0) {
-      this.#item.bookmarkKey = key;
-    } else {
-      throw new Error("The bookmark key has already been set and cannot be changed.");
-    }
-  }
-  getLine(offset2) {
-    if (offset2 == 0) {
-      return this;
-    }
-    let ctx = this.#getLineOrUndefined(this.#offset + offset2);
-    if (ctx) {
-      return ctx;
-    }
-    throw new RangeError("The specified offset is outside the available window.");
-  }
-  getLineOrUndefined(offset2) {
-    if (offset2 == 0) {
-      return this;
-    }
-    return this.#getLineOrUndefined(this.#offset + offset2);
-  }
-  *scanForward(maxOffset) {
-    let offset2 = 1;
-    while (!maxOffset || offset2 <= maxOffset) {
-      const offsetLine = this.#getLineOrUndefined(this.#offset + offset2);
-      if (!offsetLine) {
-        return;
-      }
-      yield offsetLine;
-      ++offset2;
-    }
-  }
-  *scanBack(maxOffset) {
-    let offset2 = 1;
-    while (!maxOffset || offset2 <= maxOffset) {
-      const offsetLine = this.#getLineOrUndefined(this.#offset - offset2);
-      if (!offsetLine) {
-        return;
-      }
-      yield offsetLine;
-      ++offset2;
-    }
-  }
-};
-var SlidingWindowLineProcessor = class extends Transform2 {
-  constructor(maxLinesAhead = 10, maxLinesBehind = 10, abortSignal) {
-    super({ objectMode: true });
-    this.maxLinesAhead = maxLinesAhead;
-    this.maxLinesBehind = maxLinesBehind;
-    this.#abortSignal = abortSignal;
-    this.#buf = new import_ring_buffer_ts.RingBuffer(maxLinesBehind + maxLinesAhead + 1);
-  }
-  #abortSignal;
-  /**
-   * The current position within `#buf`. When the window is primed and streaming
-   * is well underway, `#position` will always be `maxLinesBehind`. During initial priming,
-   * `#position` can be less than `maxLinesBehind`, and while processing the end of
-   * the stream in `_flush`, `#position` can be greater than `maxLinesBehind`.
-   */
-  #position = -1;
-  #buf;
-  #getLineContext(offset2) {
-    let p = this.#position + offset2;
-    if (p < 0 || p >= this.#buf.getBufferLength()) {
-      return void 0;
-    }
-    return new ProcessLineContext(this.#buf.get(p), this.#getLineContextClosure, offset2);
-  }
-  #getLineContextClosure = (offset2) => this.#getLineContext(offset2);
-  _transform(chunk, encoding, callback) {
-    if (this.#abortSignal?.aborted) {
-      callback(this.#abortSignal.reason);
-      return;
-    }
-    if (typeof chunk !== "string") {
-      return callback(new InternalError("chunk must be a string"));
-    }
-    if (!this.#buf.isFull()) {
-      this.#buf.add(new ProcessorLine(chunk));
-      if (!this.#buf.isFull()) {
-        return callback();
-      }
-    }
-    if (this.#position == -1) {
-      while (this.#position < this.maxLinesBehind) {
-        ++this.#position;
-        try {
-          this._processLine(this.#getLineContext(0));
-        } catch (err) {
-          if (err instanceof Error) {
-            return callback(err);
-          } else {
-            return callback(new Error("Unrecognized error, see cause.", { cause: err }));
-          }
-        }
-      }
-      return callback();
-    }
-    if (this.#position != this.maxLinesBehind) {
-      return callback(new InternalError("Unexpected state!"));
-    }
-    const itemToPush = this.#buf.get(0);
-    this.#buf.add(new ProcessorLine(chunk));
-    try {
-      this._processLine(this.#getLineContext(0));
-    } catch (err) {
-      if (err instanceof Error) {
-        return callback(err);
-      } else {
-        return callback(new Error("Unrecognized error, see cause.", { cause: err }));
-      }
-    }
-    if (itemToPush.emit) {
-      this.push(itemToPush);
-    }
-    callback();
-  }
-  _flush(callback) {
-    if (this.#abortSignal?.aborted) {
-      callback(this.#abortSignal.reason);
-      return;
-    }
-    while (this.#position < this.#buf.getBufferLength() - 1) {
-      ++this.#position;
-      try {
-        this._processLine(this.#getLineContext(0));
-      } catch (err) {
-        if (err instanceof Error) {
-          return callback(err);
-        } else {
-          return callback(new Error("Unrecognized error, see cause.", { cause: err }));
-        }
-      }
-    }
-    for (let index = 0; index < this.#buf.getBufferLength(); ++index) {
-      const itemToPush = this.#buf.get(index);
-      if (itemToPush.emit) {
-        this.push(itemToPush);
-      }
-    }
-    callback();
-  }
-};
-
-// ../server/gcode-processor/GCodeInfo.ts
-init_cjs_shim();
-
-// ../server/gcode-processor/helpers.ts
-init_cjs_shim();
-var import_semver = __toESM(require_semver2());
-import { promisify } from "node:util";
-import { exec as exec2 } from "child_process";
-
-// ../server/helpers/logger.ts
-init_cjs_shim();
-var import_pino2 = __toESM(require_pino());
-var logger2 = null;
-var getLogger2 = () => {
-  if (logger2 != null) {
-    return logger2;
-  }
-  const environment = serverSchema.parse(process.env);
-  const transportOption = process.env.NODE_ENV === "development" ? void 0 : {
-    target: "pino/file",
-    options: { destination: environment.LOG_FILE, append: true }
-  };
-  logger2 = (0, import_pino2.default)({ ...globalPinoOpts, transport: transportOption });
-  return logger2;
-};
-
-// ../server/gcode-processor/helpers.ts
-var parsedVersion = null;
-async function getConfiguratorVersion() {
-  let v = "__not_set__";
-  try {
-    v = await promisify(exec2)("git describe --tags --always", {
-      cwd: process.env.RATOS_SCRIPT_DIR
-    }).then(({ stdout }) => stdout.trim());
-    parsedVersion = new import_semver.SemVer(v);
-  } catch (e) {
-    getLogger2().error("Failed to get RatOS-configurator version", { versionString: v, error: e });
-    return new import_semver.SemVer("2.0.2");
-  }
-  return parsedVersion;
-}
-function exactlyOneBitSet(integer) {
-  return integer != 0 && (integer & integer - 1) == 0;
-}
-
-// ../server/gcode-processor/GCodeInfo.ts
-var import_semver2 = __toESM(require_semver2());
 
 // ../node_modules/.pnpm/date-and-time@3.5.0/node_modules/date-and-time/esm/date-and-time.mjs
 init_cjs_shim();
@@ -91525,120 +91476,334 @@ date.plugin = function(plugin) {
 };
 var date$1 = date;
 
+// ../server/gcode-processor/GCodeFile.ts
+var import_fs_reader2 = __toESM(require_fs_reader());
+var import_fast_chunk_string = __toESM(require_lib5());
+import util3 from "node:util";
+
 // ../server/gcode-processor/GCodeInfo.ts
+init_cjs_shim();
 var import_fs_reader = __toESM(require_fs_reader());
 import util2 from "node:util";
+var GCodeFlavour = /* @__PURE__ */ ((GCodeFlavour2) => {
+  GCodeFlavour2[GCodeFlavour2["Unknown"] = 0] = "Unknown";
+  GCodeFlavour2[GCodeFlavour2["PrusaSlicer"] = 1] = "PrusaSlicer";
+  GCodeFlavour2[GCodeFlavour2["OrcaSlicer"] = 2] = "OrcaSlicer";
+  GCodeFlavour2[GCodeFlavour2["SuperSlicer"] = 4] = "SuperSlicer";
+  GCodeFlavour2[GCodeFlavour2["RatOS"] = 8] = "RatOS";
+  GCodeFlavour2[GCodeFlavour2["Any"] = 65535] = "Any";
+  return GCodeFlavour2;
+})(GCodeFlavour || {});
 var fsReaderGetLines = util2.promisify(import_fs_reader.default);
-var GCodeInfo = class _GCodeInfo {
-  constructor(generator, generatorVersion, flavour, generatorTimestamp, ratosDialectVersion, processedByRatOSVersion, processedByRatOSTimestamp) {
+var MutableGCodeInfo = class {
+  constructor(generator, generatorVersion, flavour, generatorTimestamp, ratosDialectVersion, postProcessorVersion, postProcessorTimestamp, analysisResult, fileFormatVersion, ratosMetaFileOffset, processedForIdex) {
     this.generator = generator;
     this.generatorVersion = generatorVersion;
     this.flavour = flavour;
     this.generatorTimestamp = generatorTimestamp;
     this.ratosDialectVersion = ratosDialectVersion;
-    this.processedByRatOSVersion = processedByRatOSVersion;
-    this.processedByRatOSTimestamp = processedByRatOSTimestamp;
+    this.postProcessorVersion = postProcessorVersion;
+    this.postProcessorTimestamp = postProcessorTimestamp;
+    this.analysisResult = analysisResult;
+    this.fileFormatVersion = fileFormatVersion;
+    this.ratosMetaFileOffset = ratosMetaFileOffset;
+    this.processedForIdex = processedForIdex;
   }
-  static {
-    /** The placeholder version used to represent files transformed by the legacy ratos.py post processor. */
-    this.LEGACY_RATOS_VERSION = new import_semver2.SemVer("1.0.0-legacy");
-  }
-  /**
-   * Parses header information from the specified file. This method will also detect files already processed by the legacy Python-based post processor.
-   * */
-  static async fromFile(path9) {
-    const tail = await fsReaderGetLines(path9, -3);
-    const isAlreadyLegacyProcessed = /^; processed by RatOS($|\s)/im.test(tail);
-    const header = await fsReaderGetLines(path9, 4);
-    return _GCodeInfo.#tryParseHeader(header, isAlreadyLegacyProcessed);
-  }
-  /**
-   * Parses header (top of file) comments. This method will not detect files already processed by the legacy Python-based post processor.
-   * @param header One or more newline-separated lines from the start of a gcode file. Normally, at least the first three lines should be provided.
-   */
-  static tryParseHeader(header) {
-    return _GCodeInfo.#tryParseHeader(header);
-  }
-  static #tryParseHeader(header, isAlreadyLegacyProcessed = false) {
-    let match2 = /^; generated (by|with) (?<GENERATOR>[^\s]+) (?<VERSION>[^\s]+) (in RatOS dialect (?<RATOS_DIALECT_VERSION>[^\s]+) )?on (?<DATE>[^\s]+) at (?<TIME>.*)$/im.exec(
-      header
-    );
-    if (match2) {
-      let flavour = 0 /* Unknown */;
-      let ratosDialectVersion = void 0;
-      switch (match2.groups?.GENERATOR?.toLowerCase()) {
-        case "prusaslicer":
-          flavour = 1 /* PrusaSlicer */;
-          break;
-        case "orcaslicer":
-          flavour = 2 /* OrcaSlicer */;
-          break;
-        case "superslicer":
-          flavour = 4 /* SuperSlicer */;
-          break;
-        default:
-          if (match2.groups?.RATOS_DIALECT_VERSION) {
-            flavour = 8 /* RatOS */;
-            ratosDialectVersion = match2.groups?.RATOS_DIALECT_VERSION;
-          }
-          break;
-      }
-      let processedByRatOSVersion = void 0;
-      let processedByRatOSTimestamp = void 0;
-      if (isAlreadyLegacyProcessed) {
-        processedByRatOSVersion = _GCodeInfo.LEGACY_RATOS_VERSION;
-      } else {
-        let processedByRatosMatch = /^; processed by RatOS (?<VERSION>[^\s]+) on (?<DATE>[^\s]+) at (?<TIME>.*)$/im.exec(header);
-        if (processedByRatosMatch) {
-          processedByRatOSVersion = _GCodeInfo.#coerceSemVerOrThrow(
-            processedByRatosMatch?.groups?.VERSION,
-            "The processed by RatOS version is not a valid SemVer."
-          );
-          processedByRatOSTimestamp = /* @__PURE__ */ new Date(
-            processedByRatosMatch.groups?.DATE + " " + processedByRatosMatch.groups?.TIME
-          );
-        }
-      }
-      return new _GCodeInfo(
-        match2.groups?.GENERATOR,
-        _GCodeInfo.#coerceSemVerOrThrow(match2.groups?.VERSION, "The generator version is not a valid SemVer."),
-        flavour,
-        /* @__PURE__ */ new Date(match2.groups?.DATE + " " + match2.groups?.TIME),
-        _GCodeInfo.#coerceSemVerOrThrow(ratosDialectVersion, "The RatOS dialect version is not a valid SemVer."),
-        processedByRatOSVersion,
-        processedByRatOSTimestamp
-      );
-    }
-    return null;
-  }
-  static #coerceSemVerOrThrow(version, message) {
-    if (version === void 0) {
-      return void 0;
-    }
-    const sv = import_semver2.default.coerce(version);
-    if (sv === null) {
-      throw new GCodeError(message);
-    }
-    return sv;
-  }
-  static async getProcessedByRatosHeader() {
-    const currentCodeVersion = await getConfiguratorVersion();
-    const now2 = /* @__PURE__ */ new Date();
-    return `; processed by RatOS ${currentCodeVersion.toString()} on ${date$1.format(now2, "YYYY-MM-DD [at] HH:mm:ss [UTC]", true)}`;
+  /** True when the current {@link MutableGCodeInfo} is associated with a file that has been transformed. */
+  get isProcessed() {
+    return this.fileFormatVersion !== void 0 && this.postProcessorVersion !== void 0;
   }
   toJSON() {
     return JSON.stringify(this.serialize());
   }
   serialize() {
     return {
+      isProcessed: this.isProcessed,
       generator: this.generator,
       generatorVersion: this.generatorVersion.toString(),
-      flavour: this.flavour,
+      flavour: GCodeFlavour[this.flavour],
       generatorTimestamp: this.generatorTimestamp.toISOString(),
       ratosDialectVersion: this.ratosDialectVersion?.toString(),
-      processedByRatOSVersion: this.processedByRatOSVersion?.toString(),
-      processedByRatOSTimestamp: this.processedByRatOSTimestamp?.toISOString()
+      postProcessorVersion: this.postProcessorVersion?.toString(),
+      postProcessorTimestamp: this.postProcessorTimestamp?.toISOString(),
+      processedForIdex: this.processedForIdex ?? (this.postProcessorVersion ? "unknown" : void 0),
+      analysisResult: this.analysisResult
     };
+  }
+};
+
+// ../server/gcode-processor/GCodeProcessor.ts
+init_cjs_shim();
+
+// ../server/gcode-processor/ActionSequence.ts
+init_cjs_shim();
+var kActionResultNonFlagMask = (1 << 8) - 1;
+var ActionSubSequence = class {
+  constructor(entryAction, sequence) {
+    this.entryAction = entryAction;
+    this.sequence = sequence;
+  }
+};
+function subSequence(entryAction, sequence) {
+  return new ActionSubSequence(entryAction, sequence);
+}
+function executeActionSequence(actions, invoke) {
+  let idx = 0;
+  while (idx < actions.length) {
+    let item = actions[idx];
+    let action = void 0;
+    let subseq = void 0;
+    let ret = void 0;
+    if (item instanceof ActionSubSequence) {
+      action = item.entryAction;
+      subseq = item.sequence;
+    } else {
+      action = item;
+    }
+    ret = invoke(action);
+    let result;
+    if (Array.isArray(ret)) {
+      result = ret[0];
+      if (subseq) {
+        if (ret[1] instanceof ActionSubSequence) {
+          actions[idx] = ret[1];
+        } else {
+          if ((result & 512 /* flagReplaceEntryAction */) > 0) {
+            item.entryAction = ret[1];
+          } else {
+            actions[idx] = ret[1];
+          }
+        }
+      } else {
+        actions[idx] = ret[1];
+      }
+    } else {
+      result = ret;
+    }
+    if (subseq && subseq.length > 0 && (result & 256 /* flagSkipSubSequence */) == 0) {
+      executeActionSequence(subseq, invoke);
+    }
+    switch (result & kActionResultNonFlagMask) {
+      case 0 /* Continue */:
+        ++idx;
+        break;
+      case 2 /* Stop */:
+        return;
+      case 1 /* RemoveAndContinue */:
+        actions.splice(idx, 1);
+        break;
+      case 3 /* RemoveAndStop */:
+        actions.splice(idx, 1);
+        return;
+    }
+  }
+}
+
+// ../server/gcode-processor/SlidingWindowLineProcessor.ts
+init_cjs_shim();
+var import_ring_buffer_ts = __toESM(require_dist());
+import { Transform as Transform2 } from "node:stream";
+
+// ../server/gcode-processor/Bookmark.ts
+init_cjs_shim();
+var Bookmark = class {
+  constructor(originalLine, byteOffset, byteLength) {
+    this.originalLine = originalLine;
+    this.byteOffset = byteOffset;
+    this.byteLength = byteLength;
+  }
+};
+var BookmarkableLine = class {
+  constructor(line) {
+    this.line = line;
+  }
+};
+
+// ../server/gcode-processor/SlidingWindowLineProcessor.ts
+var ProcessorLine = class extends BookmarkableLine {
+  constructor() {
+    super(...arguments);
+    this.emit = true;
+  }
+};
+var ProcessLineContext = class {
+  constructor(item, getLineContextOrUndefined, offset2) {
+    this.#item = item;
+    this.#getLineOrUndefined = getLineContextOrUndefined;
+    this.#offset = offset2;
+  }
+  #getLineOrUndefined;
+  #item;
+  #offset;
+  get offset() {
+    return this.#offset;
+  }
+  get line() {
+    return this.#item.line;
+  }
+  set line(value) {
+    this.#item.line = value;
+  }
+  /** Prepend a prefix to the line. */
+  prepend(prefix) {
+    if (prefix) {
+      this.#item.line = prefix + this.#item.line;
+    }
+  }
+  /** Should this line be emitted to output? */
+  get emit() {
+    return this.#item.emit;
+  }
+  /** Should this line be emitted to output? */
+  set emit(value) {
+    this.#item.emit = value;
+  }
+  get bookmarkKey() {
+    return this.#item.bookmarkKey;
+  }
+  set bookmarkKey(key) {
+    if (this.#item.bookmarkKey === void 0) {
+      this.#item.bookmarkKey = key;
+    } else {
+      throw new Error("The bookmark key has already been set and cannot be changed.");
+    }
+  }
+  getLine(offset2) {
+    if (offset2 == 0) {
+      return this;
+    }
+    let ctx = this.#getLineOrUndefined(this.#offset + offset2);
+    if (ctx) {
+      return ctx;
+    }
+    throw new RangeError("The specified offset is outside the available window.");
+  }
+  getLineOrUndefined(offset2) {
+    if (offset2 == 0) {
+      return this;
+    }
+    return this.#getLineOrUndefined(this.#offset + offset2);
+  }
+  *scanForward(maxOffset) {
+    let offset2 = 1;
+    while (!maxOffset || offset2 <= maxOffset) {
+      const offsetLine = this.#getLineOrUndefined(this.#offset + offset2);
+      if (!offsetLine) {
+        return;
+      }
+      yield offsetLine;
+      ++offset2;
+    }
+  }
+  *scanBack(maxOffset) {
+    let offset2 = 1;
+    while (!maxOffset || offset2 <= maxOffset) {
+      const offsetLine = this.#getLineOrUndefined(this.#offset - offset2);
+      if (!offsetLine) {
+        return;
+      }
+      yield offsetLine;
+      ++offset2;
+    }
+  }
+};
+var SlidingWindowLineProcessor = class extends Transform2 {
+  constructor(maxLinesAhead = 10, maxLinesBehind = 10, abortSignal) {
+    super({ objectMode: true });
+    this.maxLinesAhead = maxLinesAhead;
+    this.maxLinesBehind = maxLinesBehind;
+    this.#abortSignal = abortSignal;
+    this.#buf = new import_ring_buffer_ts.RingBuffer(maxLinesBehind + maxLinesAhead + 1);
+  }
+  #abortSignal;
+  /**
+   * The current position within `#buf`. When the window is primed and streaming
+   * is well underway, `#position` will always be `maxLinesBehind`. During initial priming,
+   * `#position` can be less than `maxLinesBehind`, and while processing the end of
+   * the stream in `_flush`, `#position` can be greater than `maxLinesBehind`.
+   */
+  #position = -1;
+  #buf;
+  #getLineContext(offset2) {
+    let p = this.#position + offset2;
+    if (p < 0 || p >= this.#buf.getBufferLength()) {
+      return void 0;
+    }
+    return new ProcessLineContext(this.#buf.get(p), this.#getLineContextClosure, offset2);
+  }
+  #getLineContextClosure = (offset2) => this.#getLineContext(offset2);
+  _transform(chunk, encoding, callback) {
+    if (this.#abortSignal?.aborted) {
+      callback(this.#abortSignal.reason);
+      return;
+    }
+    if (typeof chunk !== "string") {
+      return callback(new InternalError("chunk must be a string"));
+    }
+    if (!this.#buf.isFull()) {
+      this.#buf.add(new ProcessorLine(chunk));
+      if (!this.#buf.isFull()) {
+        return callback();
+      }
+    }
+    if (this.#position == -1) {
+      while (this.#position < this.maxLinesBehind) {
+        ++this.#position;
+        try {
+          this._processLine(this.#getLineContext(0));
+        } catch (err) {
+          if (err instanceof Error) {
+            return callback(err);
+          } else {
+            return callback(new Error("Unrecognized error, see cause.", { cause: err }));
+          }
+        }
+      }
+      return callback();
+    }
+    if (this.#position != this.maxLinesBehind) {
+      return callback(new InternalError("Unexpected state!"));
+    }
+    const itemToPush = this.#buf.get(0);
+    this.#buf.add(new ProcessorLine(chunk));
+    try {
+      this._processLine(this.#getLineContext(0));
+    } catch (err) {
+      if (err instanceof Error) {
+        return callback(err);
+      } else {
+        return callback(new Error("Unrecognized error, see cause.", { cause: err }));
+      }
+    }
+    if (itemToPush.emit) {
+      this.push(itemToPush);
+    }
+    callback();
+  }
+  _flush(callback) {
+    if (this.#abortSignal?.aborted) {
+      callback(this.#abortSignal.reason);
+      return;
+    }
+    while (this.#position < this.#buf.getBufferLength() - 1) {
+      ++this.#position;
+      try {
+        this._processLine(this.#getLineContext(0));
+      } catch (err) {
+        if (err instanceof Error) {
+          return callback(err);
+        } else {
+          return callback(new Error("Unrecognized error, see cause.", { cause: err }));
+        }
+      }
+    }
+    for (let index = 0; index < this.#buf.getBufferLength(); ++index) {
+      const itemToPush = this.#buf.get(index);
+      if (itemToPush.emit) {
+        this.push(itemToPush);
+      }
+    }
+    callback();
   }
 };
 
@@ -91661,6 +91826,7 @@ var State = class {
     this.toolChangeCount = 0;
     this.minX = Number.MAX_VALUE;
     this.maxX = Number.MIN_VALUE;
+    this.processingHasBeenFinalized = false;
     /** Used tools, in order of first use. */
     this.usedTools = [];
   }
@@ -91687,20 +91853,28 @@ var State = class {
   get gcodeInfoOrUndefined() {
     return this.#gcodeInfo;
   }
-  serialize() {
+  get configSectionAsObject() {
     const configSectionEntries = this.configSection?.entries();
-    const configSection = configSectionEntries ? Object.fromEntries(configSectionEntries) : void 0;
-    return {
-      ...this,
-      configSection,
-      gcodeInfo: this.gcodeInfo.serialize()
-    };
+    return configSectionEntries ? Object.fromEntries(configSectionEntries) : void 0;
   }
 };
 
+// ../server/gcode-processor/helpers.ts
+init_cjs_shim();
+var import_semver = __toESM(require_semver2());
+
+// ../server/helpers/logger.ts
+init_cjs_shim();
+var import_pino2 = __toESM(require_pino());
+
+// ../server/gcode-processor/helpers.ts
+function exactlyOneBitSet(integer) {
+  return integer != 0 && (integer & integer - 1) == 0;
+}
+
 // ../server/gcode-processor/Actions.ts
 init_cjs_shim();
-var import_semver3 = __toESM(require_semver2());
+var import_semver2 = __toESM(require_semver2());
 
 // ../server/gcode-processor/CommonGCodeCommand.ts
 init_cjs_shim();
@@ -91752,69 +91926,72 @@ var REMOVED_BY_RATOS = "; Removed by RatOS post processor: ";
 function newGCodeError(message, ctx, state) {
   return new GCodeError(message, ctx.line, state.currentLineNumber);
 }
+function validateGenerator(gcodeInfo, allowUnsupportedSlicerVersions, onWarning) {
+  try {
+    switch (gcodeInfo.flavour) {
+      case 0 /* Unknown */:
+        throw new SlicerNotSupported(
+          `Slicer '${gcodeInfo.generator}' is not supported, and RatOS dialect conformance was not declared.`,
+          { cause: gcodeInfo }
+        );
+      case 1 /* PrusaSlicer */:
+        if (!import_semver2.default.satisfies(gcodeInfo.generatorVersion, "2.8.0 || 2.8.1")) {
+          throw new SlicerNotSupported(
+            `Only versions 2.8.0 and 2.8.1 of PrusaSlicer are supported. Version ${gcodeInfo.generatorVersion} is not supported.`,
+            { cause: gcodeInfo }
+          );
+        }
+        break;
+      case 2 /* OrcaSlicer */:
+        if (!import_semver2.default.satisfies(gcodeInfo.generatorVersion, "2.1.1 || 2.2.0")) {
+          throw new SlicerNotSupported(
+            `Only versions 2.1.1 and 2.2.0 of OrcasSlicer are supported. Version ${gcodeInfo.generatorVersion} is not supported.`,
+            { cause: gcodeInfo }
+          );
+        }
+        break;
+      case 4 /* SuperSlicer */:
+        if (!import_semver2.default.satisfies(gcodeInfo.generatorVersion, "2.5.59 || 2.5.60")) {
+          throw new SlicerNotSupported(
+            `Only versions 2.5.59 and 2.5.60 of SuperSlicer are supported. Version ${gcodeInfo.generatorVersion} is not supported.`,
+            { cause: gcodeInfo }
+          );
+        }
+        break;
+      case 8 /* RatOS */:
+        if (import_semver2.default.neq("0.1", gcodeInfo.generatorVersion)) {
+          throw new SlicerNotSupported(
+            `Only version 0.1 of the RatOS G-code dialect is supported. Version ${gcodeInfo.generatorVersion} is not supported.`,
+            { cause: gcodeInfo }
+          );
+        }
+        break;
+      default:
+        throw new InternalError("unexpected state");
+    }
+  } catch (ex) {
+    if (allowUnsupportedSlicerVersions && onWarning && ex instanceof SlicerNotSupported) {
+      onWarning(
+        "UNSUPPORTED_SLICER_VERSION" /* UNSUPPORTED_SLICER_VERSION */,
+        ex.message + " This may result in print defects and incorrect operation of the printer."
+      );
+    } else {
+      throw ex;
+    }
+  }
+}
 var getGcodeInfo = (c, s2) => {
-  const parsed = GCodeInfo.tryParseHeader(
+  const parsed = GCodeFile.tryParseHeader(
     c.line + "\n" + c.getLineOrUndefined(1)?.line + "\n" + c.getLineOrUndefined(2)?.line + "\n"
   );
   if (!parsed) {
     throw new SlicerIdentificationNotFound();
   } else {
-    if (parsed.processedByRatOSVersion) {
+    if (parsed.postProcessorVersion) {
       throw new AlreadyProcessedError(parsed);
     }
     s2.gcodeInfo = parsed;
-    try {
-      switch (parsed.flavour) {
-        case 0 /* Unknown */:
-          throw new SlicerNotSupported(
-            `Slicer '${parsed.generator}' is not supported, and RatOS dialect conformance was not declared.`,
-            { cause: parsed }
-          );
-        case 1 /* PrusaSlicer */:
-          if (!import_semver3.default.satisfies(parsed.generatorVersion, "2.8.0 || 2.8.1")) {
-            throw new SlicerNotSupported(
-              `Only versions 2.8.0 and 2.8.1 of PrusaSlicer are supported. Version ${parsed.generatorVersion} is not supported.`,
-              { cause: parsed }
-            );
-          }
-          break;
-        case 2 /* OrcaSlicer */:
-          if (!import_semver3.default.satisfies(parsed.generatorVersion, "2.1.1 || 2.2.0")) {
-            throw new SlicerNotSupported(
-              `Only versions 2.1.1 and 2.2.0 of OrcasSlicer are supported. Version ${parsed.generatorVersion} is not supported.`,
-              { cause: parsed }
-            );
-          }
-          break;
-        case 4 /* SuperSlicer */:
-          if (!import_semver3.default.satisfies(parsed.generatorVersion, "2.5.59 || 2.5.60")) {
-            throw new SlicerNotSupported(
-              `Only versions 2.5.59 and 2.5.60 of SuperSlicer are supported. Version ${parsed.generatorVersion} is not supported.`,
-              { cause: parsed }
-            );
-          }
-          break;
-        case 8 /* RatOS */:
-          if (import_semver3.default.neq("0.1", parsed.generatorVersion)) {
-            throw new SlicerNotSupported(
-              `Only version 0.1 of the RatOS G-code dialect is supported. Version ${parsed.generatorVersion} is not supported.`,
-              { cause: parsed }
-            );
-          }
-          break;
-        default:
-          throw new InternalError("unexpected state");
-      }
-    } catch (ex) {
-      if (s2.kAllowUnsupportedSlicerVersions && s2.onWarning && ex instanceof SlicerNotSupported) {
-        s2.onWarning(
-          "UNSUPPORTED_SLICER_VERSION" /* UNSUPPORTED_SLICER_VERSION */,
-          ex.message + " This may result in print defects and incorrect operation of the printer."
-        );
-      } else {
-        throw ex;
-      }
-    }
+    validateGenerator(s2.gcodeInfo, s2.kAllowUnsupportedSlicerVersions, s2.onWarning);
   }
   c.line = c.line.padEnd(c.line.length + 100);
   c.bookmarkKey = Symbol("first line");
@@ -92048,6 +92225,42 @@ var captureConfigSection = (c, s2) => {
 
 // ../server/gcode-processor/GCodeProcessor.ts
 var import_semver4 = __toESM(require_semver2());
+
+// ../server/gcode-processor/AnalysisResult.ts
+init_cjs_shim();
+var ANALYSIS_RESULT_VERSION = 1;
+var AnalysisResultSchema = z.discriminatedUnion("kind", [
+  z.object({
+    version: z.literal(ANALYSIS_RESULT_VERSION),
+    kind: z.literal("full" /* Full */),
+    extruderTemps: z.array(z.string()).optional(),
+    toolChangeCount: z.number(),
+    firstMoveX: z.string().optional(),
+    firstMoveY: z.string().optional(),
+    minX: z.number(),
+    maxX: z.number(),
+    hasPurgeTower: z.boolean().optional(),
+    configSection: z.record(z.string(), z.string()).optional(),
+    usedTools: z.array(z.string())
+  }),
+  z.object({
+    version: z.literal(ANALYSIS_RESULT_VERSION),
+    kind: z.literal("quick" /* Quick */),
+    extruderTemps: z.array(z.string()).optional(),
+    firstMoveX: z.string().optional(),
+    firstMoveY: z.string().optional(),
+    hasPurgeTower: z.boolean().optional()
+  })
+]);
+
+// ../server/gcode-processor/Version.ts
+init_cjs_shim();
+var import_semver3 = __toESM(require_semver2());
+async function getPostProcessorVersion() {
+  return new import_semver3.SemVer("1.0.0");
+}
+
+// ../server/gcode-processor/GCodeProcessor.ts
 var InspectionIsComplete = class extends Error {
 };
 var GCodeProcessor = class _GCodeProcessor extends SlidingWindowLineProcessor {
@@ -92059,18 +92272,29 @@ var GCodeProcessor = class _GCodeProcessor extends SlidingWindowLineProcessor {
       !!opts.allowUnsupportedSlicerVersions,
       opts.onWarning
     );
+    this.#actions = !!opts.printerHasIdex ? [
+      getGcodeInfo,
+      getStartPrint,
+      // NB: sequence won't continue past whenCommonCommandDoThenStop when the current line matches a common command (Tn/G0/G1).
+      subSequence(whenCommonCommandDoThenStop, [findFirstMoveXY, findMinMaxX, processToolchange]),
+      fixOtherLayerTemperature,
+      captureConfigSection
+    ] : [
+      getGcodeInfo,
+      getStartPrint,
+      // NB: sequence won't continue past whenCommonCommandDoThenStop when the current line matches a common command (Tn/G0/G1).
+      subSequence(whenCommonCommandDoThenStop, [findFirstMoveXY]),
+      fixOtherLayerTemperature,
+      captureConfigSection
+    ];
   }
   #state;
   // NB: The order of actions is significant.
-  #actions = [
-    getGcodeInfo,
-    getStartPrint,
-    // NB: sequence won't continue past whenCommonCommandDoThenStop when the current line matches a common command (Tn/G0/G1).
-    subSequence(whenCommonCommandDoThenStop, [findFirstMoveXY, findMinMaxX, processToolchange]),
-    fixOtherLayerTemperature,
-    captureConfigSection
-  ];
+  #actions;
   _processLine(ctx) {
+    if (this.#state.processingHasBeenFinalized) {
+      throw new InternalError("_processLine was called after processing has been finalized.");
+    }
     this.#state.resetIterationState();
     ++this.#state.currentLineNumber;
     executeActionSequence(this.#actions, (action) => _GCodeProcessor.invokeAction(action, ctx, this.#state));
@@ -92139,12 +92363,53 @@ var GCodeProcessor = class _GCodeProcessor extends SlidingWindowLineProcessor {
   /**
    * Applies all the retrospective changes required after analysing the whole file/stream.
    */
-  async processBookmarks(bookmarks, replaceLine) {
+  async finalizeProcessing(options) {
     const s2 = this.#state;
+    if (s2.processingHasBeenFinalized) {
+      throw new GCodeProcessorError("Processing has already been finalized.");
+    }
+    if (!s2.gcodeInfoOrUndefined) {
+      throw new GCodeProcessorError(
+        "Processing is incomplete and cannot be finalized (the file headers have not been parsed successfully)."
+      );
+    }
+    s2.processingHasBeenFinalized = true;
+    const currentPPVersion = await getPostProcessorVersion();
+    const now2 = /* @__PURE__ */ new Date();
+    s2.gcodeInfo.postProcessorVersion = currentPPVersion;
+    s2.gcodeInfo.postProcessorTimestamp = now2;
+    if (s2.kQuickInpsectionOnly) {
+      s2.gcodeInfo.analysisResult = {
+        version: ANALYSIS_RESULT_VERSION,
+        kind: "quick" /* Quick */,
+        extruderTemps: s2.extruderTemps,
+        firstMoveX: s2.firstMoveX,
+        firstMoveY: s2.firstMoveY,
+        hasPurgeTower: s2.hasPurgeTower,
+        configSection: s2.configSectionAsObject
+      };
+    } else {
+      s2.gcodeInfo.analysisResult = {
+        version: ANALYSIS_RESULT_VERSION,
+        kind: "full" /* Full */,
+        extruderTemps: s2.extruderTemps,
+        toolChangeCount: s2.toolChangeCount,
+        firstMoveX: s2.firstMoveX,
+        firstMoveY: s2.firstMoveY,
+        minX: s2.minX,
+        maxX: s2.maxX,
+        hasPurgeTower: s2.hasPurgeTower,
+        configSection: s2.configSectionAsObject,
+        usedTools: s2.usedTools
+      };
+    }
+    if (!options) {
+      return s2.gcodeInfo;
+    }
     if (s2.firstLine) {
-      await replaceLine(
-        bookmarks.getBookmark(s2.firstLine.bookmark),
-        await GCodeInfo.getProcessedByRatosHeader() + "\n" + s2.firstLine.line.trimEnd()
+      await options.replaceLine(
+        options.bookmarks.getBookmark(s2.firstLine.bookmark),
+        options.getProcessedByRatosHeader(currentPPVersion, now2) + "\n" + s2.firstLine.line.trimEnd()
       );
     }
     if (s2.startPrintLine) {
@@ -92162,7 +92427,10 @@ var GCodeProcessor = class _GCodeProcessor extends SlidingWindowLineProcessor {
         toAdd += ` USED_TOOLS=${s2.usedTools.join()}`;
       }
       if (toAdd) {
-        await replaceLine(bookmarks.getBookmark(s2.startPrintLine.bookmark), s2.startPrintLine.line.trimEnd() + toAdd);
+        await options.replaceLine(
+          options.bookmarks.getBookmark(s2.startPrintLine.bookmark),
+          s2.startPrintLine.line.trimEnd() + toAdd
+        );
       }
       toAdd = "";
       if (s2.usedTools.length > 0 && s2.extruderTemps && s2.onLayerChange2Line) {
@@ -92170,53 +92438,30 @@ var GCodeProcessor = class _GCodeProcessor extends SlidingWindowLineProcessor {
           toAdd += `
 M104 S${s2.extruderTemps[Number(tool)]} T${tool}`;
         }
-        await replaceLine(
-          bookmarks.getBookmark(s2.onLayerChange2Line.bookmark),
+        await options.replaceLine(
+          options.bookmarks.getBookmark(s2.onLayerChange2Line.bookmark),
           s2.onLayerChange2Line.line.trimEnd() + toAdd
         );
         if (s2.extruderTempLines) {
           for (let bmLine of s2.extruderTempLines) {
-            await replaceLine(bookmarks.getBookmark(bmLine.bookmark), REMOVED_BY_RATOS + bmLine.line.trimEnd());
+            await options.replaceLine(
+              options.bookmarks.getBookmark(bmLine.bookmark),
+              REMOVED_BY_RATOS + bmLine.line.trimEnd()
+            );
           }
         }
       }
     }
-  }
-  getAnalysisResult() {
-    const s2 = this.#state.serialize();
-    if (this.#state.kQuickInpsectionOnly) {
-      return {
-        extruderTemps: s2.extruderTemps,
-        firstMoveX: s2.firstMoveX,
-        firstMoveY: s2.firstMoveY,
-        hasPurgeTower: s2.hasPurgeTower,
-        configSection: s2.configSection,
-        gcodeInfo: s2.gcodeInfo
-      };
-    } else {
-      return {
-        extruderTemps: s2.extruderTemps,
-        toolChangeCount: s2.toolChangeCount,
-        firstMoveX: s2.firstMoveX,
-        firstMoveY: s2.firstMoveY,
-        minX: s2.minX,
-        maxX: s2.maxX,
-        hasPurgeTower: s2.hasPurgeTower,
-        configSection: s2.configSection,
-        usedTools: s2.usedTools,
-        gcodeInfo: s2.gcodeInfo
-      };
-    }
+    return s2.gcodeInfo;
   }
 };
 
-// ../server/gcode-processor/gcode-processor.ts
-var import_progress_stream = __toESM(require_progress_stream());
+// ../server/gcode-processor/GCodeFile.ts
 var import_split2 = __toESM(require_split2());
-import { createReadStream, createWriteStream, existsSync as existsSync5 } from "node:fs";
-import { access, constants, stat, open } from "node:fs/promises";
-import path6 from "node:path";
+import { Writable } from "stream";
+import { open } from "node:fs/promises";
 import { pipeline } from "node:stream/promises";
+import { createReadStream, createWriteStream } from "node:fs";
 
 // ../server/gcode-processor/BookmarkingBufferEncoder.ts
 init_cjs_shim();
@@ -92283,71 +92528,415 @@ async function replaceBookmarkedGcodeLine(fh, bookmark, replacementLine) {
   await fh.write(buf, void 0, void 0, bookmark.byteOffset);
 }
 
-// ../server/gcode-processor/gcode-processor.ts
-import { Writable } from "node:stream";
-var PROGRESS_STREAM_SPEED_STABILIZATION_TIME = 3;
+// ../server/gcode-processor/GCodeFile.ts
+import { AssertionError } from "node:assert";
+function assert(condition, message) {
+  if (!condition) {
+    throw new AssertionError({ message });
+  }
+}
+var fsReaderGetLines2 = util3.promisify(import_fs_reader2.default);
+var rxRatosMeta = /(?:^; ratos_meta begin (\d+)\n(.*))?\n; ratos_meta end (\d+)$/ms;
+var rxGeneratorHeader = /^; generated (by|with) (?<GENERATOR>[^\s]+) (?<VERSION>[^\s]+) (in RatOS dialect (?<RATOS_DIALECT_VERSION>[^\s]+) )?on (?<DATE>[^\s]+) at (?<TIME>.*)$/im;
+var rxProcessedByRatosHeaderPreV3 = /^; processed by RatOS (?<VERSION>[^\s]+) on (?<DATE>[^\s]+) at (?<TIME>\d\d:\d\d:\d\d(?:Z| UTC))/im;
+var rxProcessedByRatosHeaderV3 = /^; processed by RatOS\.PostProcessor (?<VERSION>[^\s]+) on (?<DATE>[^\s]+) at (?<TIME>\d\d:\d\d:\d\d(?:Z| UTC))(?: v:(?<V>3) m:(?<M>[\da-fA-F]+)(?<IDEX> idex)?)?(?:$|\s)/im;
+function coerceSemVerOrThrow(version, message) {
+  if (version === void 0) {
+    return void 0;
+  }
+  const sv = import_semver5.default.coerce(version);
+  if (sv === null) {
+    throw new GCodeError(message);
+  }
+  return sv;
+}
 var NullSink = class extends Writable {
   _write(chunk, encoding, callback) {
     callback();
   }
 };
+var GCodeFile = class _GCodeFile {
+  constructor(path9, info, printability, canDeprocess, printabilityReasons) {
+    this.path = path9;
+    this.info = info;
+    this.printability = printability;
+    this.canDeprocess = canDeprocess;
+    this.printabilityReasons = printabilityReasons;
+  }
+  static {
+    this.FILE_FORMAT_VERSION = 3;
+  }
+  static {
+    /** The placeholder version used to represent files transformed by the legacy ratos.py post processor. */
+    this.LEGACY_RATOS_VERSION = new import_semver5.SemVer("0.1.0-legacy");
+  }
+  static getRatosMetaFooter(analysisResult) {
+    const b64 = Buffer.from(JSON.stringify(analysisResult)).toString("base64");
+    const chunks = (0, import_fast_chunk_string.default)(b64, { size: 78, unicodeAware: false });
+    return `
+; ratos_meta begin ${b64.length}
+; ${chunks.join("\n; ")}
+; ratos_meta end ${chunks.length}`;
+  }
+  /**
+   * invalid: no valid 'generated by' header found, can't inspect (aka, not a gcode file)
+   * unsupported: 'processed by' header found, but the fileFormatVersion is not supported.
+   *   Could be a future layout version or an old file layout that is no longer supported in current code.
+   *
+   * what to do about changes to the shape of AnalysisResult?
+   *
+   * 1. Give its own version, use Zod for validation and transformation. Force printability -> mustReprocess if Zod can't parse.
+   * or
+   * 2. Bump fileFormatVersion if AnalysisResult changes.
+   *
+   * I prefer 1. actual changes to file layout or encoding, as represented by "pure" fileFormatVersion, typically need to be handled by explicit code branching.
+   * Serialized object validation and transformation can be expressed declaritively using Zod. Keep the two things separate.
+   *
+   * isProcessed:
+   * 		true
+   * 			printability: ready, mustReprocess, couldReprocess
+   * 			canReprocess: true, false
+   * 		false
+   *
+   */
+  /** Factory. Returns GCodeFile with valid `info` or throws if the file header can't be parsed etc. */
+  static async inspect(path9, options) {
+    const onWarning = options?.onWarning;
+    const header = await fsReaderGetLines2(path9, 4);
+    const gci = _GCodeFile.tryParseHeader(header);
+    if (!gci) {
+      throw new SlicerIdentificationNotFound();
+    }
+    if (gci.fileFormatVersion === void 0) {
+      const tail2 = await fsReaderGetLines2(path9, -3);
+      if (/^; processed by RatOS($|\s)/im.test(tail2)) {
+        gci.postProcessorVersion = _GCodeFile.LEGACY_RATOS_VERSION;
+        gci.fileFormatVersion = 0;
+      }
+    }
+    const reasons = [];
+    if (!options.allowUnsupportedSlicerVersions) {
+      try {
+        validateGenerator(gci, false);
+      } catch (e) {
+        if (e instanceof Error) {
+          reasons.push(e.message);
+        }
+      }
+    }
+    if (gci.fileFormatVersion !== void 0) {
+      if (gci.fileFormatVersion < _GCodeFile.FILE_FORMAT_VERSION) {
+        reasons.push(
+          "The file format is from an old version of RatOS which is no longer supported. The original file must be re-uploaded or re-sliced."
+        );
+      } else if (gci.fileFormatVersion > _GCodeFile.FILE_FORMAT_VERSION) {
+        reasons.push(
+          "The file format is from a newer version of RatOS. Update RatOS, or re-upload or re-slice the original file."
+        );
+      }
+    }
+    if (reasons.length > 0) {
+      return new _GCodeFile(path9, gci, "NOT_SUPPORTED" /* NOT_SUPPORTED */, void 0, reasons);
+    }
+    const currentVersion = await getPostProcessorVersion();
+    let printability;
+    if (gci.isProcessed) {
+      if (gci.processedForIdex !== !!options.printerHasIdex) {
+        switch (gci.processedForIdex) {
+          case true:
+            reasons.push("The file was processed for a printer with IDEX, but the current printer does not have IDEX.");
+            break;
+          case false:
+            reasons.push("The file was processed for a printer without IDEX, but the current printer has IDEX.");
+            break;
+          default:
+            reasons.push("It cannot be determined if the file was processed for a printer with IDEX or not.");
+            break;
+        }
+        printability = "MUST_REPROCESS" /* MUST_REPROCESS */;
+      } else {
+        assert(gci.postProcessorVersion);
+        if (import_semver5.default.eq(currentVersion, gci.postProcessorVersion)) {
+          printability = "READY" /* READY */;
+        } else if (import_semver5.default.lt(currentVersion, gci.postProcessorVersion)) {
+          reasons.push(
+            "The file was processed by a more recent version of RatOS than the installed version. Either update RatOS, or the file must be reprocessed."
+          );
+          printability = "MUST_REPROCESS" /* MUST_REPROCESS */;
+        } else if (currentVersion.major > gci.postProcessorVersion.major) {
+          reasons.push(
+            "There have been significant incompatible changes to RatOS gcode handling since the file was last processed."
+          );
+          printability = "MUST_REPROCESS" /* MUST_REPROCESS */;
+        } else {
+          reasons.push(
+            currentVersion.minor === gci.postProcessorVersion.minor ? "There have been enhancements and/or bug fixes since the file was last processed." : "There have been bug fixes since the file was last processed."
+          );
+          printability = "COULD_REPROCESS" /* COULD_REPROCESS */;
+        }
+      }
+    } else {
+      printability = !!options.printerHasIdex ? "MUST_PROCESS" /* MUST_PROCESS */ : "READY" /* READY */;
+    }
+    if (gci.isProcessed) {
+      var tail = await fsReaderGetLines2(path9, -100);
+      rxRatosMeta.lastIndex = 0;
+      var match2 = rxRatosMeta.exec(tail);
+      if (match2 && match2[3] && !match2[1]) {
+        tail = await fsReaderGetLines2(path9, -(102 + Number(match2[3])));
+        rxRatosMeta.lastIndex = 0;
+        match2 = rxRatosMeta.exec(tail);
+      }
+      if (match2) {
+        if (match2[3] && !match2[1]) {
+          onWarning?.(
+            "INVALID_METADATA" /* INVALID_METADATA */,
+            "Failed to parse ratos_meta block: the begin marker was not found."
+          );
+        } else {
+          const expectedBase64CharCount = Number(match2[1]);
+          const base64str = match2[2].replaceAll(/[;\s]/g, "");
+          if (base64str.length != expectedBase64CharCount) {
+            onWarning?.(
+              "INVALID_METADATA" /* INVALID_METADATA */,
+              `Failed to parse ratos_meta block: expected ${expectedBase64CharCount} base64 characters, but found ${base64str.length}.`
+            );
+          } else {
+            const jsonStr = Buffer.from(base64str, "base64").toString("utf-8");
+            const obj = JSON.parse(jsonStr);
+            if (obj.kind === void 0) {
+              obj.kind = obj.minX === void 0 ? "quick" /* Quick */ : "full" /* Full */;
+            }
+            gci.analysisResult = AnalysisResultSchema.parse(obj);
+          }
+        }
+      } else {
+        onWarning?.("INVALID_METADATA" /* INVALID_METADATA */, "The ratos_meta block was not found.");
+      }
+    }
+    return new _GCodeFile(path9, gci, printability, gci.isProcessed ? false : void 0, reasons);
+  }
+  /** If the current file is already processed by the current GCodeHandling version, throws; otherwise, inputFile will be deprocessed on the fly (if already processed) and (re)transformed. */
+  async transform(outputFile, options) {
+    let fh;
+    const gcodeProcessor = new GCodeProcessor(options);
+    const encoder = new BookmarkingBufferEncoder(void 0, void 0, options.abortSignal);
+    try {
+      try {
+        fh = await open(outputFile, "w");
+        if (options.progressTransform) {
+          await pipeline(
+            createReadStream(this.path),
+            options.progressTransform,
+            (0, import_split2.default)(),
+            gcodeProcessor,
+            encoder,
+            createWriteStream("|notused|", { fd: fh.fd, highWaterMark: 256 * 1024, autoClose: false })
+          );
+        } else {
+          await pipeline(
+            createReadStream(this.path),
+            (0, import_split2.default)(),
+            gcodeProcessor,
+            encoder,
+            createWriteStream("|notused|", { fd: fh.fd, highWaterMark: 256 * 1024, autoClose: false })
+          );
+        }
+      } catch (e) {
+        if (!(e instanceof InspectionIsComplete)) {
+          throw e;
+        }
+      }
+      const s2 = await fh.stat();
+      const gci = await gcodeProcessor.finalizeProcessing({
+        bookmarks: encoder,
+        replaceLine: (bm, line) => replaceBookmarkedGcodeLine(fh, bm, line),
+        getProcessedByRatosHeader: (currentCodeVersion, timestamp) => _GCodeFile.getProcessedByRatosHeader({
+          currentCodeVersion,
+          timestamp,
+          ratosMetaFileOffset: s2.size,
+          processedForIdex: !!options.printerHasIdex
+        })
+      });
+      if (!gci.analysisResult) {
+        throw new InternalError("finalizeProcessing did not set analysisResult.");
+      }
+      await fh.write(_GCodeFile.getRatosMetaFooter(gci.analysisResult));
+      gci.processedForIdex = !!options.printerHasIdex;
+      gci.fileFormatVersion = _GCodeFile.FILE_FORMAT_VERSION;
+      return gci;
+    } finally {
+      try {
+        await fh?.close();
+      } catch {
+      }
+    }
+  }
+  /** If the current file is already processed by the current GCodeHandling version, returns inputFile.info; otherwise, inputFile will be unprocessed on the fly (if already processed) and (re)analysed. */
+  async analyse(options) {
+    const gcodeProcessor = new GCodeProcessor(options);
+    try {
+      if (options.progressTransform) {
+        await pipeline(
+          createReadStream(this.path),
+          options.progressTransform,
+          (0, import_split2.default)(),
+          gcodeProcessor,
+          new NullSink({ objectMode: true })
+        );
+      } else {
+        await pipeline(createReadStream(this.path), (0, import_split2.default)(), gcodeProcessor, new NullSink({ objectMode: true }));
+      }
+    } catch (e) {
+      if (!(e instanceof InspectionIsComplete)) {
+        throw e;
+      }
+    }
+    const gci = await gcodeProcessor.finalizeProcessing();
+    if (!gci.analysisResult) {
+      throw new InternalError("finalizeProcessing did not set analysisResult.");
+    }
+    gci.processedForIdex = !!options.printerHasIdex;
+    return gci;
+  }
+  /** Reads the file line by line. If the file has already been processed, it will be de-processed on the fly. */
+  readDeprocessedLines(progress2) {
+    throw "todo";
+  }
+  /**
+   * Parses header (top of file) comments. This method will not detect files already processed by the legacy Python-based post processor.
+   * @param header One or more newline-separated lines from the start of a gcode file. Normally, at least the first three lines should be provided.
+   */
+  static tryParseHeader(header) {
+    rxGeneratorHeader.lastIndex = 0;
+    let match2 = rxGeneratorHeader.exec(header);
+    if (match2) {
+      let flavour = 0 /* Unknown */;
+      let ratosDialectVersion = void 0;
+      switch (match2.groups?.GENERATOR?.toLowerCase()) {
+        case "prusaslicer":
+          flavour = 1 /* PrusaSlicer */;
+          break;
+        case "orcaslicer":
+          flavour = 2 /* OrcaSlicer */;
+          break;
+        case "superslicer":
+          flavour = 4 /* SuperSlicer */;
+          break;
+        default:
+          if (match2.groups?.RATOS_DIALECT_VERSION) {
+            flavour = 8 /* RatOS */;
+            ratosDialectVersion = match2.groups?.RATOS_DIALECT_VERSION;
+          }
+          break;
+      }
+      let pbrVersion;
+      let pbrTimestamp;
+      let pbrFileFormatVersion;
+      let pbrRatosMetaFileOffset;
+      let pbrIdex;
+      rxProcessedByRatosHeaderV3.lastIndex = 0;
+      const pbrMatch = rxProcessedByRatosHeaderV3.exec(header);
+      if (pbrMatch) {
+        pbrVersion = coerceSemVerOrThrow(
+          pbrMatch?.groups?.VERSION,
+          "The processed by RatOS version is not a valid SemVer."
+        );
+        pbrTimestamp = /* @__PURE__ */ new Date(pbrMatch.groups?.DATE + " " + pbrMatch.groups?.TIME);
+        pbrFileFormatVersion = pbrMatch.groups?.V ? Number(pbrMatch.groups?.V) : 1;
+        pbrRatosMetaFileOffset = pbrMatch.groups?.M ? parseInt(pbrMatch.groups?.M, 16) : void 0;
+        pbrIdex = pbrMatch.groups?.V ? !!pbrMatch.groups?.IDEX : void 0;
+      } else {
+        rxProcessedByRatosHeaderPreV3.lastIndex = 0;
+        const pbrMatch2 = rxProcessedByRatosHeaderPreV3.exec(header);
+        if (pbrMatch2) {
+          pbrVersion = coerceSemVerOrThrow(
+            pbrMatch2?.groups?.VERSION,
+            "The processed by RatOS version is not a valid SemVer."
+          );
+          pbrTimestamp = /* @__PURE__ */ new Date(pbrMatch2.groups?.DATE + " " + pbrMatch2.groups?.TIME);
+          pbrFileFormatVersion = 1;
+        }
+      }
+      return new MutableGCodeInfo(
+        match2.groups?.GENERATOR,
+        coerceSemVerOrThrow(match2.groups?.VERSION, "The generator version is not a valid SemVer."),
+        flavour,
+        /* @__PURE__ */ new Date(match2.groups?.DATE + " " + match2.groups?.TIME),
+        coerceSemVerOrThrow(ratosDialectVersion, "The RatOS dialect version is not a valid SemVer."),
+        pbrVersion,
+        pbrTimestamp,
+        void 0,
+        pbrFileFormatVersion,
+        pbrRatosMetaFileOffset,
+        pbrIdex
+      );
+    }
+    return null;
+  }
+  /** Gets the 'Processed by RatOS' header for the current code version. */
+  static getProcessedByRatosHeader(args) {
+    return `; processed by RatOS.PostProcessor ${args.currentCodeVersion.toString()} on ${date$1.format(args.timestamp, "YYYY-MM-DD [at] HH:mm:ss [UTC]", true)} v:${_GCodeFile.FILE_FORMAT_VERSION} m:${args.ratosMetaFileOffset.toString(16)}${args.processedForIdex ? " idex" : ""}`;
+  }
+};
+
+// ../server/gcode-processor/gcode-processor.ts
+var PROGRESS_STREAM_SPEED_STABILIZATION_TIME = 3;
 async function inspectGCode(inputFile, options) {
   const inputStat = await stat(path6.resolve(inputFile));
   if (!inputStat.isFile()) {
     throw new Error(`${inputFile} is not a file`);
   }
-  const gcInfoBeforeProcessing = await GCodeInfo.fromFile(inputFile);
-  if (gcInfoBeforeProcessing?.processedByRatOSVersion) {
-    return {
-      gcodeInfo: gcInfoBeforeProcessing.serialize(),
-      wasAlreadyProcessed: true
-    };
-  }
-  const gcodeProcessor = new GCodeProcessor({
+  const gcfOptions = {
     printerHasIdex: options.idex,
     allowUnsupportedSlicerVersions: options.allowUnsupportedSlicerVersions,
     quickInspectionOnly: !options.fullInspection,
     abortSignal: options.abortSignal,
     onWarning: options.onWarning
-  });
-  const progressStream = (0, import_progress_stream.default)({ length: inputStat.size });
+  };
+  const gcf = await GCodeFile.inspect(inputFile, gcfOptions);
+  if (gcf.info.isProcessed) {
+    return {
+      ...gcf.info.serialize(),
+      wasAlreadyProcessed: true,
+      printability: gcf.printability,
+      printabilityReasons: gcf.printabilityReasons,
+      canDeprocess: gcf.canDeprocess
+    };
+  }
+  let progressStream;
   if (options.onProgress) {
+    progressStream = (0, import_progress_stream.default)({ length: inputStat.size });
     progressStream.on("progress", options.onProgress);
   }
-  try {
-    await pipeline(
-      createReadStream(inputFile),
-      progressStream,
-      (0, import_split2.default)(),
-      gcodeProcessor,
-      new NullSink({ objectMode: true })
-    );
-  } catch (e) {
-    if (e instanceof InspectionIsComplete) {
-      return {
-        ...gcodeProcessor.getAnalysisResult(),
-        wasAlreadyProcessed: false
-      };
-    }
-    throw e;
-  }
   return {
-    ...gcodeProcessor.getAnalysisResult(),
-    wasAlreadyProcessed: false
+    ...(await gcf.analyse({ progressTransform: progressStream, ...gcfOptions })).serialize(),
+    wasAlreadyProcessed: false,
+    printability: gcf.printability,
+    printabilityReasons: gcf.printabilityReasons,
+    canDeprocess: gcf.canDeprocess
   };
 }
 async function processGCode(inputFile, outputFile, options) {
-  let fh = void 0;
+  const gcfOptions = {
+    printerHasIdex: options.idex,
+    allowUnsupportedSlicerVersions: options.allowUnsupportedSlicerVersions,
+    abortSignal: options.abortSignal,
+    onWarning: options.onWarning
+  };
   const inputStat = await stat(path6.resolve(inputFile));
   const outPath = path6.resolve(path6.dirname(outputFile));
   if (!inputStat.isFile()) {
     throw new Error(`${inputFile} is not a file`);
   }
-  const gcInfoBeforeProcessing = await GCodeInfo.fromFile(inputFile);
-  if (gcInfoBeforeProcessing?.processedByRatOSVersion) {
+  const gcf = await GCodeFile.inspect(inputFile, gcfOptions);
+  if (gcf?.info.isProcessed) {
     return {
-      gcodeInfo: gcInfoBeforeProcessing.serialize(),
-      wasAlreadyProcessed: true
+      ...gcf.info.serialize(),
+      wasAlreadyProcessed: true,
+      printability: gcf.printability,
+      printabilityReasons: gcf.printabilityReasons,
+      canDeprocess: gcf.canDeprocess
     };
   }
   try {
@@ -92358,39 +92947,18 @@ async function processGCode(inputFile, outputFile, options) {
   if (existsSync5(path6.resolve(outputFile)) && !options.overwrite) {
     throw new Error(`${outputFile} already exists`);
   }
-  try {
-    fh = await open(outputFile, "w");
-    const gcodeProcessor = new GCodeProcessor({
-      printerHasIdex: options.idex,
-      allowUnsupportedSlicerVersions: options.allowUnsupportedSlicerVersions,
-      quickInspectionOnly: false,
-      abortSignal: options.abortSignal,
-      onWarning: options.onWarning
-    });
-    const encoder = new BookmarkingBufferEncoder(void 0, void 0, options.abortSignal);
-    const progressStream = (0, import_progress_stream.default)({ length: inputStat.size, speed: PROGRESS_STREAM_SPEED_STABILIZATION_TIME });
-    if (options.onProgress) {
-      progressStream.on("progress", options.onProgress);
-    }
-    await pipeline(
-      createReadStream(inputFile),
-      progressStream,
-      (0, import_split2.default)(),
-      gcodeProcessor,
-      encoder,
-      createWriteStream("|notused|", { fd: fh.fd, highWaterMark: 256 * 1024, autoClose: false })
-    );
-    await gcodeProcessor.processBookmarks(encoder, (bm, line) => replaceBookmarkedGcodeLine(fh, bm, line));
-    return {
-      ...gcodeProcessor.getAnalysisResult(),
-      wasAlreadyProcessed: false
-    };
-  } finally {
-    try {
-      await fh?.close();
-    } catch {
-    }
+  let progressStream;
+  if (options.onProgress) {
+    progressStream = (0, import_progress_stream.default)({ length: inputStat.size, speed: PROGRESS_STREAM_SPEED_STABILIZATION_TIME });
+    progressStream.on("progress", options.onProgress);
   }
+  return {
+    ...(await gcf.transform(outputFile, { progressTransform: progressStream, ...gcfOptions })).serialize(),
+    wasAlreadyProcessed: false,
+    printability: gcf.printability,
+    printabilityReasons: gcf.printabilityReasons,
+    canDeprocess: gcf.canDeprocess
+  };
 }
 
 // commands/postprocessor.tsx
@@ -100053,26 +100621,20 @@ var ProgressReportUI = ({ report, fileName, done, error }) => {
 var GcodeInfoZod = z.object({
   generator: z.string(),
   generatorVersion: z.string(),
-  flavour: z.number(),
+  flavour: z.string(),
   generatorTimestamp: z.string(),
   ratosDialectVersion: z.string().optional(),
-  processedByRatOSVersion: z.string().optional(),
-  processedByRatOSTimestamp: z.string().optional()
-});
-var PostProcessorCLIOutput = z.object({
-  result: z.literal("error"),
-  title: z.string().optional(),
-  message: z.string()
-}).or(
-  z.object({
-    result: z.literal("warning"),
-    title: z.string().optional(),
-    message: z.string()
-  })
-).or(
-  z.object({
-    result: z.literal("success"),
-    payload: z.object({
+  postProcessorVersion: z.string().optional(),
+  postProcessorTimestamp: z.string().optional(),
+  processedForIdex: z.union([z.boolean(), z.literal("unknown")]).optional(),
+  isProcessed: z.boolean(),
+  wasAlreadyProcessed: z.boolean(),
+  printability: z.string(),
+  printabilityReasons: z.array(z.string()).optional(),
+  canDeprocess: z.boolean().optional(),
+  analysisResult: z.discriminatedUnion("kind", [
+    z.object({
+      kind: z.literal("full"),
       extruderTemps: z.array(z.string()).optional(),
       toolChangeCount: z.number(),
       firstMoveX: z.string().optional(),
@@ -100081,21 +100643,32 @@ var PostProcessorCLIOutput = z.object({
       maxX: z.number(),
       hasPurgeTower: z.boolean().optional(),
       configSection: z.record(z.string(), z.string()).optional(),
-      usedTools: z.array(z.string()),
-      gcodeInfo: GcodeInfoZod
-    }).or(
-      z.object({
-        extruderTemps: z.array(z.string()).optional(),
-        firstMoveX: z.string().optional(),
-        firstMoveY: z.string().optional(),
-        hasPurgeTower: z.boolean().optional(),
-        configSection: z.record(z.string(), z.string()).optional(),
-        wasAlreadyProcessed: z.boolean(),
-        gcodeInfo: GcodeInfoZod
-      })
-    )
-  })
-).or(
+      usedTools: z.array(z.string())
+    }),
+    z.object({
+      kind: z.literal("quick"),
+      extruderTemps: z.array(z.string()).optional(),
+      firstMoveX: z.string().optional(),
+      firstMoveY: z.string().optional(),
+      hasPurgeTower: z.boolean().optional()
+    })
+  ]).optional()
+});
+var PostProcessorCLIOutput = z.discriminatedUnion("result", [
+  z.object({
+    result: z.literal("error"),
+    title: z.string().optional(),
+    message: z.string()
+  }),
+  z.object({
+    result: z.literal("warning"),
+    title: z.string().optional(),
+    message: z.string()
+  }),
+  z.object({
+    result: z.literal("success"),
+    payload: GcodeInfoZod
+  }),
   z.object({
     result: z.literal("progress"),
     payload: z.object({
@@ -100103,7 +100676,7 @@ var PostProcessorCLIOutput = z.object({
       eta: z.number()
     })
   })
-);
+]);
 var toPostProcessorCLIOutput = (obj) => {
   try {
     echo2(JSON.stringify(PostProcessorCLIOutput.parse(obj)));
@@ -100127,7 +100700,7 @@ ${formatZodError(e, obj).message}`
 };
 var postprocessor = (program3) => {
   program3.command("postprocess").description("Postprocess a gcode file for RatOS").option("--non-interactive", "Output ndjson to stdout instead of rendering a UI").option("-i, --idex", "Postprocess for an IDEX printer").option("-o, --overwrite", "Overwrite the output file if it exists").option("-O, --overwrite-input", "Overwrite the input file").option("-a, --allow-unsupported-slicer-versions", "Allow unsupported slicer versions").argument("<input>", "Path to the gcode file to postprocess").argument("[output]", "Path to the output gcode file (omit for inspection only)").action(async (inputFile, outputFile, args) => {
-    await loadEnvironment();
+    loadEnvironment();
     let onProgress = void 0;
     let rerender = void 0;
     let lastProgressPercentage = -1;
@@ -100621,6 +101194,36 @@ var doctor = program2.command("doctor").description("Diagnose and fix common iss
 loadEnvironment();
 await program2.parseAsync();
 /**
+ * @file errors.ts
+ * @description Common error classes for the G-code processor.
+ *
+ * @author Tom Glastonbury <t@tg73.net>
+ * @license MIT
+ * @copyright 2024
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+/**
+ * @file GCodeInfo.ts
+ * @description
+ *
+ * @author Tom Glastonbury <t@tg73.net>
+ * @license MIT
+ * @copyright 2024
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+/**
  * @file ActionSequence.ts
  * @description
  *
@@ -100651,52 +101254,7 @@ await program2.parseAsync();
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /**
- * @file errors.ts
- * @description Common error classes for the G-code processor.
- *
- * @author Tom Glastonbury <t@tg73.net>
- * @license MIT
- * @copyright 2024
- *
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-/**
  * @file SlidingWindowLineProcessor.ts
- * @description
- *
- * @author Tom Glastonbury <t@tg73.net>
- * @license MIT
- * @copyright 2024
- *
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-/**
- * @file helpers.ts
- * @description Common helper functions
- *
- * @author Tom Glastonbury <t@tg73.net>
- * @license MIT
- * @copyright 2024
- *
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-/**
- * @file GCodeInfo.ts
  * @description
  *
  * @author Tom Glastonbury <t@tg73.net>
@@ -100713,6 +101271,21 @@ await program2.parseAsync();
 /**
  * @file State.ts
  * @description
+ *
+ * @author Tom Glastonbury <t@tg73.net>
+ * @license MIT
+ * @copyright 2024
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+/**
+ * @file helpers.ts
+ * @description Common helper functions
  *
  * @author Tom Glastonbury <t@tg73.net>
  * @license MIT
@@ -100757,6 +101330,36 @@ await program2.parseAsync();
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /**
+ * @file AnalysisResult.ts
+ * @description
+ *
+ * @author Tom Glastonbury <t@tg73.net>
+ * @license MIT
+ * @copyright 2024
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+/**
+ * @file Version.ts
+ * @description
+ *
+ * @author Tom Glastonbury <t@tg73.net>
+ * @license MIT
+ * @copyright 2024
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+/**
  * @file GCodeProcessor.ts
  * @description The RatOS gcode post-processor.
  *
@@ -100773,6 +101376,21 @@ await program2.parseAsync();
  */
 /**
  * @file BookmarkingBufferEncoder.ts
+ * @description
+ *
+ * @author Tom Glastonbury <t@tg73.net>
+ * @license MIT
+ * @copyright 2024
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+/**
+ * @file GCodeFile.ts
  * @description
  *
  * @author Tom Glastonbury <t@tg73.net>
