@@ -92555,6 +92555,14 @@ var NullSink = class extends Writable {
     callback();
   }
 };
+var Printability = /* @__PURE__ */ ((Printability3) => {
+  Printability3["NOT_SUPPORTED"] = "NOT_SUPPORTED";
+  Printability3["MUST_PROCESS"] = "MUST_PROCESS";
+  Printability3["READY"] = "READY";
+  Printability3["COULD_REPROCESS"] = "COULD_REPROCESS";
+  Printability3["MUST_REPROCESS"] = "MUST_REPROCESS";
+  return Printability3;
+})(Printability || {});
 var GCodeFile = class _GCodeFile {
   constructor(path9, info, printability, canDeprocess, printabilityReasons) {
     this.path = path9;
@@ -100629,7 +100637,7 @@ var GcodeInfoZod = z.object({
   processedForIdex: z.union([z.boolean(), z.literal("unknown")]).optional(),
   isProcessed: z.boolean(),
   wasAlreadyProcessed: z.boolean(),
-  printability: z.string(),
+  printability: z.nativeEnum(Printability),
   printabilityReasons: z.array(z.string()).optional(),
   canDeprocess: z.boolean().optional(),
   analysisResult: z.discriminatedUnion("kind", [
