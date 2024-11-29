@@ -101092,7 +101092,7 @@ log.command("tail").option("-f, --follow", "Follow the log").option("-n, --lines
   if (options.lines) {
     flags.push(`-n${options.lines}`);
   }
-  const logFile = (await loadEnvironment()).LOG_FILE;
+  const logFile = loadEnvironment().LOG_FILE;
   const whichPretty = await which("pino-pretty");
   if (whichPretty.trim() === "") {
     echo3("pino-pretty not found, installing (requires sudo permissions)...");
@@ -101128,7 +101128,7 @@ var doctor = program2.command("doctor").description("Diagnose and fix common iss
       }
     )
   );
-  await $$`sudo ${(await loadEnvironment()).RATOS_SCRIPT_DIR}/update.sh`;
+  await $$`sudo ${loadEnvironment().RATOS_SCRIPT_DIR}/update.sh`;
   steps.push({ name: "Repaired RatOS configurator", status: "success" });
   rerender(
     /* @__PURE__ */ import_react65.default.createElement(
@@ -101143,6 +101143,7 @@ var doctor = program2.command("doctor").description("Diagnose and fix common iss
     )
   );
   await $$`sudo systemctl restart ratos-configurator`;
+  await $$`sleep 1 && curl -s -o /dev/null --retry 20 --retry-all-errors --retry-delay 1 --retry-max-time 60 "http://localhost:3000/configure" &> /dev/null`;
   steps.push({ name: "Restarted RatOS configurator", status: "success" });
   rerender(
     /* @__PURE__ */ import_react65.default.createElement(
@@ -101156,7 +101157,7 @@ var doctor = program2.command("doctor").description("Diagnose and fix common iss
       }
     )
   );
-  await $$`sudo ${(await loadEnvironment()).RATOS_CONFIGURATION_PATH}/scripts/ratos-update.sh`;
+  await $$`sudo ${loadEnvironment().RATOS_CONFIGURATION_PATH}/scripts/ratos-update.sh`;
   steps.push({ name: "Repaired RatOS configuration", status: "success" });
   rerender(
     /* @__PURE__ */ import_react65.default.createElement(
