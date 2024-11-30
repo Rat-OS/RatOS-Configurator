@@ -101123,6 +101123,7 @@ var doctor = program2.command("doctor").description("Diagnose and fix common iss
       {
         status: "Fixing potential RatOS issues...",
         stepText: "Repairing RatOS configurator...",
+        isLoading: true,
         cmdSignal,
         steps
       }
