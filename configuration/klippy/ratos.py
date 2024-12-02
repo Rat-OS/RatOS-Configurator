@@ -32,9 +32,8 @@ class RatOS:
 		self.reactor = self.printer.get_reactor()
 
 		self.old_is_graph_files = []
-		self.contact_mesh = None
-		self.gantry_mesh = None
-		self.gantry_mesh_points = []
+		self.offset_mesh = None
+		self.offset_mesh_points = [[]]
 		self.pmgr = BedMeshProfileManager(self.config, self)
 
 		self.load_settings()
@@ -78,9 +77,8 @@ class RatOS:
 		self.gcode.register_command('RATOS_LOG', self.cmd_RATOS_LOG, desc=(self.desc_RATOS_LOG))
 		self.gcode.register_command('PROCESS_GCODE_FILE', self.cmd_PROCESS_GCODE_FILE, desc=(self.desc_PROCESS_GCODE_FILE))
 		self.gcode.register_command('BEACON_APPLY_SCAN_COMPENSATION', self.cmd_BEACON_APPLY_SCAN_COMPENSATION, desc=(self.desc_BEACON_APPLY_SCAN_COMPENSATION))
-		self.gcode.register_command('RESET_GANTRY_TWIST_MESH', self.cmd_RESET_GANTRY_TWIST_MESH, desc=(self.desc_RESET_GANTRY_TWIST_MESH))
-		self.gcode.register_command('ADD_GANTRY_TWIST_MESH_VALUE', self.cmd_ADD_GANTRY_TWIST_MESH_VALUE, desc=(self.desc_ADD_GANTRY_TWIST_MESH_VALUE))
-		self.gcode.register_command('SET_GANTRY_TWIST_MESH', self.cmd_SET_GANTRY_TWIST_MESH, desc=(self.desc_SET_GANTRY_TWIST_MESH))
+		self.gcode.register_command('CACHE_BEACON_OFFSET_MESH_VALUE', self.cmd_CACHE_BEACON_OFFSET_MESH_VALUE, desc=(self.desc_CACHE_BEACON_OFFSET_MESH_VALUE))
+		self.gcode.register_command('SET_BEACON_OFFSET_MESH', self.cmd_SET_BEACON_OFFSET_MESH, desc=(self.desc_SET_BEACON_OFFSET_MESH))
 		self.gcode.register_command('TEST_PROCESS_GCODE_FILE', self.cmd_TEST_PROCESS_GCODE_FILE, desc=(self.desc_TEST_PROCESS_GCODE_FILE))
 
 	desc_TEST_PROCESS_GCODE_FILE = "Test the G-code post-processor for IDEX and RMMU, only for debugging purposes"
@@ -161,38 +159,28 @@ class RatOS:
 
 	desc_BEACON_APPLY_SCAN_COMPENSATION = "Compensates magnetic inaccuracies for beacon scan meshes."
 	def cmd_BEACON_APPLY_SCAN_COMPENSATION(self, gcmd):
-		profile = gcmd.get('PROFILE', "Contact")
+		profile = gcmd.get('PROFILE', "Offset")
 		if not profile.strip():
 			raise gcmd.error("Value for parameter 'PROFILE' must be specified")
 		if profile not in self.pmgr.get_profiles():
 			raise self.printer.command_error("Profile " + str(profile) + " not found for Beacon scan compensation")
-		self.contact_mesh = self.pmgr.load_profile(profile)
-		if not self.contact_mesh:
+		self.offset_mesh = self.pmgr.load_profile(profile)
+		if not self.offset_mesh:
 			raise self.printer.command_error("Could not load profile " + str(profile) + " for Beacon scan compensation")
 		self.compensate_beacon_scan(profile)
 
-	desc_RESET_GANTRY_TWIST_MESH = "Resets a gantry twist mesh and sets all values to 0."
-	def cmd_RESET_GANTRY_TWIST_MESH(self, gcmd):
-		profile = gcmd.get('PROFILE', "Gantry")
-		if not profile.strip():
-			raise gcmd.error("Value for parameter 'PROFILE' must be specified")
-		if profile not in self.pmgr.get_profiles():
-			raise self.printer.command_error("Profile " + str(profile) + " not found for reset gantry twist mesh")
-		# self.gantry_mesh = self.pmgr.save_profile(profile)
-		self.gantry_mesh = self.pmgr.load_profile(profile)
-		if not self.gantry_mesh:
-			raise self.printer.command_error("Could not load profile " + str(profile) + " for reset gantry twist mesh")
-		self.reset_gantry_twist_mesh(profile)
-
-	desc_ADD_GANTRY_TWIST_MESH_VALUE = "Adds a new value to the gantry twist mesh cache."
-	def cmd_ADD_GANTRY_TWIST_MESH_VALUE(self, gcmd):
+	desc_CACHE_BEACON_OFFSET_MESH_VALUE = "Adds a new value to the gantry twist mesh cache."
+	def cmd_CACHE_BEACON_OFFSET_MESH_VALUE(self, gcmd):
+		y = gcmd.get_int('Y', 0)
 		value = gcmd.get_float('VALUE', None)
-		self.gantry_mesh_points.append(value)
+		if len(self.offset_mesh_points) < y + 1:
+			self.offset_mesh_points.append([])
+		self.offset_mesh_points[y].append(value)
 
-	desc_SET_GANTRY_TWIST_MESH = "Sets the gantry twist cache to the gantry twist mesh."
-	def cmd_SET_GANTRY_TWIST_MESH(self, gcmd):
-		profile = gcmd.get('PROFILE', "Gantry")
-		self.set_gantry_twist_mesh(profile)
+	desc_SET_BEACON_OFFSET_MESH = "Sets the gantry twist cache to the gantry twist mesh."
+	def cmd_SET_BEACON_OFFSET_MESH(self, gcmd):
+		profile = gcmd.get('PROFILE', "Offset")
+		self.set_beacon_offset_mesh(profile)
 
 	#####
 	# Beacon Scan Compensation
@@ -214,8 +202,8 @@ class RatOS:
 							x_pos = params["min_x"] + x * x_step
 							y_pos = params["min_y"] + y * y_step
 							z_val = points[y][x]
-							contact_z = self.contact_mesh.calc_z(x_pos, y_pos)
-							new_z = z_val - (z_val - contact_z)
+							beacon_offset = self.offset_mesh.calc_z(x_pos, y_pos)
+							new_z = z_val - beacon_offset
 							new_points[y].append(new_z)
 					self.bed_mesh.z_mesh.build_mesh(new_points)
 					self.bed_mesh.save_profile(profile_name)
@@ -224,41 +212,12 @@ class RatOS:
 		except BedMesh.BedMeshError as e:
 			self.console_echo("Beacon scan compensation error", "error", str(e))
 
-	def reset_gantry_twist_mesh(self, profile):
-		self.gantry_mesh_points = []
-		systime = self.reactor.monotonic()
+	def set_beacon_offset_mesh(self, profile):
 		try:
 			if self.bed_mesh.z_mesh:
 				profile_name = self.bed_mesh.z_mesh.get_profile_name()
 				if profile_name == profile:
-					points = self.bed_mesh.get_status(systime)["profiles"][profile_name]["points"]
-					new_points = []
-					for y in range(len(points)):
-						new_points.append([])
-						for x in range(len(points[0])):
-							new_points[y].append(0)
-					self.bed_mesh.z_mesh.build_mesh(new_points)
-					self.bed_mesh.save_profile(profile_name)
-					self.bed_mesh.set_mesh(self.bed_mesh.z_mesh)
-					self.console_echo("Reset gantry twist mesh", "debug", "Gantry twist profile %s resetted %s" % (str(profile_name), str(profile)))
-		except BedMesh.BedMeshError as e:
-			self.console_echo("Reset gantry twist mesh error", "error", str(e))
-
-	def set_gantry_twist_mesh(self, profile):
-		systime = self.reactor.monotonic()
-		try:
-			if self.bed_mesh.z_mesh:
-				profile_name = self.bed_mesh.z_mesh.get_profile_name()
-				if profile_name == profile:
-					points = self.bed_mesh.get_status(systime)["profiles"][profile_name]["points"]
-					index = 0
-					new_points = []
-					for y in range(len(points)):
-						new_points.append([])
-						for x in range(len(points[0])):
-							new_points[y].append(self.gantry_mesh_points[index])
-							index = index + 1
-					self.bed_mesh.z_mesh.build_mesh(new_points)
+					self.bed_mesh.z_mesh.build_mesh(self.offset_mesh_points)
 					self.bed_mesh.save_profile(profile_name)
 					self.bed_mesh.set_mesh(self.bed_mesh.z_mesh)
 				else:
