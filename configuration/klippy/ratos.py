@@ -77,8 +77,7 @@ class RatOS:
 		self.gcode.register_command('RATOS_LOG', self.cmd_RATOS_LOG, desc=(self.desc_RATOS_LOG))
 		self.gcode.register_command('PROCESS_GCODE_FILE', self.cmd_PROCESS_GCODE_FILE, desc=(self.desc_PROCESS_GCODE_FILE))
 		self.gcode.register_command('BEACON_APPLY_SCAN_COMPENSATION', self.cmd_BEACON_APPLY_SCAN_COMPENSATION, desc=(self.desc_BEACON_APPLY_SCAN_COMPENSATION))
-		self.gcode.register_command('CACHE_BEACON_OFFSET_MESH_VALUE', self.cmd_CACHE_BEACON_OFFSET_MESH_VALUE, desc=(self.desc_CACHE_BEACON_OFFSET_MESH_VALUE))
-		self.gcode.register_command('SET_BEACON_OFFSET_MESH', self.cmd_SET_BEACON_OFFSET_MESH, desc=(self.desc_SET_BEACON_OFFSET_MESH))
+		self.gcode.register_command('CREATE_BEACON_COMPENSATION_MESH', self.cmd_CREATE_BEACON_COMPENSATION_MESH, desc=(self.desc_CREATE_BEACON_COMPENSATION_MESH))
 		self.gcode.register_command('TEST_PROCESS_GCODE_FILE', self.cmd_TEST_PROCESS_GCODE_FILE, desc=(self.desc_TEST_PROCESS_GCODE_FILE))
 
 	desc_TEST_PROCESS_GCODE_FILE = "Test the G-code post-processor for IDEX and RMMU, only for debugging purposes"
@@ -169,18 +168,12 @@ class RatOS:
 			raise self.printer.command_error("Could not load profile " + str(profile) + " for Beacon scan compensation")
 		self.compensate_beacon_scan(profile)
 
-	desc_CACHE_BEACON_OFFSET_MESH_VALUE = "Adds a new value to the gantry twist mesh cache."
-	def cmd_CACHE_BEACON_OFFSET_MESH_VALUE(self, gcmd):
-		y = gcmd.get_int('Y', 0)
-		value = gcmd.get_float('VALUE', None)
-		if len(self.offset_mesh_points) < y + 1:
-			self.offset_mesh_points.append([])
-		self.offset_mesh_points[y].append(value)
-
-	desc_SET_BEACON_OFFSET_MESH = "Sets the gantry twist cache to the gantry twist mesh."
-	def cmd_SET_BEACON_OFFSET_MESH(self, gcmd):
+	desc_CREATE_BEACON_COMPENSATION_MESH = "Sets the gantry twist cache to the gantry twist mesh."
+	def cmd_CREATE_BEACON_COMPENSATION_MESH(self, gcmd):
 		profile = gcmd.get('PROFILE', "Offset")
-		self.set_beacon_offset_mesh(profile)
+		if not profile.strip():
+			raise gcmd.error("Value for parameter 'PROFILE' must be specified")
+		self.create_compensation_mesh(profile)
 
 	#####
 	# Beacon Scan Compensation
@@ -201,9 +194,14 @@ class RatOS:
 						for x in range(len(points[0])):
 							x_pos = params["min_x"] + x * x_step
 							y_pos = params["min_y"] + y * y_step
-							z_val = points[y][x]
-							beacon_offset = self.offset_mesh.calc_z(x_pos, y_pos)
-							new_z = z_val - beacon_offset
+							scan_z = points[y][x]
+							offset_z = self.offset_mesh.calc_z(x_pos, y_pos)
+							new_z = scan_z - offset_z
+
+							self.gcode.respond_raw('scan_z: ' + str(scan_z))
+							self.gcode.respond_raw('offset_z: ' + str(offset_z))
+							self.gcode.respond_raw('new_z: ' + str(new_z))
+
 							new_points[y].append(new_z)
 					self.bed_mesh.z_mesh.build_mesh(new_points)
 					self.bed_mesh.save_profile(profile_name)
@@ -212,19 +210,32 @@ class RatOS:
 		except BedMesh.BedMeshError as e:
 			self.console_echo("Beacon scan compensation error", "error", str(e))
 
-	def set_beacon_offset_mesh(self, profile):
-		try:
-			if self.bed_mesh.z_mesh:
-				profile_name = self.bed_mesh.z_mesh.get_profile_name()
-				if profile_name == profile:
-					self.bed_mesh.z_mesh.build_mesh(self.offset_mesh_points)
-					self.bed_mesh.save_profile(profile_name)
-					self.bed_mesh.set_mesh(self.bed_mesh.z_mesh)
-				else:
-					raise self.printer.command_error("Wrong profile loaded " + str(profile) + " for add gantry twist mesh value")
-		except BedMesh.BedMeshError as e:
-			self.console_echo("Reset gantry twist mesh error", "error", str(e))
+	def create_compensation_mesh(self, profile):
+		systime = self.reactor.monotonic()
+		if self.bed_mesh.z_mesh:
+			self.gcode.run_script_from_command("BED_MESH_PROFILE LOAD='RatOSTempOffsetScan'")
+			scan_mesh_points = self.bed_mesh.get_status(systime)["profiles"]["RatOSTempOffsetScan"]["points"]
+			self.gcode.run_script_from_command("BED_MESH_PROFILE LOAD='%s'" % profile)
+			try:
+				points = self.bed_mesh.get_status(systime)["profiles"][profile]["points"]
+				new_points = []
+				for y in range(len(points)):
+					new_points.append([])
+					for x in range(len(points[0])):
+						z_val = points[y][x]
+						scan_mesh_z_val = scan_mesh_points[y][x]
+						new_z = z_val - scan_mesh_z_val 
+						new_points[y].append(new_z)
+				self.bed_mesh.z_mesh.build_mesh(new_points)
+				self.bed_mesh.save_profile(profile)
+				self.bed_mesh.set_mesh(self.bed_mesh.z_mesh)
+				self.console_echo("Beacon scan compensation", "debug", "Compensation Mesh %s created" % (str(profile)))
+			except BedMesh.BedMeshError as e:
+				self.console_echo("Beacon scan compensation error", "error", str(e))
 
+	#####
+	# Gcode Post Processor
+	#####
 	def process_gcode_file(self, filename, enable_post_processing):
 		try:
 			[path, size] = self.get_gcode_file_info(filename)
@@ -495,41 +506,6 @@ class BedMeshProfileManager:
 		except BedMesh.BedMeshError as e:
 			raise self.gcode.error(str(e))
 		return z_mesh
-	# def save_profile(self, prof_name):
-	# 	z_mesh = self.bedmesh.get_mesh()
-	# 	if z_mesh is None:
-	# 		self.gcode.respond_info(
-	# 			"Unable to save to profile [%s], the bed has not been probed"
-	# 			% (prof_name))
-	# 		return
-	# 	probed_matrix = z_mesh.get_probed_matrix()
-	# 	mesh_params = z_mesh.get_mesh_params()
-	# 	configfile = self.printer.lookup_object('configfile')
-	# 	cfg_name = self.name + " " + prof_name
-	# 	# set params
-	# 	z_values = ""
-	# 	for line in probed_matrix:
-	# 		z_values += "\n  "
-	# 		for p in line:
-	# 			z_values += "%.6f, " % p
-	# 		z_values = z_values[:-2]
-	# 	configfile.set(cfg_name, 'version', PROFILE_VERSION)
-	# 	configfile.set(cfg_name, 'points', z_values)
-	# 	for key, value in mesh_params.items():
-	# 		configfile.set(cfg_name, key, value)
-	# 	# save copy in local storage
-	# 	# ensure any self.profiles returned as status remains immutable
-	# 	profiles = dict(self.profiles)
-	# 	profiles[prof_name] = profile = {}
-	# 	profile['points'] = probed_matrix
-	# 	profile['mesh_params'] = collections.OrderedDict(mesh_params)
-	# 	self.profiles = profiles
-	# 	self.bedmesh.update_status()
-	# 	self.gcode.respond_info(
-	# 		"Bed Mesh state has been saved to profile [%s]\n"
-	# 		"for the current session.  The SAVE_CONFIG command will\n"
-	# 		"update the printer config file and restart the printer."
-	# 		% (prof_name))
 
 #####
 # Loader
