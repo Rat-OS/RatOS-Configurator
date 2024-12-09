@@ -104,12 +104,12 @@ class RatOS:
 
 	desc_SHOW_IS_GRAPH_FILES = "Shows the last generated IS graph in the console"
 	def cmd_SHOW_IS_GRAPH_FILES(self, gcmd):
-		title = gcmd.get('TITLE', '')
 		try:
 			counter = 0
 			new_is_graph_files = self.get_is_graph_files()
 			for file_path in new_is_graph_files:
 				if file_path not in self.old_is_graph_files:
+					title = gcmd.get('TITLE', '')
 					file_name = file_path.replace("/home/pi/printer_data/config/input_shaper/", "")
 					url = file_path.replace("/home/pi/printer_data", "../server/files")
 					title = title + ': ' if title != '' else ''
@@ -122,7 +122,9 @@ class RatOS:
 						break
 			self.old_is_graph_files = []
 		except Exception as exc:
-			self.debug_echo("SHOW_IS_GRAPH_FILES", "Something went wrong. " + str(exc))
+			self.console_echo("Error showing IS graph files", "error", "Please report this issue on discord or GitHub and attach a debug-zip from the configurator.")
+			logging.error(exc)
+			self.debug_echo("SHOW_IS_GRAPH_FILES", str(exc))
 
 	desc_CACHE_IS_GRAPH_FILES = "Caches the current is graph files"
 	def cmd_CACHE_IS_GRAPH_FILES(self, gcmd):
@@ -237,6 +239,7 @@ class RatOS:
 			if self.allow_unsupported_slicer_versions:
 				args.append('--allow-unsupported-slicer-versions')
 			args.append(path)
+			logging.info('Post-processing started via RatOS CLI: ' + str(args))
 			self.console_echo('Post-processing started', 'info',  'Processing %s (%.2f mb)...' % (filename, size / 1024 / 1024));
 			process = subprocess.Popen(
 				args,
@@ -297,6 +300,8 @@ class RatOS:
 						self.console_echo(f"Post-processing ({data['payload']['percentage']}%)... {eta_str} remaining", 'info')
 					else:
 						self.console_echo(f"Post-processing ({data['payload']['percentage']}%)...", 'info')
+				if data['result'] == 'waiting':
+					self.console_echo('Post-processing waiting', 'info', 'Waiting for input file to finish being written...')
 
 			def _process_output(eventtime):
 				if process.stdout is None:

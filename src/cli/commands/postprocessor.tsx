@@ -19,6 +19,8 @@ import { getRealPath, loadEnvironment } from '@/cli/util';
 import { GCodeError, GCodeProcessorError, SlicerNotSupported } from '@/server/gcode-processor/errors';
 import { formatZodError } from '@schema-hub/zod-error-formatter';
 import { Printability } from '@/server/gcode-processor/GCodeFile';
+import { promisify } from 'util';
+import { stat } from 'fs/promises';
 
 const ProgressReportUI: React.FC<{
 	report?: Progress;
@@ -120,6 +122,12 @@ export const PostProcessorCLIOutput = z.discriminatedUnion('result', [
 			eta: z.number(),
 		}),
 	}),
+	z.object({
+		result: z.literal('waiting'),
+		payload: z.object({
+			fileName: z.string(),
+		}),
+	}),
 ]);
 
 export type PostProcessorCLIOutput = z.infer<typeof PostProcessorCLIOutput>;
@@ -144,6 +152,54 @@ export const toPostProcessorCLIOutput = (obj: PostProcessorCLIOutput): void => {
 	}
 };
 
+class FileStillBeingWrittenError extends Error {
+	constructor(filePath: string, maxWaitTime: number) {
+		super(`Input file ${filePath} appears to still be being written to after ${maxWaitTime}ms`);
+	}
+}
+
+/**
+ * Waits for a file to finish being written by monitoring its size changes.
+ * This helps prevent processing incomplete files that are still being written by other programs.
+ *
+ * @param filePath - The path to the file to monitor
+ * @param maxWaitTime - Maximum time to wait in milliseconds (default: 10000ms / 10 seconds)
+ * @throws Error if the file is still being written after maxWaitTime
+ *
+ * The function works by:
+ * 1. Checking the file size every 100ms
+ * 2. If the size hasn't changed between checks, assumes writing is complete
+ * 3. If the size is still changing after maxWaitTime, throws an error
+ */
+const waitForFileToBeWritten = async (filePath: string, maxWaitTime: number = 10000): Promise<void> => {
+	// Check if file is being written to
+	let lastSize = -1;
+	let currentSize = 0;
+	let attempts = 0;
+	const maxAttempts = 10;
+	const waitTime = 100; // 100ms
+
+	while (attempts * waitTime < maxWaitTime) {
+		const stats = await stat(filePath);
+		currentSize = stats.size;
+
+		if (currentSize === lastSize) {
+			break; // File size hasn't changed, assume writing is complete
+		}
+
+		lastSize = currentSize;
+		attempts++;
+
+		if (attempts * waitTime < maxWaitTime) {
+			await promisify(setTimeout)(waitTime);
+		}
+	}
+
+	if (attempts === maxAttempts) {
+		throw new FileStillBeingWrittenError(filePath, maxWaitTime);
+	}
+};
+
 export const postprocessor = (program: Command) => {
 	program
 		.command('postprocess')
@@ -161,8 +217,37 @@ export const postprocessor = (program: Command) => {
 			if (outputFile) {
 				outputFile = await getRealPath(program, outputFile);
 			}
+
+			try {
+				await waitForFileToBeWritten(inputFile);
+			} catch (e) {
+				if (e instanceof FileStillBeingWrittenError) {
+					toPostProcessorCLIOutput({
+						result: 'error',
+						title: 'Input file is still being written to',
+						message: e.message,
+					});
+					process.exit(1);
+				} else if (e instanceof Error && 'code' in e && e.code === 'ENOENT' && 'path' in e) {
+					toPostProcessorCLIOutput({
+						result: 'error',
+						title: 'Input file not found',
+						message: e.message,
+					});
+					process.exit(1);
+				} else {
+					toPostProcessorCLIOutput({
+						result: 'error',
+						title: 'An unexpected error occurred while waiting for the input file to be written',
+						message: 'Please download a debug-zip and report this issue.',
+					});
+					throw e;
+				}
+			}
+
 			// load env variables
 			loadEnvironment();
+
 			let onProgress: ((report: Progress) => void) | undefined = undefined;
 			let rerender: ((element: React.ReactNode) => void) | undefined = undefined;
 			let lastProgressPercentage: number = -1;
@@ -221,24 +306,47 @@ export const postprocessor = (program: Command) => {
 				},
 			};
 
+			getLogger().info(
+				{ ...opts, inputFile, outputFile: outputFile ?? 'No output file specified' },
+				'postprocessor options',
+			);
+
 			try {
 				if (args.overwriteInput) {
 					outputFile = tmpfile();
 				}
-				const result = !!outputFile
-					? await processGCode(inputFile, outputFile, opts)
-					: await inspectGCode(inputFile, { ...opts, fullInspection: false });
+
+				// TODO: At a later date, when the post-processor can deprocess a file,
+				// we should check if the file was already processed by inspecting the file.
+				// In case of `MUST_PROCESS`, we can immediately process the file,
+				// in case of `READY`, we can skip processing the file, but should still run analysis to get the full file result.
+				// In all other situations the consumer can then prompt the user based on the input file's printability.
+				// NOTE by tg73: There's fuzzyness around the knowledge re non-idex not needing to be transformed.
+				// My current opinion: rather overprocess than underprocess. Specific situations where skipping processing is OK
+				// can be handled in fancy ways later - i need to see that it's worth the complexity first.
+
+				const result =
+					outputFile != null && outputFile.trim() !== ''
+						? await processGCode(inputFile, outputFile, opts)
+						: await inspectGCode(inputFile, { ...opts, fullInspection: false });
+
+				getLogger().info(result, 'postprocessor result');
 
 				if (!result.wasAlreadyProcessed && args.overwriteInput) {
+					getLogger().info({ outputFile, inputFile }, 'renaming output file to input file');
 					fs.renameSync(outputFile, inputFile);
 				}
 				if (
 					result.wasAlreadyProcessed &&
-					result.printability === 'READY' &&
+					result.printability === Printability.READY &&
 					!args.overwriteInput &&
 					outputFile != null &&
 					outputFile.trim() !== ''
 				) {
+					getLogger().info(
+						{ outputFile, inputFile },
+						'Input file already processed. Copying input file to output file',
+					);
 					// If the file was already processed, output file is provided and the printability is READY, copy the file to the output location
 					fs.copyFileSync(inputFile, outputFile);
 				}
