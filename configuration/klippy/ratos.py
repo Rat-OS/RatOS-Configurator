@@ -197,11 +197,7 @@ class RatOS:
 							scan_z = points[y][x]
 							offset_z = self.offset_mesh.calc_z(x_pos, y_pos)
 							new_z = scan_z - offset_z
-
-							self.gcode.respond_raw('scan_z: ' + str(scan_z))
-							self.gcode.respond_raw('offset_z: ' + str(offset_z))
-							self.gcode.respond_raw('new_z: ' + str(new_z))
-
+							self.debug_echo("Beacon scan compensation", "scan: %0.4f  offset: %0.4f  new: %0.4f" % (scan_z, offset_z, new_z))
 							new_points[y].append(new_z)
 					self.bed_mesh.z_mesh.build_mesh(new_points)
 					self.bed_mesh.save_profile(profile_name)
