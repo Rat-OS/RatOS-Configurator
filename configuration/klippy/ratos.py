@@ -214,7 +214,7 @@ class RatOS:
 					for x in range(len(points[0])):
 						contact_z = points[y][x]
 						scan_z = scan_mesh_points[y][x]
-						offset_z = contact_z - scan_z 
+						offset_z = scan_z - contact_z
 						new_points[y].append(offset_z)
 				self.bed_mesh.z_mesh.build_mesh(new_points)
 				self.bed_mesh.save_profile(profile)
