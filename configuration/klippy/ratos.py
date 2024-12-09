@@ -7,14 +7,6 @@ from . import bed_mesh as BedMesh
 # RatOS
 #####
 
-PRUSA_SLICER = "prusaslicer"
-SUPER_SLICER = "superslicer"
-ORCA_SLICER = "orcaslicer"
-UNKNOWN_SLICER = "unknown"
-
-CHANGED_BY_POST_PROCESSOR = " ; Changed by RatOS post processor: "
-REMOVED_BY_POST_PROCESSOR = "; Removed by RatOS post processor: "
-
 class RatOS:
 
 	#####
