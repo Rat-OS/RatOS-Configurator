@@ -215,13 +215,14 @@ class RatOS:
 						contact_z = points[y][x]
 						scan_z = scan_mesh_points[y][x]
 						offset_z = contact_z - scan_z
+						self.debug_echo("Create compensation mesh", "scan: %0.4f  contact: %0.4f  offset: %0.4f" % (scan_z, contact_z, offset_z))
 						new_points[y].append(offset_z)
 				self.bed_mesh.z_mesh.build_mesh(new_points)
 				self.bed_mesh.save_profile(profile)
 				self.bed_mesh.set_mesh(self.bed_mesh.z_mesh)
-				self.console_echo("Beacon scan compensation", "debug", "Compensation Mesh %s created" % (str(profile)))
+				self.console_echo("Create compensation mesh", "debug", "Compensation Mesh %s created" % (str(profile)))
 			except BedMesh.BedMeshError as e:
-				self.console_echo("Beacon scan compensation error", "error", str(e))
+				self.console_echo("Create compensation mesh error", "error", str(e))
 
 	#####
 	# Gcode Post Processor
