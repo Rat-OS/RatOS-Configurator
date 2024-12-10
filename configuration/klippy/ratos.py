@@ -1,7 +1,5 @@
-import os, logging, re, glob, math
-import logging, collections, pathlib
-import json, asyncio, subprocess
-from . import bed_mesh as BedMesh
+import os, logging, glob
+import json, subprocess, pathlib
 
 #####
 # RatOS
@@ -24,9 +22,6 @@ class RatOS:
 		self.reactor = self.printer.get_reactor()
 
 		self.old_is_graph_files = []
-		self.offset_mesh = None
-		self.offset_mesh_points = [[]]
-		self.pmgr = BedMeshProfileManager(self.config, self)
 
 		self.load_settings()
 		self.register_commands()
@@ -41,8 +36,6 @@ class RatOS:
 	def _connect(self):
 		self.v_sd = self.printer.lookup_object('virtual_sdcard', None)
 		self.sdcard_dirname = self.v_sd.sdcard_dirname
-		if self.config.has_section("bed_mesh"):
-			self.bed_mesh = self.printer.lookup_object('bed_mesh')
 		self.dual_carriage = None
 		if self.config.has_section("dual_carriage"):
 			self.dual_carriage = self.printer.lookup_object("dual_carriage", None)
@@ -68,8 +61,6 @@ class RatOS:
 		self.gcode.register_command('CONSOLE_ECHO', self.cmd_CONSOLE_ECHO, desc=(self.desc_CONSOLE_ECHO))
 		self.gcode.register_command('RATOS_LOG', self.cmd_RATOS_LOG, desc=(self.desc_RATOS_LOG))
 		self.gcode.register_command('PROCESS_GCODE_FILE', self.cmd_PROCESS_GCODE_FILE, desc=(self.desc_PROCESS_GCODE_FILE))
-		self.gcode.register_command('BEACON_APPLY_SCAN_COMPENSATION', self.cmd_BEACON_APPLY_SCAN_COMPENSATION, desc=(self.desc_BEACON_APPLY_SCAN_COMPENSATION))
-		self.gcode.register_command('CREATE_BEACON_COMPENSATION_MESH', self.cmd_CREATE_BEACON_COMPENSATION_MESH, desc=(self.desc_CREATE_BEACON_COMPENSATION_MESH))
 		self.gcode.register_command('TEST_PROCESS_GCODE_FILE', self.cmd_TEST_PROCESS_GCODE_FILE, desc=(self.desc_TEST_PROCESS_GCODE_FILE))
 
 	desc_TEST_PROCESS_GCODE_FILE = "Test the G-code post-processor for IDEX and RMMU, only for debugging purposes"
@@ -149,80 +140,6 @@ class RatOS:
 		else:
 			if self.process_gcode_file(filename, True):
 				self.v_sd.cmd_SDCARD_PRINT_FILE(gcmd)
-
-	desc_BEACON_APPLY_SCAN_COMPENSATION = "Compensates magnetic inaccuracies for beacon scan meshes."
-	def cmd_BEACON_APPLY_SCAN_COMPENSATION(self, gcmd):
-		profile = gcmd.get('PROFILE', "Offset")
-		if not profile.strip():
-			raise gcmd.error("Value for parameter 'PROFILE' must be specified")
-		if profile not in self.pmgr.get_profiles():
-			raise self.printer.command_error("Profile " + str(profile) + " not found for Beacon scan compensation")
-		self.offset_mesh = self.pmgr.load_profile(profile)
-		if not self.offset_mesh:
-			raise self.printer.command_error("Could not load profile " + str(profile) + " for Beacon scan compensation")
-		self.compensate_beacon_scan(profile)
-
-	desc_CREATE_BEACON_COMPENSATION_MESH = "Sets the gantry twist cache to the gantry twist mesh."
-	def cmd_CREATE_BEACON_COMPENSATION_MESH(self, gcmd):
-		profile = gcmd.get('PROFILE', "Offset")
-		if not profile.strip():
-			raise gcmd.error("Value for parameter 'PROFILE' must be specified")
-		self.create_compensation_mesh(profile)
-
-	#####
-	# Beacon Scan Compensation
-	#####
-	def compensate_beacon_scan(self, profile):
-		systime = self.reactor.monotonic()
-		try:
-			if self.bed_mesh.z_mesh:
-				profile_name = self.bed_mesh.z_mesh.get_profile_name()
-				if profile_name != profile:
-					points = self.bed_mesh.get_status(systime)["profiles"][profile_name]["points"]
-					params = self.bed_mesh.z_mesh.get_mesh_params()
-					x_step = ((params["max_x"] - params["min_x"]) / (len(points[0]) - 1))
-					y_step = ((params["max_y"] - params["min_y"]) / (len(points) - 1))
-					new_points = []
-					for y in range(len(points)):
-						new_points.append([])
-						for x in range(len(points[0])):
-							x_pos = params["min_x"] + x * x_step
-							y_pos = params["min_y"] + y * y_step
-							scan_z = points[y][x]
-							offset_z = self.offset_mesh.calc_z(x_pos, y_pos)
-							new_z = scan_z + offset_z
-							self.debug_echo("Beacon scan compensation", "scan: %0.4f  offset: %0.4f  new: %0.4f" % (scan_z, offset_z, new_z))
-							new_points[y].append(new_z)
-					self.bed_mesh.z_mesh.build_mesh(new_points)
-					self.bed_mesh.save_profile(profile_name)
-					self.bed_mesh.set_mesh(self.bed_mesh.z_mesh)
-					self.console_echo("Beacon scan compensation", "debug", "Mesh scan profile %s compensated with contact profile %s" % (str(profile_name), str(profile)))
-		except BedMesh.BedMeshError as e:
-			self.console_echo("Beacon scan compensation error", "error", str(e))
-
-	def create_compensation_mesh(self, profile):
-		systime = self.reactor.monotonic()
-		if self.bed_mesh.z_mesh:
-			self.gcode.run_script_from_command("BED_MESH_PROFILE LOAD='RatOSTempOffsetScan'")
-			scan_mesh_points = self.bed_mesh.get_status(systime)["profiles"]["RatOSTempOffsetScan"]["points"]
-			self.gcode.run_script_from_command("BED_MESH_PROFILE LOAD='%s'" % profile)
-			try:
-				points = self.bed_mesh.get_status(systime)["profiles"][profile]["points"]
-				new_points = []
-				for y in range(len(points)):
-					new_points.append([])
-					for x in range(len(points[0])):
-						contact_z = points[y][x]
-						scan_z = scan_mesh_points[y][x]
-						offset_z = contact_z - scan_z
-						self.debug_echo("Create compensation mesh", "scan: %0.4f  contact: %0.4f  offset: %0.4f" % (scan_z, contact_z, offset_z))
-						new_points[y].append(offset_z)
-				self.bed_mesh.z_mesh.build_mesh(new_points)
-				self.bed_mesh.save_profile(profile)
-				self.bed_mesh.set_mesh(self.bed_mesh.z_mesh)
-				self.console_echo("Create compensation mesh", "debug", "Compensation Mesh %s created" % (str(profile)))
-			except BedMesh.BedMeshError as e:
-				self.console_echo("Create compensation mesh error", "error", str(e))
 
 	#####
 	# Gcode Post Processor
@@ -447,59 +364,6 @@ class RatOS:
 	
 	def get_status(self, eventtime):
 		return {'name': self.name, 'last_processed_file_result': self.last_processed_file_result}
-
-#####
-# Bed Mesh Profile Manager
-#####
-PROFILE_VERSION = 1
-class BedMeshProfileManager:
-	def __init__(self, config, bedmesh):
-		self.name = "bed_mesh"
-		self.printer = config.get_printer()
-		self.gcode = self.printer.lookup_object('gcode')
-		self.bedmesh = bedmesh
-		self.profiles = {}
-		self.incompatible_profiles = []
-		# Fetch stored profiles from Config
-		stored_profs = config.get_prefix_sections(self.name)
-		stored_profs = [s for s in stored_profs
-						if s.get_name() != self.name]
-		for profile in stored_profs:
-			name = profile.get_name().split(' ', 1)[1]
-			version = profile.getint('version', 0)
-			if version != BedMesh.PROFILE_VERSION:
-				logging.info(
-					"bed_mesh: Profile [%s] not compatible with this version\n"
-					"of bed_mesh.  Profile Version: %d Current Version: %d "
-					% (name, version, BedMesh.PROFILE_VERSION))
-				self.incompatible_profiles.append(name)
-				continue
-			self.profiles[name] = {}
-			zvals = profile.getlists('points', seps=(',', '\n'), parser=float)
-			self.profiles[name]['points'] = zvals
-			self.profiles[name]['mesh_params'] = params = \
-				collections.OrderedDict()
-			for key, t in BedMesh.PROFILE_OPTIONS.items():
-				if t is int:
-					params[key] = profile.getint(key)
-				elif t is float:
-					params[key] = profile.getfloat(key)
-				elif t is str:
-					params[key] = profile.get(key)
-	def get_profiles(self):
-		return self.profiles
-	def load_profile(self, prof_name):
-		profile = self.profiles.get(prof_name, None)
-		if profile is None:
-			return None
-		probed_matrix = profile['points']
-		mesh_params = profile['mesh_params']
-		z_mesh = BedMesh.ZMesh(mesh_params, prof_name)
-		try:
-			z_mesh.build_mesh(probed_matrix)
-		except BedMesh.BedMeshError as e:
-			raise self.gcode.error(str(e))
-		return z_mesh
 
 #####
 # Loader
