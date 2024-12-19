@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+# shellcheck source=./src/scripts/common.sh
 source "$SCRIPT_DIR/common.sh"
 
 verify_ready()
@@ -30,6 +31,8 @@ ensure_service_permission
 ensure_sudo_command_whitelisting
 ensure_pnpm_installation
 pnpm_install
-install_udev_rule root
 install_cli
+install_udev_rule
 patch_log_rotation
+symlink_configuration
+install_or_update_service_file
