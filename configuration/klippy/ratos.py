@@ -41,7 +41,6 @@ class RatOS:
 	#####
 	def register_handler(self):
 		self.printer.register_event_handler("klippy:connect", self._connect)
-		self.printer.register_event_handler("stepper_enable:motor_off", self._motor_off)
 
 	def _connect(self):
 		self.v_sd = self.printer.lookup_object('virtual_sdcard', None)
@@ -57,9 +56,6 @@ class RatOS:
 
 		# Register overrides.
 		self.register_command_overrides()
-
-	def _motor_off(self, print_time):
-		self.bypass_post_processing = self.config.getboolean('bypass_post_processing', False)
 
 	#####
 	# Settings
@@ -85,7 +81,6 @@ class RatOS:
 		self.gcode.register_command('ALLOW_UNKNOWN_GCODE_GENERATOR', self.cmd_ALLOW_UNKNOWN_GCODE_GENERATOR, desc=(self.desc_ALLOW_UNKNOWN_GCODE_GENERATOR))
 		self.gcode.register_command('DONT_PROCESS_GCODE_FOR_NEXT_PRINT', self.cmd_DONT_PROCESS_GCODE_FOR_NEXT_PRINT, desc=(self.desc_DONT_PROCESS_GCODE_FOR_NEXT_PRINT))
 		self.gcode.register_command('_SYNC_GCODE_POSITION', self.cmd_SYNC_GCODE_POSITION, desc=(self.desc_SYNC_GCODE_POSITION))
-		self.gcode.register_command('_RATOS_END_PRINT', self.cmd_RATOS_END_PRINT, desc=(self.desc_RATOS_END_PRINT))
 
 	def register_command_overrides(self):
 		self.register_override('TEST_RESONANCES', self.override_TEST_RESONANCES, desc=(self.desc_TEST_RESONANCES))
@@ -127,10 +122,6 @@ class RatOS:
 	def cmd_SYNC_GCODE_POSITION(self, gcmd):
 		toolhead = self.printer.lookup_object('toolhead')
 		toolhead.manual_move((None, None, None), 100)
-
-	desc_RATOS_END_PRINT = ("Called from the END_PRINT macro.")
-	def cmd_RATOS_END_PRINT(self, gcmd):
-		self.bypass_post_processing = self.config.getboolean('bypass_post_processing', False)
 
 	desc_ALLOW_UNKNOWN_GCODE_GENERATOR = "Temporarily allow gcode from generators that cannot be identified by the postprocessor"
 	def cmd_ALLOW_UNKNOWN_GCODE_GENERATOR(self, gcmd):
@@ -213,6 +204,7 @@ class RatOS:
 		self.gcode.run_script_from_command("SET_GCODE_VARIABLE MACRO=START_PRINT VARIABLE=first_x VALUE=-1")
 		self.gcode.run_script_from_command("SET_GCODE_VARIABLE MACRO=START_PRINT VARIABLE=first_y VALUE=-1")
 		if self.bypass_post_processing:
+			self.bypass_post_processing = self.config.getboolean('bypass_post_processing', False)
 			self.console_echo('Bypassing post-processing', 'info', 'Configuration option `bypass_post_processing` is set to true. Bypassing post-processing...')
 			if isIdex:
 				self.console_echo('Bypassing post-processing on IDEX machines is not recommended', 'warning', '_N_'.join([
