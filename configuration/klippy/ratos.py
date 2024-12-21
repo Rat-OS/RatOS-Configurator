@@ -85,6 +85,7 @@ class RatOS:
 		self.gcode.register_command('ALLOW_UNKNOWN_GCODE_GENERATOR', self.cmd_ALLOW_UNKNOWN_GCODE_GENERATOR, desc=(self.desc_ALLOW_UNKNOWN_GCODE_GENERATOR))
 		self.gcode.register_command('DONT_PROCESS_GCODE_FOR_NEXT_PRINT', self.cmd_DONT_PROCESS_GCODE_FOR_NEXT_PRINT, desc=(self.desc_DONT_PROCESS_GCODE_FOR_NEXT_PRINT))
 		self.gcode.register_command('_SYNC_GCODE_POSITION', self.cmd_SYNC_GCODE_POSITION, desc=(self.desc_SYNC_GCODE_POSITION))
+		self.gcode.register_command('_RATOS_END_PRINT', self.cmd_RATOS_END_PRINT, desc=(self.desc_RATOS_END_PRINT))
 
 	def register_command_overrides(self):
 		self.register_override('TEST_RESONANCES', self.override_TEST_RESONANCES, desc=(self.desc_TEST_RESONANCES))
@@ -126,6 +127,10 @@ class RatOS:
 	def cmd_SYNC_GCODE_POSITION(self, gcmd):
 		toolhead = self.printer.lookup_object('toolhead')
 		toolhead.manual_move((None, None, None), 100)
+
+	desc_RATOS_END_PRINT = ("Called from the END_PRINT macro.")
+	def cmd_RATOS_END_PRINT(self, gcmd):
+		self.bypass_post_processing = self.config.getboolean('bypass_post_processing', False)
 
 	desc_ALLOW_UNKNOWN_GCODE_GENERATOR = "Temporarily allow gcode from generators that cannot be identified by the postprocessor"
 	def cmd_ALLOW_UNKNOWN_GCODE_GENERATOR(self, gcmd):
