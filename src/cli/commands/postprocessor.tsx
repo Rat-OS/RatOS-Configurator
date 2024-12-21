@@ -14,11 +14,16 @@ import { Duration, DurationLikeObject } from 'luxon';
 import path from 'path';
 import { z, ZodError } from 'zod';
 import { getLogger } from '@/cli/logger';
-import { ACTION_WARNING_CODES } from '@/server/gcode-processor/Actions';
+import { WarningCodes } from '@/server/gcode-processor/WarningCodes';
 import { getRealPath, loadEnvironment } from '@/cli/util';
-import { GCodeError, GCodeProcessorError, SlicerNotSupported } from '@/server/gcode-processor/errors';
+import {
+	GCodeError,
+	GCodeProcessorError,
+	GeneratorIdentificationNotFound,
+	SlicerNotSupported,
+} from '@/server/gcode-processor/errors';
 import { formatZodError } from '@schema-hub/zod-error-formatter';
-import { Printability } from '@/server/gcode-processor/GCodeFile';
+import { Printability } from '@/server/gcode-processor/Printability';
 import { promisify } from 'util';
 import { stat } from 'fs/promises';
 
@@ -100,11 +105,20 @@ const GcodeInfoZod = z.object({
 		.optional(),
 });
 
+const ErrorCodes = z.enum([
+	'UNKNOWN_GCODE_GENERATOR',
+	'UNSUPPORTED_SLICER_VERSION',
+	'FILE_NOT_FOUND',
+	'G_CODE_ERROR',
+	'UNKNOWN_ERROR',
+]);
+
 export const PostProcessorCLIOutput = z.discriminatedUnion('result', [
 	z.object({
 		result: z.literal('error'),
 		title: z.string().optional(),
 		message: z.string(),
+		code: ErrorCodes.default('UNKNOWN_ERROR'),
 	}),
 	z.object({
 		result: z.literal('warning'),
@@ -130,9 +144,10 @@ export const PostProcessorCLIOutput = z.discriminatedUnion('result', [
 	}),
 ]);
 
-export type PostProcessorCLIOutput = z.infer<typeof PostProcessorCLIOutput>;
+export type PostProcessorCLIOutput = z.output<typeof PostProcessorCLIOutput>;
+export type PostProcessorCLIInput = z.input<typeof PostProcessorCLIOutput>;
 
-export const toPostProcessorCLIOutput = (obj: PostProcessorCLIOutput): void => {
+export const toPostProcessorCLIOutput = (obj: PostProcessorCLIInput): void => {
 	try {
 		echo(JSON.stringify(PostProcessorCLIOutput.parse(obj)));
 	} catch (e) {
@@ -143,6 +158,7 @@ export const toPostProcessorCLIOutput = (obj: PostProcessorCLIOutput): void => {
 				JSON.stringify({
 					result: 'error',
 					title: 'An error occurred while serializing postprocessor output',
+					code: 'UNKNOWN_ERROR',
 					message: `This is likely caused by loading a gcode file that was processed by a legacy version of the RatOS postprocessor.\n\n${formatZodError(e, obj).message}`,
 				} satisfies PostProcessorCLIOutput),
 			);
@@ -209,6 +225,10 @@ export const postprocessor = (program: Command) => {
 		.option('-o, --overwrite', 'Overwrite the output file if it exists')
 		.option('-O, --overwrite-input', 'Overwrite the input file')
 		.option('-a, --allow-unsupported-slicer-versions', 'Allow unsupported slicer versions')
+		.option(
+			'-u, --allow-unknown-generator',
+			'Allow gcode from generators that cannot be identified by the postprocessor',
+		)
 		.argument('<input>', 'Path to the gcode file to postprocess')
 		.argument('[output]', 'Path to the output gcode file (omit [output] and --overwrite-input for inspection only)')
 		.action(async (inputFile, outputFile, args) => {
@@ -276,21 +296,29 @@ export const postprocessor = (program: Command) => {
 				idex: args.idex,
 				overwrite: args.overwrite || args.overwriteInput,
 				allowUnsupportedSlicerVersions: args.allowUnsupportedSlicerVersions,
+				allowUnknownGenerator: args.allowUnknownGenerator,
 				onProgress,
 				onWarning: (code: string, message: string) => {
 					getLogger().trace(code, 'Warning during processing: ' + message);
 					switch (code) {
-						case ACTION_WARNING_CODES.UNSUPPORTED_SLICER_VERSION:
+						case WarningCodes.UNSUPPORTED_SLICER_VERSION:
 							toPostProcessorCLIOutput({
 								result: 'warning',
 								title: 'Unsupported slicer version',
 								message: message,
 							});
 							break;
-						case ACTION_WARNING_CODES.HEURISTIC_SMELL:
+						case WarningCodes.HEURISTIC_SMELL:
 							toPostProcessorCLIOutput({
 								result: 'warning',
 								title: 'Unexpected g-code sequence',
+								message: message,
+							});
+							break;
+						case WarningCodes.UNKNOWN_GCODE_GENERATOR:
+							toPostProcessorCLIOutput({
+								result: 'warning',
+								title: 'Unknown g-code generator',
 								message: message,
 							});
 							break;
@@ -325,14 +353,17 @@ export const postprocessor = (program: Command) => {
 				// My current opinion: rather overprocess than underprocess. Specific situations where skipping processing is OK
 				// can be handled in fancy ways later - i need to see that it's worth the complexity first.
 
+				// NOTE: processGCode is blind as to whether the input file requires transformation to be ready to print. Notably,
+				// in the --overwrite-input and not --idex scenario, the processGCode call will not actually lead to transformation,
+				// but only analysis. The fullAnalysis option applies only is this non-transformative scenario.
 				const result =
 					outputFile != null && outputFile.trim() !== ''
-						? await processGCode(inputFile, outputFile, opts)
-						: await inspectGCode(inputFile, { ...opts, fullInspection: false });
+						? await processGCode(inputFile, outputFile, { ...opts, fullAnalysis: false })
+						: await inspectGCode(inputFile, { ...opts, fullAnalysis: false });
 
 				getLogger().info(result, 'postprocessor result');
 
-				if (!result.wasAlreadyProcessed && args.overwriteInput) {
+				if (!result.wasAlreadyProcessed && args.overwriteInput && result.isProcessed) {
 					getLogger().info({ outputFile, inputFile }, 'renaming output file to input file');
 					fs.renameSync(outputFile, inputFile);
 				}
@@ -362,20 +393,27 @@ export const postprocessor = (program: Command) => {
 				let errorMessage =
 					'An unexpected error occurred while processing the file, please download a debug-zip and report this issue.';
 				let errorTitle = 'An unexpected error occurred during post-processing';
+				let errorCode: z.input<typeof ErrorCodes> = 'UNKNOWN_ERROR';
 				if (e instanceof GCodeProcessorError) {
 					errorTitle = 'G-code could not be processed';
 					errorMessage = e.message;
 					if (e instanceof SlicerNotSupported) {
 						errorTitle = 'Unsupported slicer version';
+						errorCode = 'UNSUPPORTED_SLICER_VERSION';
 					}
 					if (e instanceof GCodeError && e.lineNumber) {
 						errorTitle += ` (line ${e.lineNumber})`;
 						errorMessage += `\n\nLine ${e.lineNumber}: ${e.line}`;
+						errorCode = 'G_CODE_ERROR';
+					}
+					if (e instanceof GeneratorIdentificationNotFound) {
+						errorCode = 'UNKNOWN_GCODE_GENERATOR';
 					}
 				} else if (e instanceof Error) {
 					if ('code' in e && e.code === 'ENOENT' && 'path' in e) {
 						errorTitle = 'File not found';
 						errorMessage = `File ${e.path} not found`;
+						errorCode = 'FILE_NOT_FOUND';
 					} else {
 						getLogger().error(e, 'Unexpected error while processing gcode file');
 					}
@@ -389,6 +427,7 @@ export const postprocessor = (program: Command) => {
 						result: 'error',
 						message: errorMessage,
 						title: errorTitle,
+						code: errorCode,
 					});
 				}
 				process.exit(1);

@@ -1,5 +1,6 @@
 #!/bin/bash
-set -e -u
+set -eo pipefail
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "$(realpath -- "${BASH_SOURCE[0]}")" )" &> /dev/null && pwd )
 
 # shellcheck source=./configuration/scripts/ratos-common.sh
@@ -10,7 +11,7 @@ source "$SCRIPT_DIR"/ratos-common.sh
 ## but this has been reliable for me so far…
 sleep 10
 
- outdir="${RATOS_PRINTER_DATA_DIR}"/config/input_shaper
+outdir="${RATOS_PRINTER_DATA_DIR}"/config/input_shaper
 if [ ! -d "${outdir}" ]; then
     mkdir "${outdir}"
     chown "${RATOS_USERNAME}:${RATOS_USERGROUP}" "${outdir}"
