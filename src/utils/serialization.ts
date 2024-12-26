@@ -157,7 +157,7 @@ export const getAccelerometerWithType = (
 	toolheadSuffix: ToolheadSuffix | null,
 	toolboard?: Toolboard | null,
 	controlboard?: Board | null,
-): KlipperAccelSensorSchema => {
+): KlipperAccelSensorSchema | null => {
 	let accelType: z.infer<typeof AccelerometerType> = 'adxl345';
 	if (accelerometer.id === 'toolboard') {
 		if (toolboard == null) {
@@ -183,6 +183,9 @@ export const getAccelerometerWithType = (
 		accelType = 'beacon';
 	} else if (accelerometer.id === 'sbc') {
 		accelType = 'adxl345';
+	}
+	if (accelerometer.id === 'none') {
+		return null;
 	}
 	return klipperAccelSensorSchema.parse({
 		name: accelerometerIdToKlipperAccelSensorName(accelerometer, toolheadSuffix, toolboard, controlboard),

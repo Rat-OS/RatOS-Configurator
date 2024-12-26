@@ -307,8 +307,6 @@ export const constructKlipperConfigUtils = async (config: PrinterConfiguration) 
 			return this.renderCommentHeader(header ?? rail.axis.toUpperCase(), section);
 		},
 		getAccelWithType(accelerometerName: KlipperAccelSensorName) {
-			let accelType: z.infer<typeof AccelerometerType> = 'adxl345';
-
 			if (accelerometerName === 'controlboard') {
 				return getAccelerometerWithType({ id: 'controlboard', title: 'Controlboard' }, null, null, config.controlboard);
 			}
@@ -853,16 +851,25 @@ export const constructKlipperConfigHelpers = async (
 			}
 			const xAccel = utils.getAccelWithType(xToolhead.getXAccelerometerName());
 			const yAccel = utils.getAccelWithType(xToolhead.getYAccelerometerName());
-			result.push('[resonance_tester]');
-			if (xAccel.type === 'beacon') {
-				result.push(`accel_chip_x: ${xAccel.type}`);
-			} else {
-				result.push(`accel_chip_x: ${xAccel.type} ${xAccel.name}`);
+			if (xAccel == null && yAccel == null) {
+				return '';
 			}
-			if (yAccel.type === 'beacon') {
-				result.push(`accel_chip_y: ${yAccel.type}`);
-			} else {
-				result.push(`accel_chip_y: ${yAccel.type} ${yAccel.name}`);
+			result.push('[resonance_tester]');
+			if (xAccel != null) {
+				const prefix = yAccel != null ? 'accel_chip_x' : 'accel_chip';
+				if (xAccel.type === 'beacon') {
+					result.push(`${prefix}: ${xAccel.type}`);
+				} else {
+					result.push(`${prefix}: ${xAccel.type} ${xAccel.name}`);
+				}
+			}
+			if (yAccel != null) {
+				const prefix = xAccel != null ? 'accel_chip_y' : 'accel_chip';
+				if (yAccel.type === 'beacon') {
+					result.push(`${prefix}: ${yAccel.type}`);
+				} else {
+					result.push(`${prefix}: ${yAccel.type} ${yAccel.name}`);
+				}
 			}
 			result.push('probe_points:');
 			result.push(`\t${printerSize.x / 2},${printerSize.y / 2},20`);
