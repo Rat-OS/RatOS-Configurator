@@ -242,12 +242,18 @@ export const PrinterRailSettings: React.FC<PrinterRailSettingsProps> = (props) =
 	}, [supportedVoltages, voltage, recommendedPreset]);
 
 	useEffect(() => {
-		const newState = {
+		const newState: Zod.infer<typeof BasePrinterRail> = {
 			axis: props.printerRail.axis,
 			axisDescription: props.printerRail.axisDescription,
 			rotationDistance: props.printerRail.rotationDistance,
+			invertStepperDirection: props.printerRail.invertStepperDirection,
+			axisMinimum: props.printerRail.axisMinimum,
+			axisMaximum: props.printerRail.axisMaximum,
+			axisEndstop: props.printerRail.axisEndstop,
 			homingSpeed: homingSpeed,
 			motorSlot: motorSlot,
+			microstepping: props.printerRail.microstepping,
+			gearRatio: props.printerRail.gearRatio,
 			driver,
 			voltage: voltage.id,
 			stepper,
