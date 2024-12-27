@@ -211,10 +211,10 @@ export const deserializeToolheadConfiguration = async (
 				)
 			: null;
 
-	if (xAccel == null && serializedXAccel != null) {
+	if (xAccel == null && serializedXAccel != null && serializedXAccel.id != 'none') {
 		throw new Error(`Accelerometer type could not be determined for ${serializedXAccel.id}`);
 	}
-	if (yAccel == null && serializedYAccel != null) {
+	if (yAccel == null && serializedYAccel != null && serializedYAccel.id != 'none') {
 		throw new Error(`Accelerometer type could not be determined for ${serializedYAccel.id}`);
 	}
 

@@ -811,14 +811,14 @@ describe('server', async () => {
 							}
 						});
 					});
-					for (const { line, param } of offendingLines) {
-						try {
-							expect(splitRes[line + 1].startsWith('\t') || splitRes[line + 1].startsWith('  ')).toBeTruthy();
-						} catch (e) {
-							throw new Error(
-								`Illegal parameter "${param}" at line ${line + 1}:\n${annotatedLines.slice(Math.max(line - 4, 0), Math.min(line + 5, annotatedLines.length)).join('\n')}`,
-							);
+					try {
+						expect(offendingLines.length).toBe(0);
+					} catch (e) {
+						let errorMsg = '';
+						for (const { line, param } of offendingLines) {
+							errorMsg += `Illegal parameter "${param}" at line ${line + 1}:\n${annotatedLines.slice(Math.max(line - 4, 0), Math.min(line + 5, annotatedLines.length)).join('\n')}`;
 						}
+						throw new Error(errorMsg);
 					}
 				});
 				test.concurrent('properly indents gcode blocks', async () => {
@@ -826,7 +826,12 @@ describe('server', async () => {
 					splitRes.forEach((l, i) => l.includes('gcode:') && gcodeBlocks.push(i));
 					for (const block of gcodeBlocks) {
 						try {
-							expect(splitRes[block + 1].startsWith('\t') || splitRes[block + 1].startsWith('  ')).toBeTruthy();
+							expect(
+								splitRes[block + 1].startsWith('\t') ||
+									splitRes[block + 1].startsWith('#\t') ||
+									splitRes[block + 1].startsWith('  ') ||
+									splitRes[block + 1].startsWith('#  '),
+							).toBeTruthy();
 						} catch (e) {
 							throw new Error(
 								`Failed to indent gcode block at line ${block + 1}:\n${annotatedLines.slice(Math.max(block - 4, 0), Math.min(block + 5, annotatedLines.length)).join('\n')}`,
