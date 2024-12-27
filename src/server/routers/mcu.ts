@@ -103,8 +103,8 @@ export const compileFirmware = async <T extends boolean>(
 		}
 		const binaryName = board.firmwareBinaryName;
 		let extension = path.extname(binaryName);
-		if (extension === 'hex' && board.firmwareBinaryName.endsWith('.elf.hex')) {
-			extension = 'elf.hex';
+		if (extension === '.hex' && board.firmwareBinaryName.endsWith('.elf.hex')) {
+			extension = '.elf.hex';
 		}
 		const klipperOut = path.join(environment.KLIPPER_DIR, 'out', `klipper${extension}`);
 		const firmwareDest = path.join(environment.RATOS_DATA_DIR, binaryName);
