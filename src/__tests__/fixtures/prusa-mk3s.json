@@ -6,8 +6,8 @@
       "hotend": "v6",
       "thermistor": "ATC Semitec 104GT-2", 
       "extruder": "mk3s",
-      "xEndstop": "endstop",
-      "yEndstop": "endstop",
+      "xEndstop": "sensorless",
+      "yEndstop": "sensorless",
       "hotendFan": "4pin-dedicated",
       "partFan": "4pin-dedicated",
       "nozzle": {

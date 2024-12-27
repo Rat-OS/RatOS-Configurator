@@ -222,7 +222,7 @@ export const constructKlipperConfigUtils = async (config: PrinterConfiguration) 
 		getAxisDriverHomingCurrent(axis: PrinterAxis, factor: number) {
 			const rail = this.getRail(axis);
 			factor = Math.max(0, Math.min(1, factor));
-			return rail.stepper.maxPeakCurrent * 0.71 * factor;
+			return Math.round(rail.stepper.maxPeakCurrent * 0.71 * factor * 1000) / 1000;
 		},
 		getExtruderPinPrefix(tool: ToolOrAxis = 0) {
 			const th = this.getToolhead(tool);
@@ -382,19 +382,19 @@ export const constructKlipperConfigExtrasGenerator = (config: PrinterConfigurati
 				return [`[save_variables]`, `filename: ${path.join(environment.KLIPPER_CONFIG_PATH, f.fileName)}`].join('\n');
 			});
 		},
-		generateSensorlessHomingIncludes() {
+		generateSensorlessHomingIncludes(hasPretunedConfig: boolean) {
 			const filesToWrite: WritableFiles = [];
 			if (utils.isSensorless(PrinterAxis.x)) {
 				filesToWrite.push({
 					fileName: 'sensorless-homing-x.cfg',
-					content: sensorlessXTemplate(config, utils),
+					content: sensorlessXTemplate(config, utils, hasPretunedConfig),
 					overwrite: false,
 				});
 			}
 			if (utils.isSensorless(PrinterAxis.y)) {
 				filesToWrite.push({
 					fileName: 'sensorless-homing-y.cfg',
-					content: sensorlessYTemplate(config, utils),
+					content: sensorlessYTemplate(config, utils, hasPretunedConfig),
 					overwrite: false,
 				});
 			}
@@ -1009,8 +1009,9 @@ export const constructKlipperConfigHelpers = async (
 						))
 				) {
 					result.push(`[include ${pretunedSensorlessConfig}]`);
+					result.push(extrasGenerator.generateSensorlessHomingIncludes(true));
 				} else {
-					result.push(extrasGenerator.generateSensorlessHomingIncludes());
+					result.push(extrasGenerator.generateSensorlessHomingIncludes(false));
 				}
 			}
 			if (utils.getToolheads().every((th) => th.getProbe() == null)) {

@@ -55,13 +55,15 @@ const serializedConfigFromDefaults = (printer: PrinterDefinition): SerializedPri
 
 const loadConfig = async (path: string) => {
 	const config = await loadSerializedConfig(path);
-	const res: string = (await getFilesToWrite(config)).find((f) => f.fileName === 'RatOS.cfg')?.content ?? '';
+	const files = await getFilesToWrite(config);
+	const res: string = files.find((f) => f.fileName === 'RatOS.cfg')?.content ?? '';
 	const splitRes = res.split('\n');
 	const annotatedLines = splitRes.map((l: string, i: number) => `Line-${i + 1}`.padEnd(10, '-') + `|${l}`);
 	return {
 		splitRes,
 		annotatedLines,
 		config,
+		files,
 	};
 };
 
@@ -242,16 +244,16 @@ describe('server', async () => {
 				}
 			});
 		});
-		describe('can generate a config without resonance tester', async () => {
+		describe('can generate a valid mk3s config', async () => {
 			const prusaMk3sConfigPath = path.join(__dirname, 'fixtures', 'prusa-mk3s.json');
-			const { splitRes, annotatedLines, config } = await loadConfig(prusaMk3sConfigPath);
-			const gcodeBlocks: number[] = [];
-			splitRes.forEach((l, i) => l.includes('[resonance_tester]') && gcodeBlocks.push(i));
+			const { splitRes, annotatedLines, config, files } = await loadConfig(prusaMk3sConfigPath);
 			test('produces valid config', async () => {
 				expectValidConfig(config, splitRes, annotatedLines);
 			});
+			const resonanceTesterBlocks: number[] = [];
+			splitRes.forEach((l, i) => l.includes('[resonance_tester]') && resonanceTesterBlocks.push(i));
 			test('does not include resonance tester in the config', async () => {
-				for (const block of gcodeBlocks) {
+				for (const block of resonanceTesterBlocks) {
 					try {
 						expect(splitRes[block].includes('[resonance_tester]')).toBeFalsy();
 					} catch (e) {
@@ -260,6 +262,31 @@ describe('server', async () => {
 						);
 					}
 				}
+			});
+			const sensorlessBlocks: number[] = [];
+			const endstopBlocks: number[] = [];
+			splitRes.forEach((l, i) => l.includes('[include sensorless-homing') && sensorlessBlocks.push(i));
+			splitRes.forEach((l, i) => l.includes('variable_homing_x: "endstop"') && endstopBlocks.push(i));
+			splitRes.forEach((l, i) => l.includes('variable_homing_y: "endstop"') && endstopBlocks.push(i));
+			test('correctly configures sensorless homing', async () => {
+				try {
+					expect(endstopBlocks.length).toBeLessThan(1);
+				} catch (e) {
+					throw new Error(
+						`Found endstop configuration:\n${annotatedLines.slice(endstopBlocks[0] - 4, endstopBlocks[0] + 5).join('\n')}`,
+					);
+				}
+				expect(sensorlessBlocks.length).toBe(2);
+			});
+			test('correctly comments out generated sensorless defaults', async () => {
+				expect(files.find((f) => f.fileName === 'sensorless-homing-x.cfg')?.content).toContain(
+					'#variable_sensorless_x_current: ',
+				);
+				expect(files.find((f) => f.fileName === 'sensorless-homing-y.cfg')?.content).toContain(
+					'#variable_sensorless_y_current: ',
+				);
+				expect(files.find((f) => f.fileName === 'sensorless-homing-x.cfg')?.content).toContain('#driver_SGT: 0');
+				expect(files.find((f) => f.fileName === 'sensorless-homing-y.cfg')?.content).toContain('#driver_SGT: 0');
 			});
 		});
 		describe('can generate another idex config', async () => {
@@ -408,8 +435,12 @@ describe('server', async () => {
 			test.concurrent('can render sensorless homing files', async () => {
 				const config = await loadSerializedConfig(path.join(__dirname, 'fixtures', 'hybrid-config.json'));
 				const utils = await constructKlipperConfigUtils(config);
-				const x = sensorlessXTemplate(config, utils);
-				const y = sensorlessYTemplate(config, utils);
+				const x = sensorlessXTemplate(config, utils, false);
+				const y = sensorlessYTemplate(config, utils, false);
+				expect(x).toContain('variable_sensorless_x_current:');
+				expect(y).toContain('variable_sensorless_y_current:');
+				expect(x).toContain('driver_SGTHRS:');
+				expect(y).toContain('driver_SGTHRS:');
 			});
 		});
 		describe('can generate v-minion config', async () => {
