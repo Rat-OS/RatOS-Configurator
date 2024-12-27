@@ -568,7 +568,6 @@ describe('server', async () => {
 				expect(config.rails.find((r) => r.axis === PrinterAxis.z3)?.gearRatio).toEqual('80:16');
 				// Expect gear_ratio to be present in splitRes
 				expect(splitRes.filter((l) => l.includes('gear_ratio:')).length).toBe(5);
-				console.log(splitRes.join('\n'));
 			});
 		});
 	});
