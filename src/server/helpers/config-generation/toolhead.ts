@@ -432,7 +432,7 @@ export class ToolheadGenerator<IsToolboard extends boolean> extends ToolheadHelp
 				result.push(`cycle_time:  0.00004`);
 				if (this.toolboardPins?.['4p_fan_part_cooling_tach_pin'] != null) {
 					result.push(
-						`tachometer_pin: ^${this.isToolboardPinInverted(this.toolboardPins?.['4p_fan_part_cooling_tach_pin']) ? '!' : ''}${this.toolboardPins?.['4p_fan_part_cooling_tach_pin']}`,
+						`tachometer_pin: ^${this.isToolboardPinInverted(this.toolboardPins?.['4p_fan_part_cooling_tach_pin']) ? '!' : ''}${this.getPinPrefix()}${this.toolboardPins?.['4p_fan_part_cooling_tach_pin']}`,
 					);
 					result.push(`tachometer_poll_interval: 0.0005`);
 				}
@@ -499,7 +499,7 @@ export class ToolheadGenerator<IsToolboard extends boolean> extends ToolheadHelp
 				result.push(`cycle_time:  0.00004`);
 				if (this.toolboardPins?.['4p_toolhead_cooling_tach_pin'] != null) {
 					result.push(
-						`tachometer_pin: ^${this.isToolboardPinInverted(this.toolboardPins?.['4p_toolhead_cooling_tach_pin']) ? '!' : ''}${this.toolboardPins?.['4p_toolhead_cooling_tach_pin']}`,
+						`tachometer_pin: ^${this.isToolboardPinInverted(this.toolboardPins?.['4p_toolhead_cooling_tach_pin']) ? '!' : ''}${this.getPinPrefix()}${this.toolboardPins?.['4p_toolhead_cooling_tach_pin']}`,
 					);
 					result.push(`tachometer_poll_interval: 0.0005`);
 				}
