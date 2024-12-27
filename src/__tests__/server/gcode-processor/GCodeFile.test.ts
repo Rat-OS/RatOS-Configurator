@@ -201,7 +201,7 @@ describe('inspect', async () => {
 			path.join(__dirname, 'fixtures', 'other', 'legacy_processed.gcode'),
 			{
 				...defaultExpectedFile,
-				printability: Printability.NOT_SUPPORTED,
+				printability: Printability.PROCESSOR_NOT_SUPPORTED,
 				printabilityReasons: [
 					expect.stringContaining('The file format is from an old version of RatOS which is no longer supported'),
 				],

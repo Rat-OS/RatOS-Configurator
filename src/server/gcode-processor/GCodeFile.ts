@@ -178,6 +178,7 @@ export class GCodeFile {
 		}
 
 		const reasons: string[] = [];
+		let printability: Printability | undefined;
 
 		if (!options.allowUnsupportedSlicerVersions) {
 			try {
@@ -192,10 +193,12 @@ export class GCodeFile {
 		if (gci.fileFormatVersion !== undefined) {
 			// NB: In the future, we might make more effort to read older file layouts. For now, we don't.
 			if (gci.fileFormatVersion < GCodeFile.FILE_FORMAT_VERSION) {
+				printability = Printability.PROCESSOR_NOT_SUPPORTED;
 				reasons.push(
 					'The file format is from an old version of RatOS which is no longer supported. The original file must be re-uploaded or re-sliced.',
 				);
 			} else if (gci.fileFormatVersion > GCodeFile.FILE_FORMAT_VERSION) {
+				printability = Printability.PROCESSOR_NOT_SUPPORTED;
 				reasons.push(
 					'The file format is from a newer version of RatOS. Update RatOS, or re-upload or re-slice the original file.',
 				);
@@ -203,11 +206,10 @@ export class GCodeFile {
 		}
 
 		if (reasons.length > 0) {
-			return new GCodeFile(path, gci, Printability.NOT_SUPPORTED, undefined, reasons);
+			return new GCodeFile(path, gci, printability ?? Printability.NOT_SUPPORTED, undefined, reasons);
 		}
 
 		const currentVersion = await getPostProcessorVersion();
-		let printability: Printability | undefined;
 
 		if (gci.isProcessed) {
 			if (gci.processedForIdex !== !!options.printerHasIdex) {

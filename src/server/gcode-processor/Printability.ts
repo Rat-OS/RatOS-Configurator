@@ -28,8 +28,10 @@
 export enum Printability {
 	/** Applies to headerless GCode when `allowUnknownGenerator` is true. The printability of such files cannot be determined. */
 	UNKNOWN = 'UNKNOWN',
-	/** The file is not supported: (re)processing won't help. For example, an unsupported slicer version, an obsolete or future file layout. When applicable, see {@link GCodeFile.printabilityReasons}. */
+	/** The file is not supported: (re)processing won't help. For example, an unsupported slicer version. When applicable, see {@link GCodeFile.printabilityReasons}. */
 	NOT_SUPPORTED = 'NOT_SUPPORTED',
+	/** The file is not supported: (re)processing won't help. File was processed by an obsolete or future version of the RatOS postprocessor. */
+	PROCESSOR_NOT_SUPPORTED = 'PROCESSOR_NOT_SUPPORTED',
 	/** The file is not processed yet, and must be processed before it can be printed. */
 	MUST_PROCESS = 'MUST_PROCESS',
 	/** The file can be printed as-is. There would be no benefit to (re)processing. */
