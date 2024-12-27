@@ -17,7 +17,7 @@ import { getBoardChipId } from '@/helpers/board';
 import { constructKlipperConfigUtils } from '@/server/helpers/klipper-config';
 import { sensorlessXTemplate, sensorlessYTemplate } from '@/templates/extras/sensorless-homing';
 import { readFile } from 'fs/promises';
-import { SerializedPrinterConfiguration } from '@/zods/printer-configuration';
+import { PrinterConfiguration, SerializedPrinterConfiguration } from '@/zods/printer-configuration';
 import { PrinterDefinition } from '@/zods/printer';
 import { Accelerometer } from '@/zods/hardware';
 import { z } from 'zod';
@@ -51,6 +51,30 @@ const serializedConfigFromDefaults = (printer: PrinterDefinition): SerializedPri
 		stealthchop: false,
 		controllerFan: printer.defaults.controllerFan ?? '2pin',
 	} satisfies SerializedPrinterConfiguration);
+};
+
+const loadConfig = async (path: string) => {
+	const config = await loadSerializedConfig(path);
+	const res: string = (await getFilesToWrite(config)).find((f) => f.fileName === 'RatOS.cfg')?.content ?? '';
+	const splitRes = res.split('\n');
+	const annotatedLines = splitRes.map((l: string, i: number) => `Line-${i + 1}`.padEnd(10, '-') + `|${l}`);
+	return {
+		splitRes,
+		annotatedLines,
+		config,
+	};
+};
+
+const expectValidConfig = async (config: PrinterConfiguration, splitRes: string[], annotatedLines: string[]) => {
+	const noUndefined = splitRes.filter((l: string) => l.includes('undefined')).join('\n');
+	const noPromises = splitRes.filter((l: string) => l.includes('[object Promise]')).join('\n');
+	const noObjects = splitRes.filter((l: string) => l.includes('[object Object]')).join('\n');
+	if (noUndefined || noPromises || noObjects) {
+		console.log(annotatedLines.join('\n'));
+	}
+	expect(noUndefined, 'Expected no undefined values in config').to.eq('');
+	expect(noPromises, 'Expected no promises in config').to.eq('');
+	expect(noObjects, 'Expected no objects in config').to.eq('');
 };
 
 describe('server', async () => {
@@ -175,23 +199,11 @@ describe('server', async () => {
 	describe('regression tests', async () => {
 		describe('can generate a default v-core config', async () => {
 			const vCoreConfigPath = path.join(__dirname, 'fixtures', 'v-core-200.json');
-			const config = await loadSerializedConfig(vCoreConfigPath);
-			const res: string = (await getFilesToWrite(config)).find((f) => f.fileName === 'RatOS.cfg')?.content ?? '';
-			const splitRes = res.split('\n');
-			const annotatedLines = splitRes.map((l: string, i: number) => `Line-${i + 1}`.padEnd(10, '-') + `|${l}`);
+			const { splitRes, annotatedLines, config } = await loadConfig(vCoreConfigPath);
 			const gcodeBlocks: number[] = [];
 			splitRes.forEach((l, i) => l.includes('gcode:') && gcodeBlocks.push(i));
 			test('produces valid config', async () => {
-				expect(splitRes.length).toBeGreaterThan(0);
-				const noUndefined = splitRes.filter((l: string) => l.includes('undefined')).join('\n');
-				const noPromises = splitRes.filter((l: string) => l.includes('[object Promise]')).join('\n');
-				const noObjects = splitRes.filter((l: string) => l.includes('[object Object]')).join('\n');
-				if (noUndefined || noPromises || noObjects) {
-					console.log(annotatedLines.join('\n'));
-				}
-				expect(noUndefined, 'Expected no undefined values in config').to.eq('');
-				expect(noPromises, 'Expected no promises in config').to.eq('');
-				expect(noObjects, 'Expected no objects in config').to.eq('');
+				expectValidConfig(config, splitRes, annotatedLines);
 			});
 			test('can diff files', async () => {
 				const configJson = await readFile(vCoreConfigPath);
@@ -211,23 +223,12 @@ describe('server', async () => {
 			});
 		});
 		describe('can generate idex config', async () => {
-			const config = await loadSerializedConfig(path.join(__dirname, 'fixtures', 'idex-config.json'));
-			const res: string = (await getFilesToWrite(config)).find((f) => f.fileName === 'RatOS.cfg')?.content ?? '';
-			const splitRes = res.split('\n');
-			const annotatedLines = splitRes.map((l: string, i: number) => `Line-${i + 1}`.padEnd(10, '-') + `|${l}`);
+			const idexConfigPath = path.join(__dirname, 'fixtures', 'idex-config.json');
+			const { splitRes, annotatedLines, config } = await loadConfig(idexConfigPath);
 			const gcodeBlocks: number[] = [];
 			splitRes.forEach((l, i) => l.includes('gcode:') && gcodeBlocks.push(i));
 			test('produces valid config', async () => {
-				expect(splitRes.length).toBeGreaterThan(0);
-				const noUndefined = splitRes.filter((l: string) => l.includes('undefined')).join('\n');
-				const noPromises = splitRes.filter((l: string) => l.includes('[object Promise]')).join('\n');
-				const noObjects = splitRes.filter((l: string) => l.includes('[object Object]')).join('\n');
-				if (noUndefined || noPromises || noObjects) {
-					console.log(annotatedLines.join('\n'));
-				}
-				expect(noUndefined, 'Expected no undefined values in config').to.eq('');
-				expect(noPromises, 'Expected no promises in config').to.eq('');
-				expect(noObjects, 'Expected no objects in config').to.eq('');
+				expectValidConfig(config, splitRes, annotatedLines);
 			});
 			test.runIf(gcodeBlocks.length > 0)('correctly indents gcode blocks', async () => {
 				for (const block of gcodeBlocks) {
@@ -236,6 +237,26 @@ describe('server', async () => {
 					} catch (e) {
 						throw new Error(
 							`Failed to indent gcode block at line ${block + 1}:\n${annotatedLines.slice(block - 4, block + 5).join('\n')}`,
+						);
+					}
+				}
+			});
+		});
+		describe('can generate a config without resonance tester', async () => {
+			const prusaMk3sConfigPath = path.join(__dirname, 'fixtures', 'prusa-mk3s.json');
+			const { splitRes, annotatedLines, config } = await loadConfig(prusaMk3sConfigPath);
+			const gcodeBlocks: number[] = [];
+			splitRes.forEach((l, i) => l.includes('[resonance_tester]') && gcodeBlocks.push(i));
+			test('produces valid config', async () => {
+				expectValidConfig(config, splitRes, annotatedLines);
+			});
+			test('does not include resonance tester in the config', async () => {
+				for (const block of gcodeBlocks) {
+					try {
+						expect(splitRes[block].includes('[resonance_tester]')).toBeFalsy();
+					} catch (e) {
+						throw new Error(
+							`Found resonance tester in the config:\n${annotatedLines.slice(block - 4, block + 5).join('\n')}`,
 						);
 					}
 				}

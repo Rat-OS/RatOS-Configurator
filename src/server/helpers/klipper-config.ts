@@ -306,7 +306,10 @@ export const constructKlipperConfigUtils = async (config: PrinterConfiguration) 
 			}
 			return this.renderCommentHeader(header ?? rail.axis.toUpperCase(), section);
 		},
-		getAccelWithType(accelerometerName: KlipperAccelSensorName) {
+		getAccelWithType(accelerometerName: KlipperAccelSensorName | null) {
+			if (accelerometerName == null) {
+				return null;
+			}
 			if (accelerometerName === 'controlboard') {
 				return getAccelerometerWithType({ id: 'controlboard', title: 'Controlboard' }, null, null, config.controlboard);
 			}
