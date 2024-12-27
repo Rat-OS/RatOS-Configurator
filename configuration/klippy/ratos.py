@@ -88,7 +88,7 @@ class RatOS:
 
 		prev_cmd = self.gcode.register_command(command, None)
 		if prev_cmd is None:
-			if command == 'TEST_RESONANCES' or command == 'SHAPER_CALIBRATE' and not self.config.has_section('resonance_tester'):
+			if (command == 'TEST_RESONANCES' or command == 'SHAPER_CALIBRATE') and not self.config.has_section('resonance_tester'):
 				# No [resonance_tester] section found, don't throw an error, skip overriding.
 				logging.info("No [resonance_tester] section found, skipping override of command '%s'" % (command,))
 				return
