@@ -25,6 +25,7 @@ import { serializePrinterConfiguration } from '@/hooks/usePrinterConfiguration';
 import { glob } from 'glob';
 import { serverSchema } from '@/env/schema.mjs';
 import { existsSync } from 'fs';
+import { PrinterAxis } from '@/zods/motion';
 
 const serializedConfigFromDefaults = (printer: PrinterDefinition): SerializedPrinterConfiguration => {
 	return SerializedPrinterConfiguration.strip().parse({
@@ -290,12 +291,8 @@ describe('server', async () => {
 			});
 		});
 		describe('can generate another idex config', async () => {
-			const config = await loadSerializedConfig(path.join(__dirname, 'fixtures', 'another-idex.json'));
-			const filesToWrite = await getFilesToWrite(config);
-			const res: string = filesToWrite.find((f) => f.fileName === 'RatOS.cfg')?.content ?? '';
-			const printerCfg: string = filesToWrite.find((f) => f.fileName === 'ratos-variables.cfg')?.content ?? '';
-			const splitRes = res.split('\n');
-			const annotatedLines = splitRes.map((l: string, i: number) => `Line-${i + 1}`.padEnd(10, '-') + `|${l}`);
+			const idexConfigPath = path.join(__dirname, 'fixtures', 'another-idex.json');
+			const { splitRes, annotatedLines, config } = await loadConfig(idexConfigPath);
 			const gcodeBlocks: number[] = [];
 			splitRes.forEach((l, i) => l.includes('gcode:') && gcodeBlocks.push(i));
 			test('produces valid config', async () => {
@@ -325,11 +322,8 @@ describe('server', async () => {
 			});
 		});
 		describe('can resolve pins that are only defined in motorslots and not aliases', async () => {
-			const config = await loadSerializedConfig(path.join(__dirname, 'fixtures', 'idex-undefined-pins.json'));
-			const filesToWrite = await getFilesToWrite(config);
-			const res: string = filesToWrite.find((f) => f.fileName === 'RatOS.cfg')?.content ?? '';
-			const splitRes = res.split('\n');
-			const annotatedLines = splitRes.map((l: string, i: number) => `Line-${i + 1}`.padEnd(10, '-') + `|${l}`);
+			const idexConfigPath = path.join(__dirname, 'fixtures', 'idex-undefined-pins.json');
+			const { splitRes, annotatedLines, config } = await loadConfig(idexConfigPath);
 			const suspectedMissingPins: string[] = [
 				`y1_step_pin=`,
 				`y1_dir_pin=`,
@@ -388,21 +382,12 @@ describe('server', async () => {
 			let debugLines: string[] = [];
 			let generatedLines: string[] = [];
 			test('produces valid config', async () => {
-				const config = await loadSerializedConfig(path.join(__dirname, 'fixtures', 'hybrid-config.json'));
+				const hybridConfigPath = path.join(__dirname, 'fixtures', 'hybrid-config.json');
+				const { splitRes, annotatedLines, config } = await loadConfig(hybridConfigPath);
 				expect(config.printer.kinematics).toEqual('hybrid-corexy');
-				const res: string = (await getFilesToWrite(config)).find((f) => f.fileName === 'RatOS.cfg')?.content ?? '';
-				generatedLines = res.split('\n');
-				debugLines = generatedLines.map((l: string, i: number) => `Line ${i + 1}`.padEnd(10, ' ') + `|${l}`);
-				expect(debugLines.length).toBeGreaterThan(0);
-				const noUndefined = debugLines.filter((l: string) => l.includes('undefined')).join('\n');
-				const noPromises = debugLines.filter((l: string) => l.includes('[object Promise]')).join('\n');
-				const noObjects = debugLines.filter((l: string) => l.includes('[object Object]')).join('\n');
-				if (noUndefined || noPromises || noObjects) {
-					console.log(debugLines.join('\n'));
-				}
-				expect(noUndefined, 'Expected no undefined values in config').to.eq('');
-				expect(noPromises, 'Expected no promises in config').to.eq('');
-				expect(noObjects, 'Expected no objects in config').to.eq('');
+				debugLines = annotatedLines;
+				generatedLines = splitRes;
+				expectValidConfig(config, splitRes, annotatedLines);
 				expect(generatedLines.includes(`variable_x_axes: ["x"]`)).toBeTruthy();
 				expect(generatedLines.includes(`variable_x_driver_types: ["tmc2209"]`)).toBeTruthy();
 				expect(generatedLines.includes(`variable_y_axes: ["x1", "y", "y1"]`)).toBeTruthy();
@@ -444,29 +429,17 @@ describe('server', async () => {
 			});
 		});
 		describe('can generate v-minion config', async () => {
-			const config = await loadSerializedConfig(path.join(__dirname, 'fixtures', 'minion-config.json'));
-			const filesToWrite = await getFilesToWrite(config);
-			let res: string = filesToWrite.find((f) => f.fileName === 'RatOS.cfg')?.content ?? '';
-			const printerCfg: string = filesToWrite.find((f) => f.fileName === 'printer.cfg')?.content ?? '';
-			const splitRes = res.split('\n');
+			const minionConfigPath = path.join(__dirname, 'fixtures', 'minion-config.json');
+			const { splitRes, annotatedLines, config, files } = await loadConfig(minionConfigPath);
+			const printerCfg = files.find((f) => f.fileName === 'printer.cfg')?.content ?? '';
 			const splitPrinterCfg = printerCfg.split('\n');
-			const annotatedLines = splitRes.map((l: string, i: number) => `Line-${i + 1}`.padEnd(10, '-') + `|${l}`);
 			const annotatedPrinterCfgLines = splitPrinterCfg.map(
 				(l: string, i: number) => `Line-${i + 1}`.padEnd(10, '-') + `|${l}`,
 			);
 			const gcodeBlocks: number[] = [];
 			splitRes.forEach((l, i) => l.includes('gcode:') && gcodeBlocks.push(i));
 			test('produces valid config', async () => {
-				expect(splitRes.length).toBeGreaterThan(0);
-				const noUndefined = splitRes.filter((l: string) => l.includes('undefined')).join('\n');
-				const noPromises = splitRes.filter((l: string) => l.includes('[object Promise]')).join('\n');
-				const noObjects = splitRes.filter((l: string) => l.includes('[object Object]')).join('\n');
-				if (noUndefined || noPromises || noObjects) {
-					console.log(annotatedLines.join('\n'));
-				}
-				expect(noUndefined, 'Expected no undefined values in config').to.eq('');
-				expect(noPromises, 'Expected no promises in config').to.eq('');
-				expect(noObjects, 'Expected no objects in config').to.eq('');
+				expectValidConfig(config, splitRes, annotatedLines);
 			});
 			test.runIf(gcodeBlocks.length > 0)('correctly indents gcode blocks', async () => {
 				for (const block of gcodeBlocks) {
@@ -552,14 +525,12 @@ describe('server', async () => {
 			});
 		});
 		describe('can generate idex-with-double-orbitools config', async () => {
-			const config = await loadSerializedConfig(path.join(__dirname, 'fixtures', 'idex-with-double-orbitools.json'));
-			const filesToWrite = await getFilesToWrite(config);
-			const res: string = filesToWrite.find((f) => f.fileName === 'RatOS.cfg')?.content ?? '';
-			const printerCfg: string = filesToWrite.find((f) => f.fileName === 'printer.cfg')?.content ?? '';
-			const splitRes = res.split('\n');
-			const annotatedLines = splitRes.map((l: string, i: number) => `Line-${i + 1}`.padEnd(10, '-') + `|${l}`);
+			const idexWithDoubleOrbitoolsConfigPath = path.join(__dirname, 'fixtures', 'idex-with-double-orbitools.json');
+			const { splitRes, annotatedLines, config, files } = await loadConfig(idexWithDoubleOrbitoolsConfigPath);
+			const gcodeBlocks: number[] = [];
+			splitRes.forEach((l, i) => l.includes('gcode:') && gcodeBlocks.push(i));
 			test('produces valid config', async () => {
-				expect(splitRes.length).toBeGreaterThan(0);
+				expectValidConfig(config, splitRes, annotatedLines);
 			});
 			test('contains correct lis2dw accelerometers', () => {
 				const accelLineIndex = splitRes.findIndex((l) => l.includes('variable_adxl_chip: '));
@@ -581,6 +552,23 @@ describe('server', async () => {
 						`Incorrect variable_adxl_chip, expected lis2dw toolboard_t1 to be found in line ${accelLineIndex + 1}:\n${annotatedLines.slice(Math.max(accelLineIndex - 4, 0), Math.min(accelLineIndex + 5, annotatedLines.length)).join('\n')}`,
 					);
 				}
+			});
+		});
+		describe('can generate voron-v24 config', async () => {
+			const voronV24ConfigPath = path.join(__dirname, 'fixtures', 'voron-v24-300.json');
+			const { splitRes, annotatedLines, config, files } = await loadConfig(voronV24ConfigPath);
+			const gcodeBlocks: number[] = [];
+			splitRes.forEach((l, i) => l.includes('gcode:') && gcodeBlocks.push(i));
+			test('produces valid config', async () => {
+				expectValidConfig(config, splitRes, annotatedLines);
+				// Expect gear_ratio to be set for z1, z2, z3, z4
+				expect(config.rails.find((r) => r.axis === PrinterAxis.z)?.gearRatio).toEqual('80:16');
+				expect(config.rails.find((r) => r.axis === PrinterAxis.z1)?.gearRatio).toEqual('80:16');
+				expect(config.rails.find((r) => r.axis === PrinterAxis.z2)?.gearRatio).toEqual('80:16');
+				expect(config.rails.find((r) => r.axis === PrinterAxis.z3)?.gearRatio).toEqual('80:16');
+				// Expect gear_ratio to be present in splitRes
+				expect(splitRes.filter((l) => l.includes('gear_ratio:')).length).toBe(5);
+				console.log(splitRes.join('\n'));
 			});
 		});
 	});
