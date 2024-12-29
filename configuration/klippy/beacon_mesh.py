@@ -1,5 +1,7 @@
+import time
 import logging, collections
 from . import bed_mesh as BedMesh
+from statistics import mean
 
 #####
 # Beacon Mesh
@@ -31,6 +33,8 @@ class BeaconMesh:
 		self.printer.register_event_handler("klippy:connect", self._connect)
 
 	def _connect(self):
+		if self.config.has_section("beacon"):
+			self.beacon = self.printer.lookup_object('beacon')
 		if self.config.has_section("ratos"):
 			self.ratos = self.printer.lookup_object('ratos')
 		if self.config.has_section("bed_mesh"):
@@ -42,6 +46,7 @@ class BeaconMesh:
 	def register_commands(self):
 		self.gcode.register_command('BEACON_APPLY_SCAN_COMPENSATION', self.cmd_BEACON_APPLY_SCAN_COMPENSATION, desc=(self.desc_BEACON_APPLY_SCAN_COMPENSATION))
 		self.gcode.register_command('CREATE_BEACON_COMPENSATION_MESH', self.cmd_CREATE_BEACON_COMPENSATION_MESH, desc=(self.desc_CREATE_BEACON_COMPENSATION_MESH))
+		self.gcode.register_command('BEACON_WAIT_FOR_EXPANSION', self.cmd_BEACON_WAIT_FOR_EXPANSION, desc=(self.desc_BEACON_WAIT_FOR_EXPANSION))
 
 	desc_BEACON_APPLY_SCAN_COMPENSATION = "Compensates a beacon scan mesh with the beacon compensation mesh."
 	def cmd_BEACON_APPLY_SCAN_COMPENSATION(self, gcmd):
@@ -61,6 +66,57 @@ class BeaconMesh:
 		if not profile.strip():
 			raise gcmd.error("Value for parameter 'PROFILE' must be specified")
 		self.create_compensation_mesh(profile)
+
+	desc_BEACON_WAIT_FOR_EXPANSION = "Waits until gantry bowing has been finished."
+	def cmd_BEACON_WAIT_FOR_EXPANSION(self, gcmd):
+		duration = gcmd.get_int('DURATION', 30)
+		max_time = gcmd.get_int('MAX_TIME', 1800)
+		threshold = gcmd.get_float('THRESHOLD', 0.01)
+
+		toolhead = self.printer.lookup_object('toolhead')
+
+		current_value = self.get_last_proximity_value()
+		if current_value == None:
+			gcmd.respond_info('Error. No beacon data.')
+
+		else:
+			values = []
+			start_time = time.time()
+			probe_start_time = time.time()
+
+			gcmd.respond_info('waiting for thermal expansion...')
+
+			while True:
+				current_time = time.time()
+
+				# exit if max waiting time has been reached
+				if current_time - start_time >= max_time:
+					gcmd.respond_info("Max waiting time reached.")
+					break
+
+				# compute mean value from within the duration time
+				current_value = self.get_last_proximity_value()
+				values.append(current_value)
+				gcmd.respond_info(f'Current Value: {current_value:.4f}')
+				if len(values) > 1 and current_time - probe_start_time >= duration:
+					avg_value = mean(values)
+					gcmd.respond_info(f'Current Value: {current_value:.4f}, Average of last 30 seconds: {avg_value:.4f}')
+
+					# check for threshold value
+					avg_change = mean([abs(values[i] - values[i-1]) for i in range(1, len(values))])
+					if avg_change < threshold:
+						gcmd.respond_info("Thermal expansion has stabilized.")
+						break
+
+					# reset
+					values = []
+					probe_start_time = time.time()
+
+				# wait 5 seconds
+				toolhead.dwell(5)
+
+			gcmd.respond_info("Thermal expansion finished.")
+
 
 	#####
 	# Beacon Scan Compensation
@@ -116,6 +172,18 @@ class BeaconMesh:
 				self.ratos.console_echo("Create compensation mesh", "debug", "Compensation Mesh %s created" % (str(profile)))
 			except BedMesh.BedMeshError as e:
 				self.ratos.console_echo("Create compensation mesh error", "error", str(e))
+
+	#####
+	# helper
+	#####
+	def get_last_proximity_value(self):
+		sample = self.beacon._sample_async()
+		last_value = sample["freq"]
+		dist = sample["dist"]
+		if dist is not None:
+			return dist
+		else:
+			return None
 
 #####
 # Bed Mesh Profile Manager
