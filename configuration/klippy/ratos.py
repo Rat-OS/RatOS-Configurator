@@ -75,10 +75,12 @@ class RatOS:
 		self.gcode.register_command('ALLOW_UNKNOWN_GCODE_GENERATOR', self.cmd_ALLOW_UNKNOWN_GCODE_GENERATOR, desc=(self.desc_ALLOW_UNKNOWN_GCODE_GENERATOR))
 		self.gcode.register_command('BYPASS_GCODE_PROCESSING', self.cmd_BYPASS_GCODE_PROCESSING, desc=(self.desc_BYPASS_GCODE_PROCESSING))
 		self.gcode.register_command('_SYNC_GCODE_POSITION', self.cmd_SYNC_GCODE_POSITION, desc=(self.desc_SYNC_GCODE_POSITION))
+		self.gcode.register_command('CHECK_MESH_PROFILE_VERSION', self.cmd_CHECK_MESH_PROFILE_VERSION, desc=(self.desc_CHECK_MESH_PROFILE_VERSION))
 
 	def register_command_overrides(self):
 		self.register_override('TEST_RESONANCES', self.override_TEST_RESONANCES, desc=(self.desc_TEST_RESONANCES))
 		self.register_override('SHAPER_CALIBRATE', self.override_SHAPER_CALIBRATE, desc=(self.desc_SHAPER_CALIBRATE))
+		self.register_override('BED_MESH_PROFILE', self.override_BED_MESH_PROFILE, desc=(self.desc_BED_MESH_PROFILE))
 
 	def register_override(self, command, func, desc):
 		if self.overridden_commands[command] is not None:
@@ -104,6 +106,18 @@ class RatOS:
 		if command not in self.overridden_commands or self.overridden_commands[command] is None:
 			raise self.printer.config_error("Previous function for command '%s' not found in RatOS override list" % (command,))
 		return self.overridden_commands[command]
+
+	desc_CHECK_MESH_PROFILE_VERSION = ("Checks mesh profile versioning.")
+	def cmd_CHECK_MESH_PROFILE_VERSION(self, gcmd):
+		profile = gcmd.get('PROFILE', None)
+		self.check_mesh_profile_version(profile)
+
+	desc_BED_MESH_PROFILE = ("Checks mesh profile versioning.")
+	def override_BED_MESH_PROFILE(self, gcmd):
+		profile = gcmd.get('PROFILE', None)
+		self.check_mesh_profile_version(profile)
+		prev_cmd = self.get_prev_cmd('BED_MESH_PROFILE')
+		prev_cmd(gcmd)
 
 	desc_TEST_RESONANCES = ("Runs the resonance test for a specifed axis, positioning errors caused by sweeping are corrected by a RatOS override of this command.")
 	def override_TEST_RESONANCES(self, gcmd):
@@ -226,7 +240,6 @@ class RatOS:
 			self.v_sd.cmd_SDCARD_PRINT_FILE(gcmd)
 		else:
 			self.console_echo('Print aborted', 'error')
-
 
 	#####
 	# Gcode Post Processor
@@ -433,7 +446,6 @@ class RatOS:
 			raise
 		return self.post_process_success;
 
-
 	def get_gcode_file_info(self, filename):
 		files = self.v_sd.get_file_list(True)
 		flist = [f[0] for f in files]
@@ -451,6 +463,16 @@ class RatOS:
 	#####
 	# Helper
 	#####
+	mesh_ver_number = 1
+	def check_mesh_profile_version(self, profile):
+		if profile != None:
+			mesh_ver_string = "_v" + str(self.mesh_ver_number) + "_"
+			if not profile.lower().startswith(mesh_ver_string):
+				self.console_echo('Mesh version mismatch.', 'warning', "_N_".join([
+					'The mesh profile {profile} is out of date, current version is V{mesh_ver_number}.',
+					'Please recreate the mesh to avoid build plate damage._N_'
+				]))
+
 	def ratos_echo(self, prefix, msg):
 		self.gcode.run_script_from_command("RATOS_ECHO PREFIX='" + str(prefix) + "' MSG='" + str(msg) + "'")
 
