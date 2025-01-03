@@ -50,6 +50,7 @@ class BeaconMesh:
 			raise gcmd.error("Value for parameter 'PROFILE' must be specified")
 		if profile not in self.pmgr.get_profiles():
 			raise self.printer.command_error("Profile " + str(profile) + " not found for Beacon scan compensation")
+		self.ratos.check_mesh_profile_version(profile)
 		self.offset_mesh = self.pmgr.load_profile(profile)
 		if not self.offset_mesh:
 			raise self.printer.command_error("Could not load profile " + str(profile) + " for Beacon scan compensation")
@@ -60,6 +61,7 @@ class BeaconMesh:
 		profile = gcmd.get('PROFILE', "Offset")
 		if not profile.strip():
 			raise gcmd.error("Value for parameter 'PROFILE' must be specified")
+		self.ratos.check_mesh_profile_version(profile)
 		self.create_compensation_mesh(profile)
 
 	#####
