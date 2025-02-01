@@ -100806,7 +100806,7 @@ var processToolchange = (c, s2) => {
     {
       let foundStop = false;
       let prevZMove;
-      for (let scan of c.scanForward(19)) {
+      for (let scan of c.scanForward(49)) {
         const cmd = parseCommonGCodeCommandLine(scan.line);
         if (cmd && cmd.letter === "G" && cmd.value === "1") {
           if (cmd.x || cmd.y) {
@@ -100937,7 +100937,7 @@ var InspectionIsComplete = class extends Error {
 };
 var GCodeProcessor = class _GCodeProcessor extends SlidingWindowLineProcessor {
   constructor(opts) {
-    super(20, 100, opts?.abortSignal);
+    super(50, 100, opts?.abortSignal);
     this.#state = new State(
       !!opts.printerHasIdex,
       !!opts.quickInspectionOnly,
