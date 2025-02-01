@@ -28,7 +28,7 @@ const getSensorEndpoint = (sensor: KlipperAccelSensorSchema) => {
 
 type KlipperADXLRequest = JSONRPCRequest<
 	ReturnType<typeof getSensorEndpoint>,
-	{ sensor: KlipperAccelSensorName; response_template: {} }
+	{ sensor?: KlipperAccelSensorName; response_template: {} }
 >;
 
 export interface RealtimeADXLOptions {
@@ -107,16 +107,22 @@ export const createADXL345Stream = (url: string, sensor: KlipperAccelSensorSchem
 
 	const dataStream$ = subject
 		.multiplex(
-			() =>
-				({
+			() => {
+				const params: KlipperADXLRequest['params'] = {
+					response_template: {},
+				};
+				// If using the default [beacon] config, sensor name should be omitted.
+				// TODO: support multiple beacon sensors.
+				if (sensor.name !== 'beacon') {
+					params.sensor = sensor.name;
+				}
+				return {
 					jsonrpc: '2.0',
 					method: getSensorEndpoint(sensor),
-					params: {
-						sensor: sensor.name,
-						response_template: {},
-					},
+					params: params,
 					id: ++id,
-				}) satisfies KlipperADXLRequest,
+				} satisfies KlipperADXLRequest;
+			},
 			() => {
 				return null;
 			},
