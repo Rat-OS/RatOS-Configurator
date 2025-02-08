@@ -3,11 +3,9 @@ import { Container } from '@/cli/components/container';
 import { APIResult, Status } from '@/cli/components/status';
 import { render } from 'ink';
 import { Command } from 'commander';
-import { readFile, realpath } from 'node:fs/promises';
-import { existsSync, readFileSync } from 'node:fs';
-import { serverSchema } from '@/env/schema.mjs';
-import dotenv from 'dotenv';
+import { realpath } from 'node:fs/promises';
 import React from 'react';
+export { loadEnvironment } from '@/server/helpers/utils';
 
 const reservedWords = [
 	'if',
@@ -185,17 +183,4 @@ export async function getRealPath(program: Command, p: string) {
 		}
 		throw e;
 	}
-}
-
-let alreadyLoaded = false;
-export function loadEnvironment() {
-	if (alreadyLoaded) {
-		return serverSchema.parse(process.env);
-	}
-	const envFilePath = existsSync('./.env.local') ? '.env.local' : '.env';
-	const envFile = readFileSync(envFilePath, 'utf8');
-	const env = serverSchema.parse({ NODE_ENV: 'production', ...dotenv.parse(envFile) });
-	dotenv.populate(process.env as any, env);
-	alreadyLoaded = true;
-	return env;
 }

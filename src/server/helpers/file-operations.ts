@@ -3,10 +3,10 @@ import { copyFile, unlink } from 'fs/promises';
 import { EOL } from 'os';
 import { createInterface } from 'readline';
 import { getLogger } from '@/server/helpers/logger';
+import { loadEnvironment } from '@/server/helpers/utils';
 
 export const getScriptRoot = () => {
-	// This is ... not great.. come up with something better
-	return process.env.RATOS_SCRIPT_DIR ?? __dirname.split('configurator/')[0] + 'configurator/scripts/';
+	return loadEnvironment().RATOS_SCRIPT_DIR;
 };
 
 /**
