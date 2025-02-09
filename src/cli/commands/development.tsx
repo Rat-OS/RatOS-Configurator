@@ -142,7 +142,7 @@ const development = (program: Command) => {
 													.lines()
 													.map((line) => line.trim())
 													.join('\n') +
-												'\n\n Do you want to continue?',
+												'\n\nDo you want to continue?',
 											execute: skipActionIfAborted(async (abortSignal, helpers) => {
 												await $({ signal: abortSignal })`git clean -d -f`;
 												return { newName: 'Cleaned up app directory', stepStatus: 'success' };
@@ -160,46 +160,46 @@ const development = (program: Command) => {
 							: { newName: 'Switched branch to ' + newBranch, stepStatus: 'success' };
 					},
 				},
-				// {
-				// 	name: 'Updating RatOS configurator',
-				// 	execute: skipActionIfAborted(async (abortSignal, helpers) => {
-				// 		await $$({ signal: abortSignal })`sudo ${loadEnvironment().RATOS_SCRIPT_DIR}/update.sh`;
-				// 		return { stepText: 'Updated RatOS configurator', stepStatus: 'success' };
-				// 	}),
-				// },
-				// {
-				// 	name: 'Restarting RatOS configurator',
-				// 	execute: skipActionIfAborted(async (abortSignal, helpers) => {
-				// 		await $$({ signal: abortSignal })`sudo systemctl restart ratos-configurator`;
-				// 		await $$({
-				// 			signal: abortSignal,
-				// 		})`sleep 1 && curl -s -o /dev/null --retry 20 --retry-all-errors --retry-delay 1 --retry-max-time 60 "http://localhost:3000/configure" &> /dev/null`;
-				// 		return { stepText: 'Restarted RatOS configurator', stepStatus: 'success' };
-				// 	}),
-				// },
-				// {
-				// 	name: 'Updating RatOS configuration',
-				// 	execute: skipActionIfAborted(async (abortSignal, helpers) => {
-				// 		await $$({
-				// 			signal: abortSignal,
-				// 		})`sudo ${loadEnvironment().RATOS_CONFIGURATION_PATH}/scripts/ratos-update.sh`;
-				// 		return { stepText: 'Updated RatOS configuration', stepStatus: 'success' };
-				// 	}),
-				// },
-				// {
-				// 	name: 'Restarting Klipper',
-				// 	execute: skipActionIfAborted(async (abortSignal, helpers) => {
-				// 		await $$({ signal: abortSignal })`sudo systemctl restart klipper`;
-				// 		return { stepText: 'Restarted Klipper', stepStatus: 'success' };
-				// 	}),
-				// },
-				// {
-				// 	name: 'Restarting Moonraker',
-				// 	execute: skipActionIfAborted(async (abortSignal, helpers) => {
-				// 		await $$({ signal: abortSignal })`sudo systemctl restart moonraker`;
-				// 		return { stepText: 'Restarted Moonraker', stepStatus: 'success' };
-				// 	}),
-				// },
+				{
+					name: 'Updating RatOS configurator',
+					execute: skipActionIfAborted(async (abortSignal, helpers) => {
+						await $({ signal: abortSignal })`sudo ${loadEnvironment().RATOS_SCRIPT_DIR}/update.sh`;
+						return { newName: 'Updated RatOS configurator', stepStatus: 'success' };
+					}),
+				},
+				{
+					name: 'Restarting RatOS configurator',
+					execute: skipActionIfAborted(async (abortSignal, helpers) => {
+						await $({ signal: abortSignal })`sudo systemctl restart ratos-configurator`;
+						await $({
+							signal: abortSignal,
+						})`sleep 1 && curl -s -o /dev/null --retry 20 --retry-all-errors --retry-delay 1 --retry-max-time 60 "http://localhost:3000/configure" &> /dev/null`;
+						return { newName: 'Restarted RatOS configurator', stepStatus: 'success' };
+					}),
+				},
+				{
+					name: 'Updating RatOS configuration',
+					execute: skipActionIfAborted(async (abortSignal, helpers) => {
+						await $({
+							signal: abortSignal,
+						})`sudo ${loadEnvironment().RATOS_CONFIGURATION_PATH}/scripts/ratos-update.sh`;
+						return { newName: 'Updated RatOS configuration', stepStatus: 'success' };
+					}),
+				},
+				{
+					name: 'Restarting Klipper',
+					execute: skipActionIfAborted(async (abortSignal, helpers) => {
+						await $({ signal: abortSignal })`sudo systemctl restart klipper`;
+						return { newName: 'Restarted Klipper', stepStatus: 'success' };
+					}),
+				},
+				{
+					name: 'Restarting Moonraker',
+					execute: skipActionIfAborted(async (abortSignal, helpers) => {
+						await $({ signal: abortSignal })`sudo systemctl restart moonraker`;
+						return { newName: 'Restarted Moonraker', stepStatus: 'success' };
+					}),
+				},
 			];
 
 			render(

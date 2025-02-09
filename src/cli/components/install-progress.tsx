@@ -108,7 +108,6 @@ export const InstallProgress: React.FC<{
 	const [isPaused, setIsPaused] = useState(false);
 	const onStepUnpaused = useCallback((confirmed: boolean, step: InstallStep) => {
 		if (confirmed) {
-			console.log('Unpausing step', step.name);
 			setIsPaused(false);
 		} else {
 			renderError(`Installation aborted at step "${step.name}"`);
@@ -116,11 +115,6 @@ export const InstallProgress: React.FC<{
 	}, []);
 
 	useEffect(() => {
-		console.log('effect running', {
-			isPaused,
-			isInitiated: isInitiated.current,
-			steps: steps.map((s) => `${s.name} (${s.status})`).join(',\n'),
-		});
 		if (isPaused) {
 			isInitiated.current = false;
 		}
@@ -138,8 +132,8 @@ export const InstallProgress: React.FC<{
 			// NOTE: Actions are responsible for checking the abort signal and acting accordingly
 			while (actions.current.some((step) => step.status === 'pending' || step.status === 'paused')) {
 				const nextStep = actions.current.find((step) => step.status === 'pending' || step.status === 'paused');
-				console.log('nextStep', nextStep);
 				if (!nextStep) {
+					setStatusColor('green');
 					break;
 				}
 				const index = actions.current.indexOf(nextStep);
@@ -147,7 +141,6 @@ export const InstallProgress: React.FC<{
 				actions.current[index].status = nextStep.prompt && nextStep.status !== 'paused' ? 'paused' : 'running';
 				setSteps(actionsToSteps(actions.current));
 				if (nextStep.prompt && !wasPaused) {
-					console.log('setting isPaused to true', { wasPaused, nextStep });
 					setIsPaused(true);
 					pausedInLoop = true;
 					isInitiated.current = false;
@@ -194,7 +187,6 @@ export const InstallProgress: React.FC<{
 			}
 		};
 		if (!isPaused) {
-			console.log('running steps');
 			isInitiated.current = true;
 			runSteps();
 		}
@@ -350,13 +342,13 @@ export const InstallProgressUI: React.FC<{
 			{pausedStep && (
 				<Box marginTop={1} flexDirection="column">
 					<Text color="yellowBright" bold>
-						{pausedStep.prompt ?? 'Continue?'}
+						{pausedStep.prompt ?? 'Continue?'}{' '}
+						<ConfirmInput
+							defaultChoice="cancel"
+							onConfirm={() => props.onStepUnpaused?.(true, pausedStep)}
+							onCancel={() => props.onStepUnpaused?.(false, pausedStep)}
+						/>
 					</Text>
-					<ConfirmInput
-						defaultChoice="cancel"
-						onConfirm={() => props.onStepUnpaused?.(true, pausedStep)}
-						onCancel={() => props.onStepUnpaused?.(false, pausedStep)}
-					/>
 				</Box>
 			)}
 		</Container>
