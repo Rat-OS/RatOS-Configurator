@@ -111,6 +111,17 @@ const development = (program: Command) => {
 											}),
 											status: 'pending',
 										});
+										helpers.insertStep({
+											name: 'Enabling configurator service',
+											execute: skipActionIfAborted(async (abortSignal, helpers) => {
+												await $({ signal: abortSignal })`sudo systemctl enable ratos-configurator`;
+												helpers.pushWarning(
+													'Configurator service has been enabled and will start automatically on boot.',
+												);
+												return { newName: 'Enabled configurator service', stepStatus: 'success' };
+											}),
+											status: 'pending',
+										});
 									}
 									return { newName: 'Adjusted environment for deployment branch', stepStatus: 'success' };
 								}),
@@ -146,6 +157,17 @@ const development = (program: Command) => {
 											execute: skipActionIfAborted(async (abortSignal, helpers) => {
 												await $({ signal: abortSignal })`git clean -d -f`;
 												return { newName: 'Cleaned up app directory', stepStatus: 'success' };
+											}),
+											status: 'pending',
+										});
+										helpers.insertStep({
+											name: 'Disabling configurator service',
+											execute: skipActionIfAborted(async (abortSignal, helpers) => {
+												await $({ signal: abortSignal })`sudo systemctl disable ratos-configurator`;
+												helpers.pushWarning(
+													'Configurator service has been disabled, use `pnpm run dev` to start the configurator.',
+												);
+												return { newName: 'Disabled configurator service', stepStatus: 'success' };
 											}),
 											status: 'pending',
 										});
