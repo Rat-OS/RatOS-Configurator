@@ -21,7 +21,12 @@ import { MetadataCache, cacheAsyncMetadataFn, cacheMetadataFn } from '@/server/h
 export const parseMetadata = async <T extends ZodType>(cfgFile: string, zod: T): Promise<z.infer<T> | null> => {
 	if (cfgFile.trim() === '') return null;
 
-	const hashmarkPrefixedJson = await promisify(exec)(`sed -n '/^# {/{:a; N; /\\n# }/!ba; p}' ${cfgFile}`);
+	const hashmarkPrefixedJson = await promisify(exec)(
+		`sed -n -e '/^# {/{:a' -e 'N' -e '/\\n# }/!ba' -e 'p' -e '}' ${cfgFile}`,
+		{
+			shell: '/bin/bash',
+		},
+	);
 	const jsonArray = hashmarkPrefixedJson.stdout
 		.split('\n')
 		.map((l) => l.trim())
@@ -43,7 +48,13 @@ export const parseMetadata = async <T extends ZodType>(cfgFile: string, zod: T):
 		if (e instanceof Error) {
 			getLogger().error(e.message);
 		}
-		throw new Error('Failed to parse JSON from file: ' + cfgFile + ' with content: ' + jsonArray.join('\n'));
+		throw new Error(
+			'Failed to parse JSON from file: ' +
+				cfgFile +
+				' with content: ' +
+				jsonArray.join('\n') +
+				(e && typeof e === 'object' && 'message' in e ? '\n' + e.message : ''),
+		);
 	}
 };
 

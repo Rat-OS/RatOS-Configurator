@@ -6,7 +6,8 @@ import { getLogger } from '@/server/helpers/logger';
 import { loadEnvironment } from '@/server/helpers/utils';
 
 export const getScriptRoot = () => {
-	return loadEnvironment().RATOS_SCRIPT_DIR;
+	// This is ... not great.. come up with something better
+	return process.env.RATOS_SCRIPT_DIR ?? __dirname.split('configurator/')[0] + 'configurator/scripts/';
 };
 
 /**
