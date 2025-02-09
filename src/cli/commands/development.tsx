@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import { constructSignalShell, ensureSudo, loadEnvironment, renderError } from '@/cli/util';
 import { getLogger } from '@/cli/logger';
-import { cd, syncProcessCwd } from 'zx';
+import { cd, path, syncProcessCwd } from 'zx';
 import { existsSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { replaceInFileByLine } from '@/server/helpers/file-operations';
@@ -60,7 +60,19 @@ const development = (program: Command) => {
 
 			if (
 				hasDirtyWorkingDirectory &&
-				!(await confirm('Working directory is dirty and will be forcefully reset, do you want to continue?', false))
+				!(await confirm(
+					'Working directory is dirty and will be forcefully reset, do you want to continue?',
+					(await $`git diff --name-only HEAD`)
+						.lines()
+						.map((line) => 'Would remove ' + path.relative(process.cwd(), line.trim()))
+						.join('\n') +
+						'\n' +
+						(await $`git clean -d -n`)
+							.lines()
+							.map((line) => line.trim())
+							.join('\n'),
+					false,
+				))
 			) {
 				getLogger().info(
 					`Aborting switch to ${newBranch}, working directory is dirty and user did not confirm the reset`,
@@ -72,6 +84,16 @@ const development = (program: Command) => {
 			getLogger().info(`Switching from ${currentBranch} to ${newBranch}...`);
 
 			const installActions: (InstallAction | null)[] = [
+				hasDirtyWorkingDirectory
+					? {
+							name: 'Resetting working directory',
+							execute: skipActionIfAborted(async (abortSignal, helpers) => {
+								await $`git reset --hard HEAD`;
+								await $`git clean -d -f`;
+								return { newName: 'Reset working directory', stepStatus: 'success' };
+							}),
+						}
+					: null,
 				{
 					name: `Switching to ${newBranch}...`,
 					execute: async (abortSignal, helpers) => {
@@ -178,7 +200,7 @@ const development = (program: Command) => {
 							});
 						}
 						return abortSignal.aborted
-							? { newName: 'Aborted', stepStatus: 'error' }
+							? { newName: 'Aborted branch switch', stepStatus: 'error' }
 							: { newName: 'Switched branch to ' + newBranch, stepStatus: 'success' };
 					},
 				},

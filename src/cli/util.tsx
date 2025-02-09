@@ -1,7 +1,7 @@
 import { $, chalk, echo, path, ProcessPromise, Shell } from 'zx';
 import { Container } from '@/cli/components/container';
 import { APIResult, Status } from '@/cli/components/status';
-import { render } from 'ink';
+import { render, Text } from 'ink';
 import { Command } from 'commander';
 import { realpath } from 'node:fs/promises';
 import React from 'react';
@@ -134,7 +134,11 @@ export function formatCmd(cmd?: string): string {
 }
 
 export const ensureSudo = async () => {
-	echo("Checking for sudo permissions. If you're prompted for a password, please enter it.");
+	render(
+		<Container>
+			<Text>Checking for sudo permissions. If you're prompted for a password, please enter it.</Text>
+		</Container>,
+	);
 	await $({ verbose: false, quiet: false })`sudo echo "Sudo permissions acquired"`;
 };
 
