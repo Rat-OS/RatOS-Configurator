@@ -2,69 +2,72 @@ import { Signal, useSignal } from '@/app/_helpers/signal';
 import { TextProps, Static, Box, Text, Transform } from 'ink';
 import Spinner from 'ink-spinner';
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { formatCmd } from '@/cli/util';
+import { formatCmd, renderError } from '@/cli/util';
 import { Container } from '@/cli/components/container';
+import { ConfirmInput } from '@inkjs/ui';
 
 export type InstallStep = {
 	name: string;
-	status: 'success' | 'error' | 'pending' | 'running' | 'warning';
+	prompt?: string;
+	status: 'success' | 'error' | 'pending' | 'running' | 'warning' | 'paused';
 };
 
 export type StepResult = {
-	stepText: string;
-	stepStatus: 'success' | 'error' | 'pending' | 'running' | 'warning';
+	newName: string;
+	stepStatus: 'success' | 'error' | 'warning';
 };
 
-export type InstallAction = Omit<InstallStep, 'status'> & {
-	/**
-	 * The action to run for the step.
-	 * Note that the process will not halt on errors or promise rejection.
-	 * You're responsible for handling subsequent steps if the abortSignal is aborted.
-	 *
-	 * @param abortSignal - The abort signal to abort the step
-	 * @param helpers - The helpers to insert and append steps
-	 * @returns The step result
-	 */
-	execute: (
-		abortSignal: AbortSignal,
-		helpers: {
-			/**
-			 * Insert a step after the current one.
-			 * @param step - The step to insert
-			 */
-			insertStep: (step: InstallActionWithStatus) => void;
-			/**
-			 * Append a step to the end of the list of steps.
-			 * @param step - The step to append
-			 */
-			appendStep: (step: InstallActionWithStatus) => void;
-			/**
-			 * Push a warning to the list of warnings.
-			 * @param warning - The warning to push
-			 */
-			pushWarning: (warning: string) => void;
-			/**
-			 * Push an error to the list of errors.
-			 * @param error - The error to push
-			 */
-			pushError: (error: string) => void;
-			/**
-			 * The command signal to log commands.
-			 */
-			cmdSignal: Signal<string | null>;
-			stepName: string;
-		},
-	) => Promise<StepResult>;
-};
+export type InstallAction = SimplifyObject<
+	Omit<InstallStep, 'status'> & {
+		/**
+		 * The action to run for the step.
+		 * Note that the process will not halt on errors or promise rejection.
+		 * You're responsible for handling subsequent steps if the abortSignal is aborted.
+		 *
+		 * @param abortSignal - The abort signal to abort the step
+		 * @param helpers - The helpers to insert and append steps
+		 * @returns The step result
+		 */
+		execute: (
+			abortSignal: AbortSignal,
+			helpers: {
+				/**
+				 * Insert a step after the current one.
+				 * @param step - The step to insert
+				 */
+				insertStep: (step: InstallActionWithStatus) => void;
+				/**
+				 * Append a step to the end of the list of steps.
+				 * @param step - The step to append
+				 */
+				appendStep: (step: InstallActionWithStatus) => void;
+				/**
+				 * Push a warning to the list of warnings.
+				 * @param warning - The warning to push
+				 */
+				pushWarning: (warning: string) => void;
+				/**
+				 * Push an error to the list of errors.
+				 * @param error - The error to push
+				 */
+				pushError: (error: string) => void;
+				/**
+				 * The command signal to log commands.
+				 */
+				cmdSignal: Signal<string | null>;
+				stepName: string;
+			},
+		) => Promise<StepResult>;
+	}
+>;
 
-export type InstallActionWithStatus = InstallAction & {
-	status: 'pending' | 'running' | 'success' | 'error' | 'warning';
-};
+export type InstallActionWithStatus = SimplifyObject<InstallStep & InstallAction>;
 
 const actionsToSteps = (actions: InstallActionWithStatus[]): InstallStep[] => {
 	return actions.map((action) => ({
 		name: action.name,
 		status: action.status,
+		prompt: action.prompt,
 	}));
 };
 
@@ -79,7 +82,7 @@ export const skipActionIfAborted = (execute: InstallAction['execute']): InstallA
 	return async (...args: Parameters<InstallAction['execute']>) => {
 		const abortSignal = args[0];
 		if (abortSignal.aborted) {
-			return { stepText: `${args[1].stepName} (Aborted)`, stepStatus: 'error' };
+			return { newName: `${args[1].stepName} (Aborted)`, stepStatus: 'error' };
 		}
 		return await execute(...args);
 	};
@@ -102,12 +105,30 @@ export const InstallProgress: React.FC<{
 	const [errors, setErrors] = useState<string[]>([]);
 	const [status, setStatus] = useState<string>(props.initialStatusText);
 	const [statusColor, setStatusColor] = useState<TextProps['color']>(props.initialStatusColor ?? 'white');
+	const [isPaused, setIsPaused] = useState(false);
+	const onStepUnpaused = useCallback((confirmed: boolean, step: InstallStep) => {
+		if (confirmed) {
+			console.log('Unpausing step', step.name);
+			setIsPaused(false);
+		} else {
+			renderError(`Installation aborted at step "${step.name}"`);
+		}
+	}, []);
 
 	useEffect(() => {
+		console.log('effect running', {
+			isPaused,
+			isInitiated: isInitiated.current,
+			steps: steps.map((s) => `${s.name} (${s.status})`).join(',\n'),
+		});
+		if (isPaused) {
+			isInitiated.current = false;
+		}
 		if (isInitiated.current) {
 			return;
 		}
-		const abortController = new AbortController();
+		let abortController = new AbortController();
+		let pausedInLoop = false;
 		setSteps(actionsToSteps(actions.current));
 		setStatus(props.initialStatusText);
 		setStatusColor(props.initialStatusColor ?? 'white');
@@ -115,12 +136,24 @@ export const InstallProgress: React.FC<{
 		setErrors([]);
 		const runSteps = async () => {
 			// NOTE: Actions are responsible for checking the abort signal and acting accordingly
-			while (actions.current.some((step) => step.status === 'pending')) {
-				const nextStep = actions.current.find((step) => step.status === 'pending');
+			while (actions.current.some((step) => step.status === 'pending' || step.status === 'paused')) {
+				const nextStep = actions.current.find((step) => step.status === 'pending' || step.status === 'paused');
+				console.log('nextStep', nextStep);
 				if (!nextStep) {
 					break;
 				}
 				const index = actions.current.indexOf(nextStep);
+				const wasPaused = nextStep.status === 'paused';
+				actions.current[index].status = nextStep.prompt && nextStep.status !== 'paused' ? 'paused' : 'running';
+				setSteps(actionsToSteps(actions.current));
+				if (nextStep.prompt && !wasPaused) {
+					console.log('setting isPaused to true', { wasPaused, nextStep });
+					setIsPaused(true);
+					pausedInLoop = true;
+					isInitiated.current = false;
+					setSteps(actionsToSteps(actions.current));
+					break;
+				}
 				try {
 					const result = await nextStep.execute(abortController.signal, {
 						insertStep: (step) => {
@@ -139,7 +172,7 @@ export const InstallProgress: React.FC<{
 					actions.current[index] = {
 						...actions.current[index],
 						status: result.stepStatus,
-						name: result.stepText ?? actions.current[index].name,
+						name: result.newName ?? actions.current[index].name,
 					};
 					setSteps(actionsToSteps(actions.current));
 				} catch (error) {
@@ -160,10 +193,17 @@ export const InstallProgress: React.FC<{
 				}
 			}
 		};
-		isInitiated.current = true;
-		runSteps();
-		return () => abortController.abort();
-	}, [props.initialStatusText, props.initialStatusColor]);
+		if (!isPaused) {
+			console.log('running steps');
+			isInitiated.current = true;
+			runSteps();
+		}
+		return () => {
+			if (!pausedInLoop) {
+				abortController.abort();
+			}
+		};
+	}, [props.initialStatusText, props.initialStatusColor, isPaused]);
 
 	return (
 		<InstallProgressUI
@@ -173,6 +213,7 @@ export const InstallProgress: React.FC<{
 			cmdSignal={cmdSignalRef.current}
 			status={status}
 			statusColor={statusColor}
+			onStepUnpaused={onStepUnpaused}
 		/>
 	);
 };
@@ -184,6 +225,7 @@ export const InstallProgressUI: React.FC<{
 	stepTextBeforeSteps?: boolean;
 	stepText?: string;
 	stepTextColor?: TextProps['color'];
+	onStepUnpaused?: (confirmed: boolean, step: InstallStep) => void;
 	warnings?: string[];
 	errors?: string[];
 	steps?: InstallStep[];
@@ -196,6 +238,7 @@ export const InstallProgressUI: React.FC<{
 			setCurrentCmd(cmd);
 		}, []),
 	);
+	const pausedStep = props.steps?.find((step) => step.status === 'paused');
 	return (
 		<Container>
 			<Box flexDirection="column" rowGap={0}>
@@ -206,7 +249,7 @@ export const InstallProgressUI: React.FC<{
 						) : ['green', 'greenBright'].includes(props.statusColor ?? 'white') ? (
 							<Text bold={true}>✓{'  '}</Text>
 						) : (
-							'   '
+							<Text bold={true}>▶{'  '}</Text>
 						)}
 						{props.status}
 					</Text>
@@ -271,6 +314,11 @@ export const InstallProgressUI: React.FC<{
 									•{'  '}
 								</Text>
 							)}
+							{step.status === 'paused' && (
+								<Text bold={true} color="yellow">
+									⏸{'  '}
+								</Text>
+							)}
 							<Text color="gray" bold={false}>
 								{step.name}
 							</Text>
@@ -297,6 +345,18 @@ export const InstallProgressUI: React.FC<{
 					<Text color="white">
 						Running: <Transform transform={formatCmd}>{currentCmd}</Transform>
 					</Text>
+				</Box>
+			)}
+			{pausedStep && (
+				<Box marginTop={1} flexDirection="column">
+					<Text color="yellowBright" bold>
+						{pausedStep.prompt ?? 'Continue?'}
+					</Text>
+					<ConfirmInput
+						defaultChoice="cancel"
+						onConfirm={() => props.onStepUnpaused?.(true, pausedStep)}
+						onCancel={() => props.onStepUnpaused?.(false, pausedStep)}
+					/>
 				</Box>
 			)}
 		</Container>

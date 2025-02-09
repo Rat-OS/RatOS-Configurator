@@ -1,10 +1,12 @@
-import { $, chalk, echo, path } from 'zx';
+import { $, chalk, echo, path, ProcessPromise, Shell } from 'zx';
 import { Container } from '@/cli/components/container';
 import { APIResult, Status } from '@/cli/components/status';
 import { render } from 'ink';
 import { Command } from 'commander';
 import { realpath } from 'node:fs/promises';
 import React from 'react';
+import { createSignal } from '@/app/_helpers/signal';
+import { getLogger } from '@/server/helpers/logger';
 export { loadEnvironment } from '@/server/helpers/utils';
 
 const reservedWords = [
@@ -23,7 +25,7 @@ const reservedWords = [
 	'done',
 	'in',
 ];
-
+// From zx/src/util.ts
 export function formatCmd(cmd?: string): string {
 	if (cmd == undefined) return chalk.grey('undefined');
 	const chars = [...cmd];
@@ -184,3 +186,37 @@ export async function getRealPath(program: Command, p: string) {
 		throw e;
 	}
 }
+
+export const constructSignalShell = () => {
+	const cmdSignal = createSignal<string | null>();
+	let scoped$ = $({
+		quiet: true,
+		log(entry) {
+			if (entry.kind === 'cmd') {
+				cmdSignal(entry.cmd);
+				getLogger().info('Running command: ' + entry.cmd);
+			}
+		},
+	});
+
+	const $$: Shell = Object.assign(
+		scoped$,
+		(...args: Parameters<typeof scoped$>) => {
+			const res = scoped$(...args);
+			if (res instanceof ProcessPromise) {
+				return res.then((result) => {
+					cmdSignal(null);
+					return result;
+				});
+			}
+			return res;
+		},
+		{
+			sync: (...args: Parameters<typeof scoped$>) => {
+				throw new Error('Synchronous execution is not supported.');
+			},
+		},
+	);
+
+	return { cmdSignal, $: $$ };
+};

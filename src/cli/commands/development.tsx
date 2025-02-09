@@ -1,8 +1,7 @@
 import { Command } from 'commander';
-import { ensureSudo, loadEnvironment, renderError } from '@/cli/util';
-import { createSignal } from '@/app/_helpers/signal';
+import { constructSignalShell, ensureSudo, loadEnvironment, renderError } from '@/cli/util';
 import { getLogger } from '@/cli/logger';
-import { $ } from 'zx';
+import { cd, syncProcessCwd } from 'zx';
 import { existsSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { replaceInFileByLine } from '@/server/helpers/file-operations';
@@ -42,20 +41,13 @@ const development = (program: Command) => {
 		.argument('<branch>', 'The new branch to switch to, eg. "development" or "dev-deployment"')
 		.action(async (newBranch: string) => {
 			await ensureSudo();
+			syncProcessCwd();
 
-			const cmdSignal = createSignal<string | null>();
-			const $$ = $({
-				quiet: true,
-				log(entry) {
-					if (entry.kind === 'cmd') {
-						cmdSignal(entry.cmd);
-						getLogger().info('Running command: ' + entry.cmd);
-					}
-				},
-			});
+			const { cmdSignal, $ } = constructSignalShell();
 
-			const currentBranch = (await $$`git branch --show-current`).lines()[0];
-			const hasDirtyWorkingDirectory = (await $$`git status --porcelain`).lines().length > 0;
+			const currentBranch = (await $`git branch --show-current`).lines()[0];
+			const hasDirtyWorkingDirectory =
+				(await $`git status --porcelain`).lines().filter((line) => line.trim() !== '').length > 0;
 
 			getLogger().info(
 				{
@@ -83,10 +75,10 @@ const development = (program: Command) => {
 				{
 					name: `Switching to ${newBranch}...`,
 					execute: async (abortSignal, helpers) => {
-						await $$({ signal: abortSignal })`git checkout ${newBranch}`;
+						await $({ signal: abortSignal })`git checkout ${newBranch}`;
 						if (abortSignal.aborted) {
-							await $$`git checkout ${currentBranch}`;
-							return { stepText: 'Aborted', stepStatus: 'error' };
+							await $`git checkout ${currentBranch}`;
+							return { newName: 'Aborted', stepStatus: 'error' };
 						}
 						// If the app directory exists, we are on a deployment branch
 						if (existsSync('../app')) {
@@ -100,7 +92,27 @@ const development = (program: Command) => {
 										}
 										return line;
 									});
-									return { stepText: 'Adjusted environment for deployment branch', stepStatus: 'success' };
+									if (process.cwd().endsWith('/src')) {
+										cd('../app');
+										await $({ signal: abortSignal })`cp -r ../src/.env.local ./.env.local`;
+										const filesToDelete = await $`git clean -d -n ..`;
+										helpers.insertStep({
+											name: 'Cleaning up src directory',
+											prompt:
+												'The following files/directories will be deleted:\n\n' +
+												filesToDelete
+													.lines()
+													.map((line) => line.trim())
+													.join('\n') +
+												'\n\nDo you want to continue?',
+											execute: skipActionIfAborted(async (abortSignal, helpers) => {
+												await $({ signal: abortSignal })`git clean -d -f`;
+												return { newName: 'Cleaned up src directory', stepStatus: 'success' };
+											}),
+											status: 'pending',
+										});
+									}
+									return { newName: 'Adjusted environment for deployment branch', stepStatus: 'success' };
 								}),
 								status: 'pending',
 							});
@@ -118,14 +130,34 @@ const development = (program: Command) => {
 										}
 										return line;
 									});
-									return { stepText: 'Adjusted environment for development branch', stepStatus: 'success' };
+									if (process.cwd().endsWith('/app')) {
+										cd('../src');
+										await $({ signal: abortSignal })`cp -r ../app/.env.local ./.env.local`;
+										const filesToDelete = await $`git clean -d -n ..`;
+										helpers.insertStep({
+											name: 'Cleaning up app directory',
+											prompt:
+												'The following files/directories will be deleted:\n\n' +
+												filesToDelete
+													.lines()
+													.map((line) => line.trim())
+													.join('\n') +
+												'\n\n Do you want to continue?',
+											execute: skipActionIfAborted(async (abortSignal, helpers) => {
+												await $({ signal: abortSignal })`git clean -d -f`;
+												return { newName: 'Cleaned up app directory', stepStatus: 'success' };
+											}),
+											status: 'pending',
+										});
+									}
+									return { newName: 'Adjusted environment for development branch', stepStatus: 'success' };
 								}),
 								status: 'pending',
 							});
 						}
 						return abortSignal.aborted
-							? { stepText: 'Aborted', stepStatus: 'error' }
-							: { stepText: 'Switched branch to ' + newBranch, stepStatus: 'success' };
+							? { newName: 'Aborted', stepStatus: 'error' }
+							: { newName: 'Switched branch to ' + newBranch, stepStatus: 'success' };
 					},
 				},
 				// {
