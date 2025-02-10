@@ -337,7 +337,7 @@ export const InstallProgressUI: React.FC<{
 					</Text>
 				)}
 			</Box>
-			{currentCmd && (
+			{currentCmd && !pausedStep && (
 				<Box marginTop={1} flexDirection="column">
 					<Text color="white">
 						Running: <Transform transform={formatCmd}>{currentCmd}</Transform>

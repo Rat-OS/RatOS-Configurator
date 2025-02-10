@@ -293,7 +293,13 @@ const development = (program: Command) => {
 				{
 					name: 'Restarting RatOS configurator',
 					execute: skipActionIfAborted(async (abortSignal, helpers) => {
-						if ((await $`sudo systemctl is-enabled ratos-configurator`).text().trim() === 'disabled') {
+						let isDisabled = false;
+						try {
+							isDisabled = (await $`sudo systemctl is-enabled ratos-configurator`).text().trim() === 'disabled';
+						} catch (e) {
+							isDisabled = true;
+						}
+						if (isDisabled) {
 							return {
 								newName: 'Skipped restarting RatOS configurator (service disabled)',
 								stepStatus: 'skipped',
