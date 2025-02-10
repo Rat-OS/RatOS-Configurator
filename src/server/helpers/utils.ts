@@ -14,3 +14,12 @@ export function loadEnvironment() {
 	alreadyLoaded = true;
 	return env;
 }
+
+export function resetEnvironment() {
+	alreadyLoaded = false;
+}
+
+export function reloadEnvironment() {
+	resetEnvironment();
+	return loadEnvironment();
+}

@@ -10,6 +10,7 @@ import { confirm } from '@/cli/components/confirm';
 import { render, Static, Text } from 'ink';
 import React from 'react';
 import { Container } from '@/cli/components/container';
+import { reloadEnvironment } from '@/server/helpers/utils';
 
 const ensureLocalEnvFile = async () => {
 	if (!existsSync('./.env.local')) {
@@ -112,7 +113,7 @@ const development = (program: Command) => {
 				if (
 					!(await confirm(
 						`Local branch "${newBranch}" will be recreated, proceed?`,
-						`If you proceed "${newBranch}" will be forcefully deleted and recreated to match "${remote}/${newBranch}".` +
+						`If you proceed "${newBranch}" will be forcefully deleted and recreated to match "${remote}/${newBranch}". ` +
 							'This will also delete any unpushed local changes you have made to the branch.',
 						false,
 					))
@@ -200,6 +201,7 @@ const development = (program: Command) => {
 										cd('..');
 										await $({ signal: abortSignal })`cp -r ${tempEnvFile} ./app/.env.local`;
 										const filesToDelete = await $`git clean -d -n`;
+										reloadEnvironment();
 										helpers.insertStep({
 											name: 'Cleaning up src directory',
 											prompt:
@@ -246,6 +248,7 @@ const development = (program: Command) => {
 										cd('..');
 										await $({ signal: abortSignal })`cp -r ${tempEnvFile} ./src/.env.local`;
 										const filesToDelete = await $`git clean -d -n`;
+										reloadEnvironment();
 										helpers.insertStep({
 											name: 'Cleaning up app directory',
 											prompt:
@@ -269,6 +272,14 @@ const development = (program: Command) => {
 													'Configurator service has been disabled, use `pnpm run dev` to start the configurator.',
 												);
 												return { newName: 'Disabled configurator service', stepStatus: 'success' };
+											}),
+											status: 'pending',
+										});
+										helpers.insertStep({
+											name: 'Building RatOS CLI',
+											execute: skipActionIfAborted(async (abortSignal, helpers) => {
+												await $({ signal: abortSignal })`pnpm run build:cli`;
+												return { newName: 'Built RatOS CLI', stepStatus: 'success' };
 											}),
 											status: 'pending',
 										});
