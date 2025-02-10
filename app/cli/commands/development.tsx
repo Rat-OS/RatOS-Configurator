@@ -145,13 +145,13 @@ const development = (program: Command) => {
 				{
 					name: `Switching to ${newBranch}...`,
 					execute: async (abortSignal, helpers) => {
-						await $({ signal: abortSignal })`git checkout ${newBranch}`;
+						await $({ signal: abortSignal })`git checkout -b ${newBranch} ${remote}/${newBranch}`;
 						if (abortSignal.aborted) {
 							await $`git checkout ${currentBranch}`;
 							return { newName: 'Aborted', stepStatus: 'error' };
 						}
-						// If the app directory exists, we are on a deployment branch
-						if (existsSync('../app')) {
+						// Conventionally, deployment branches have a "-deployment" suffix
+						if (newBranch.endsWith('-deployment')) {
 							getLogger().info(`Switched to deployment branch "${newBranch}"`);
 							helpers.insertStep({
 								name: `Adjusting environment for deployment branch ${newBranch}`,
@@ -197,9 +197,6 @@ const development = (program: Command) => {
 								}),
 								status: 'pending',
 							});
-						} else if (newBranch.indexOf('-deployment') > -1) {
-							getLogger().info(`Deployment branch detected (${newBranch}) but app directory wasn't found`);
-							throw new Error('Deployment branch detected but app directory not found');
 						} else {
 							getLogger().info(`Switched to development branch "${newBranch}"`);
 							helpers.insertStep({
