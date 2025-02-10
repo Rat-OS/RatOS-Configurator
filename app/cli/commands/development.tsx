@@ -197,11 +197,11 @@ const development = (program: Command) => {
 										}
 										return line;
 									});
+									reloadEnvironment(tempEnvFile);
 									if (process.cwd().endsWith('/src')) {
 										cd('..');
 										await $({ signal: abortSignal })`cp -r ${tempEnvFile} ./app/.env.local`;
 										const filesToDelete = await $`git clean -d -n`;
-										reloadEnvironment();
 										helpers.insertStep({
 											name: 'Cleaning up src directory',
 											prompt:
@@ -244,11 +244,11 @@ const development = (program: Command) => {
 										}
 										return line;
 									});
+									reloadEnvironment(tempEnvFile);
 									if (process.cwd().endsWith('/app')) {
 										cd('..');
 										await $({ signal: abortSignal })`cp -r ${tempEnvFile} ./src/.env.local`;
 										const filesToDelete = await $`git clean -d -n`;
-										reloadEnvironment();
 										helpers.insertStep({
 											name: 'Cleaning up app directory',
 											prompt:
