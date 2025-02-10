@@ -18,18 +18,22 @@ const ensureLocalEnvFile = async () => {
 	}
 };
 
+const tempEnvFile = '/tmp/configurator.env.local';
+
 /**
  * Replaces lines in local env file with new lines.
  * @param searchOrReplacer  String or RegExp to search for, or a function that takes a line and returns a new line, if the function returns null the line will be removed.
  * @param replace String to replace with, or null to remove the line.
  * @returns Number of lines changed
  */
-const replaceInLocalEnvFile = async (
+const replaceInTempEnvFile = async (
 	searchOrReplacer: string | RegExp | ((line: string, lineNumber: number) => string | null),
 	replace?: string | null,
 ) => {
-	await ensureLocalEnvFile();
-	await replaceInFileByLine('./.env.local', searchOrReplacer, replace);
+	if (!existsSync(tempEnvFile)) {
+		throw new Error(`Temporary environment file ${tempEnvFile} not found`);
+	}
+	await replaceInFileByLine(tempEnvFile, searchOrReplacer, replace);
 };
 
 const isDeploymentBranch = (branch: string) => branch.indexOf('-deployment') > -1;
@@ -165,13 +169,17 @@ const development = (program: Command) => {
 					}),
 				},
 				{
+					name: 'Copying local environment file',
+					execute: skipActionIfAborted(async (abortSignal, helpers) => {
+						await ensureLocalEnvFile();
+						await $`cp ./.env.local ${tempEnvFile}`;
+						return { newName: 'Copied local environment file', stepStatus: 'success' };
+					}),
+				},
+				{
 					name: `Switching to ${newBranch}...`,
 					execute: async (abortSignal, helpers) => {
-						if (options?.force) {
-							await $({ signal: abortSignal })`git switch -C ${newBranch} ${remote}/${newBranch}`;
-						} else {
-							await $({ signal: abortSignal })`git checkout ${newBranch}`;
-						}
+						await $({ signal: abortSignal })`git switch -C ${newBranch} ${remote}/${newBranch}`;
 						if (abortSignal.aborted) {
 							await $`git checkout ${currentBranch}`;
 							return { newName: 'Aborted', stepStatus: 'error' };
@@ -182,7 +190,7 @@ const development = (program: Command) => {
 							helpers.insertStep({
 								name: `Adjusting environment for deployment branch ${newBranch}`,
 								execute: skipActionIfAborted(async (abortSignal, helpers) => {
-									await replaceInLocalEnvFile((line) => {
+									await replaceInTempEnvFile((line) => {
 										if (line.startsWith('RATOS_SCRIPT_DIR=')) {
 											return line.replace('/src/', '/app/');
 										}
@@ -190,7 +198,7 @@ const development = (program: Command) => {
 									});
 									if (process.cwd().endsWith('/src')) {
 										cd('../app');
-										await $({ signal: abortSignal })`cp -r ../src/.env.local ./.env.local`;
+										await $({ signal: abortSignal })`cp -r ${tempEnvFile} ./.env.local`;
 										const filesToDelete = await $`git clean -d -n ..`;
 										helpers.insertStep({
 											name: 'Cleaning up src directory',
@@ -228,7 +236,7 @@ const development = (program: Command) => {
 							helpers.insertStep({
 								name: `Adjusting environment for development branch ${newBranch}`,
 								execute: skipActionIfAborted(async (abortSignal, helpers) => {
-									await replaceInLocalEnvFile((line) => {
+									await replaceInTempEnvFile((line) => {
 										if (line.startsWith('RATOS_SCRIPT_DIR=')) {
 											return line.replace('/app/', '/src/');
 										}
@@ -236,7 +244,7 @@ const development = (program: Command) => {
 									});
 									if (process.cwd().endsWith('/app')) {
 										cd('../src');
-										await $({ signal: abortSignal })`cp -r ../app/.env.local ./.env.local`;
+										await $({ signal: abortSignal })`cp -r ${tempEnvFile} ./.env.local`;
 										const filesToDelete = await $`git clean -d -n ..`;
 										helpers.insertStep({
 											name: 'Cleaning up app directory',
