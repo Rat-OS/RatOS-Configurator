@@ -9,12 +9,12 @@ import { ConfirmInput } from '@inkjs/ui';
 export type InstallStep = {
 	name: string;
 	prompt?: string;
-	status: 'success' | 'error' | 'pending' | 'running' | 'warning' | 'paused';
+	status: 'success' | 'error' | 'pending' | 'running' | 'warning' | 'paused' | 'skipped';
 };
 
 export type StepResult = {
 	newName: string;
-	stepStatus: 'success' | 'error' | 'warning';
+	stepStatus: 'success' | 'error' | 'warning' | 'skipped';
 };
 
 export type InstallAction = SimplifyObject<
@@ -309,6 +309,11 @@ export const InstallProgressUI: React.FC<{
 							{step.status === 'paused' && (
 								<Text bold={true} color="yellow">
 									⏸{'  '}
+								</Text>
+							)}
+							{step.status === 'skipped' && (
+								<Text bold={true} color="gray">
+									⏭{'  '}
 								</Text>
 							)}
 							<Text color="gray" bold={false}>

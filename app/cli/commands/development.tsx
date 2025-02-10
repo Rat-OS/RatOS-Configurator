@@ -197,8 +197,8 @@ const development = (program: Command) => {
 										return line;
 									});
 									if (process.cwd().endsWith('/src')) {
-										cd('../app');
-										await $({ signal: abortSignal })`cp -r ${tempEnvFile} ./.env.local`;
+										cd('..');
+										await $({ signal: abortSignal })`cp -r ${tempEnvFile} ./app/.env.local`;
 										const filesToDelete = await $`git clean -d -n ..`;
 										helpers.insertStep({
 											name: 'Cleaning up src directory',
@@ -210,7 +210,7 @@ const development = (program: Command) => {
 													.join('\n') +
 												'\n\nDo you want to continue?',
 											execute: skipActionIfAborted(async (abortSignal, helpers) => {
-												await $({ signal: abortSignal })`git clean -d -f`;
+												await $({ signal: abortSignal })`git clean -d -f ..`;
 												return { newName: 'Cleaned up src directory', stepStatus: 'success' };
 											}),
 											status: 'pending',
@@ -243,8 +243,8 @@ const development = (program: Command) => {
 										return line;
 									});
 									if (process.cwd().endsWith('/app')) {
-										cd('../src');
-										await $({ signal: abortSignal })`cp -r ${tempEnvFile} ./.env.local`;
+										cd('..');
+										await $({ signal: abortSignal })`cp -r ${tempEnvFile} ./src/.env.local`;
 										const filesToDelete = await $`git clean -d -n ..`;
 										helpers.insertStep({
 											name: 'Cleaning up app directory',
@@ -256,7 +256,7 @@ const development = (program: Command) => {
 													.join('\n') +
 												'\n\nDo you want to continue?',
 											execute: skipActionIfAborted(async (abortSignal, helpers) => {
-												await $({ signal: abortSignal })`git clean -d -f`;
+												await $({ signal: abortSignal })`git clean -d -f ..`;
 												return { newName: 'Cleaned up app directory', stepStatus: 'success' };
 											}),
 											status: 'pending',
@@ -293,6 +293,12 @@ const development = (program: Command) => {
 				{
 					name: 'Restarting RatOS configurator',
 					execute: skipActionIfAborted(async (abortSignal, helpers) => {
+						if ((await $`sudo systemctl is-enabled ratos-configurator`).text().trim() === 'disabled') {
+							return {
+								newName: 'Skipped restarting RatOS configurator (service disabled)',
+								stepStatus: 'skipped',
+							};
+						}
 						await $({ signal: abortSignal })`sudo systemctl restart ratos-configurator`;
 						await $({
 							signal: abortSignal,
