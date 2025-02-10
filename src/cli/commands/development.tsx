@@ -54,10 +54,11 @@ const development = (program: Command) => {
 	const development = program.command('development').description('Development commands');
 	development
 		.command('branch')
-		.description('Switch between development and deployment branches')
+		.description('Switch between development and deployment branches.')
 		.argument('[remote]', 'The remote to fetch from, eg. "origin" or "upstream"')
 		.argument('[branch]', 'The new branch to switch to, eg. "development" or "dev-deployment"')
-		.action(async (remote?: string, newBranch?: string | null) => {
+		.option('-f, --force', 'Forcefully delete and recreate the local branch if it already exists')
+		.action(async (remote?: string, newBranch?: string | null, options?: { force?: boolean }) => {
 			const { cmdSignal, $ } = constructSignalShell();
 			syncProcessCwd();
 
@@ -98,6 +99,27 @@ const development = (program: Command) => {
 				},
 				`Switching from ${currentBranch} to ${newBranch}...`,
 			);
+
+			// Prompt if new branch exists locally
+			if (
+				(await $`git branch -a`).lines().filter((line) => line.trim() === newBranch).length !== 0 &&
+				!options?.force
+			) {
+				if (
+					!(await confirm(
+						`Local branch "${newBranch}" will be recreated, proceed?`,
+						`If you proceed "${newBranch}" will be forcefully deleted and recreated to match "${remote}/${newBranch}".` +
+							'This will also delete any unpushed local changes you have made to the branch.',
+						false,
+					))
+				) {
+					getLogger().info(
+						`Aborting switch to ${newBranch}, local branch already exists and user did not confirm the recreation`,
+					);
+					renderError(`Aborted branch switch to ${newBranch}.`);
+					return;
+				}
+			}
 
 			if (
 				hasDirtyWorkingDirectory &&
@@ -145,7 +167,11 @@ const development = (program: Command) => {
 				{
 					name: `Switching to ${newBranch}...`,
 					execute: async (abortSignal, helpers) => {
-						await $({ signal: abortSignal })`git checkout -b ${newBranch} ${remote}/${newBranch}`;
+						if (options?.force) {
+							await $({ signal: abortSignal })`git switch -C ${newBranch} ${remote}/${newBranch}`;
+						} else {
+							await $({ signal: abortSignal })`git checkout ${newBranch}`;
+						}
 						if (abortSignal.aborted) {
 							await $`git checkout ${currentBranch}`;
 							return { newName: 'Aborted', stepStatus: 'error' };
