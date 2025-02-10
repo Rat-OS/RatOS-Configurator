@@ -279,6 +279,7 @@ const development = (program: Command) => {
 											name: 'Building RatOS CLI',
 											execute: skipActionIfAborted(async (abortSignal, helpers) => {
 												cd('src');
+												await $({ signal: abortSignal })`pnpm install`;
 												await $({ signal: abortSignal })`pnpm run build:cli`;
 												cd('..');
 												return { newName: 'Built RatOS CLI', stepStatus: 'success' };
