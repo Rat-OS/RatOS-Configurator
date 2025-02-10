@@ -5,7 +5,7 @@ import { render, Text } from 'ink';
 import { Command } from 'commander';
 import { realpath } from 'node:fs/promises';
 import React from 'react';
-import { createSignal } from '@/app/_helpers/signal';
+import { createSignal, Signal } from '@/app/_helpers/signal';
 import { getLogger } from '@/server/helpers/logger';
 export { loadEnvironment } from '@/server/helpers/utils';
 
@@ -191,6 +191,29 @@ export async function getRealPath(program: Command, p: string) {
 	}
 }
 
+const wrapZx = (scoped$: Shell, cmdSignal: Signal<string | null>) => {
+	const $$: Shell = Object.assign(
+		scoped$,
+		(...args: Parameters<typeof scoped$>) => {
+			const res = scoped$(...args);
+			if (res instanceof ProcessPromise) {
+				return res.then((result) => {
+					cmdSignal(null);
+					return result;
+				});
+			} else {
+				return wrapZx(res, cmdSignal);
+			}
+		},
+		{
+			sync: (...args: Parameters<typeof scoped$>) => {
+				throw new Error('Synchronous execution is not supported.');
+			},
+		},
+	);
+	return $$;
+};
+
 export const constructSignalShell = () => {
 	const cmdSignal = createSignal<string | null>();
 	let scoped$ = $({
@@ -203,24 +226,7 @@ export const constructSignalShell = () => {
 		},
 	});
 
-	const $$: Shell = Object.assign(
-		scoped$,
-		(...args: Parameters<typeof scoped$>) => {
-			const res = scoped$(...args);
-			if (res instanceof ProcessPromise) {
-				return res.then((result) => {
-					cmdSignal(null);
-					return result;
-				});
-			}
-			return res;
-		},
-		{
-			sync: (...args: Parameters<typeof scoped$>) => {
-				throw new Error('Synchronous execution is not supported.');
-			},
-		},
-	);
+	const $$ = wrapZx(scoped$, cmdSignal);
 
 	return { cmdSignal, $: $$ };
 };
