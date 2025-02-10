@@ -1,14 +1,15 @@
 import { Command } from 'commander';
 import { constructSignalShell, ensureSudo, loadEnvironment, renderError } from '@/cli/util';
 import { getLogger } from '@/cli/logger';
-import { cd, path, syncProcessCwd } from 'zx';
+import { cd, path, Shell, syncProcessCwd } from 'zx';
 import { existsSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import { replaceInFileByLine } from '@/server/helpers/file-operations';
 import { InstallProgress, InstallAction, skipActionIfAborted } from '@/cli/components/install-progress';
 import { confirm } from '@/cli/components/confirm';
-import { render } from 'ink';
+import { render, Static, Text } from 'ink';
 import React from 'react';
+import { Container } from '@/cli/components/container';
 
 const ensureLocalEnvFile = async () => {
 	if (!existsSync('./.env.local')) {
@@ -33,17 +34,57 @@ const replaceInLocalEnvFile = async (
 
 const isDeploymentBranch = (branch: string) => branch.indexOf('-deployment') > -1;
 
+const renderBranchInfo = async ($: Shell) => {
+	render(
+		<Container>
+			<Text bold>Current branch:</Text>
+			<Text color="green">{await $`git branch --show-current`.text()}</Text>
+			<Text bold>Available upstream branches:</Text>
+			<Text>
+				{(await $`git branch -r`)
+					.lines()
+					.map((line) => line.trim())
+					.join('\n')}
+			</Text>
+		</Container>,
+	);
+};
+
 const development = (program: Command) => {
 	const development = program.command('development').description('Development commands');
 	development
 		.command('branch')
 		.description('Switch between development and deployment branches')
-		.argument('<branch>', 'The new branch to switch to, eg. "development" or "dev-deployment"')
-		.action(async (newBranch: string) => {
-			await ensureSudo();
+		.argument('[remote]', 'The remote to fetch from, eg. "origin" or "upstream"')
+		.argument('[branch]', 'The new branch to switch to, eg. "development" or "dev-deployment"')
+		.action(async (remote?: string, newBranch?: string | null) => {
+			const { cmdSignal, $ } = constructSignalShell();
 			syncProcessCwd();
 
-			const { cmdSignal, $ } = constructSignalShell();
+			if (remote == null) {
+				await renderBranchInfo($);
+				return;
+			}
+			if (newBranch == null) {
+				newBranch = remote;
+				remote = 'origin';
+			}
+			try {
+				if ((await $`git remote get-url ${remote}`).text().trim() === '') {
+					renderError(`Remote "${remote}" not found`);
+				}
+			} catch (e) {
+				renderError(`Remote "${remote}" not found`);
+			}
+			if (
+				(await $`git branch -r`)
+					.lines()
+					.map((line) => line.trim())
+					.filter((line) => line.startsWith(`${remote}/${newBranch}`)).length === 0
+			) {
+				renderError(`Branch "${newBranch}" not found on remote "${remote}"`);
+			}
+			await ensureSudo();
 
 			const currentBranch = (await $`git branch --show-current`).lines()[0];
 			const hasDirtyWorkingDirectory =
@@ -94,6 +135,13 @@ const development = (program: Command) => {
 							}),
 						}
 					: null,
+				{
+					name: 'Fetching latest changes',
+					execute: skipActionIfAborted(async (abortSignal, helpers) => {
+						await $`git fetch ${remote} ${newBranch}`;
+						return { newName: 'Fetched latest changes', stepStatus: 'success' };
+					}),
+				},
 				{
 					name: `Switching to ${newBranch}...`,
 					execute: async (abortSignal, helpers) => {
