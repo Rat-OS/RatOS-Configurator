@@ -14,7 +14,7 @@ export function loadEnvironment(filePath?: string) {
 	}
 	const envFile = readFileSync(envFilePath, 'utf8');
 	const env = serverSchema.parse({ NODE_ENV: 'production', ...dotenv.parse(envFile) });
-	dotenv.populate(process.env as any, env);
+	dotenv.populate(process.env as any, env, { override: true });
 	alreadyLoaded = true;
 	return env;
 }
