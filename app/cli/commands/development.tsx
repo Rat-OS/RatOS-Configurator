@@ -278,7 +278,9 @@ const development = (program: Command) => {
 										helpers.insertStep({
 											name: 'Building RatOS CLI',
 											execute: skipActionIfAborted(async (abortSignal, helpers) => {
+												cd('src');
 												await $({ signal: abortSignal })`pnpm run build:cli`;
+												cd('..');
 												return { newName: 'Built RatOS CLI', stepStatus: 'success' };
 											}),
 											status: 'pending',
