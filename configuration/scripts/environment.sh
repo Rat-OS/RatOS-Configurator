@@ -2,6 +2,11 @@
 
 # performed outside of a function so that other scripts sourcing this in will run this by default
 
+# Order of precedence, latter overrides former:
+# 1. $envFile
+# 2. $userEnvFile
+# 3. Inline environment variables ie. "RATOS_USERNAME=foo ./scripts/some-script.sh"
+
 # Get the real user (not root) when script is run with sudo
 
 if [ -n "$SUDO_USER" ] && [ "$SUDO_USER" != "root" ]; then

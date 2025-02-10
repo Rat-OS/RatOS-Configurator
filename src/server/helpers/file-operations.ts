@@ -3,6 +3,7 @@ import { copyFile, unlink } from 'fs/promises';
 import { EOL } from 'os';
 import { createInterface } from 'readline';
 import { getLogger } from '@/server/helpers/logger';
+import { loadEnvironment } from '@/server/helpers/utils';
 
 export const getScriptRoot = () => {
 	// This is ... not great.. come up with something better
