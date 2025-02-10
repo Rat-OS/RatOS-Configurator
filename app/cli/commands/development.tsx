@@ -199,7 +199,7 @@ const development = (program: Command) => {
 									if (process.cwd().endsWith('/src')) {
 										cd('..');
 										await $({ signal: abortSignal })`cp -r ${tempEnvFile} ./app/.env.local`;
-										const filesToDelete = await $`git clean -d -n ..`;
+										const filesToDelete = await $`git clean -d -n`;
 										helpers.insertStep({
 											name: 'Cleaning up src directory',
 											prompt:
@@ -210,7 +210,7 @@ const development = (program: Command) => {
 													.join('\n') +
 												'\n\nDo you want to continue?',
 											execute: skipActionIfAborted(async (abortSignal, helpers) => {
-												await $({ signal: abortSignal })`git clean -d -f ..`;
+												await $({ signal: abortSignal })`git clean -d -f`;
 												return { newName: 'Cleaned up src directory', stepStatus: 'success' };
 											}),
 											status: 'pending',
@@ -245,7 +245,7 @@ const development = (program: Command) => {
 									if (process.cwd().endsWith('/app')) {
 										cd('..');
 										await $({ signal: abortSignal })`cp -r ${tempEnvFile} ./src/.env.local`;
-										const filesToDelete = await $`git clean -d -n ..`;
+										const filesToDelete = await $`git clean -d -n`;
 										helpers.insertStep({
 											name: 'Cleaning up app directory',
 											prompt:
@@ -256,7 +256,7 @@ const development = (program: Command) => {
 													.join('\n') +
 												'\n\nDo you want to continue?',
 											execute: skipActionIfAborted(async (abortSignal, helpers) => {
-												await $({ signal: abortSignal })`git clean -d -f ..`;
+												await $({ signal: abortSignal })`git clean -d -f`;
 												return { newName: 'Cleaned up app directory', stepStatus: 'success' };
 											}),
 											status: 'pending',
